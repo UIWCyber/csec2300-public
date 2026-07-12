@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 18: LLM Fundamentals; Deploying Ollama + Open WebUI in Docker</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">LLM Fundamentals; Deploying Ollama + Open WebUI in Docker</h1><div class="title-meta">Session 18 &nbsp;·&nbsp; M7 - LLMs &amp; Local AI Deployment</div><div class="title-sub">Outcomes: CO4, CO1 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Explain at a conceptual level how LLMs work: tokens, next-token prediction, context window, temperature.</li><li>Distinguish model weights, the runtime (Ollama), and the interface (Open WebUI) in a local AI stack.</li><li>Deploy Ollama and Open WebUI with docker compose and pull and run a quantized model.</li><li>Identify the security-relevant properties of LLMs: nondeterminism, hallucination, and no innate access control.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">2</div></section>
+<section class="slide s-section" data-index="3"><div class="s-body"><ul>
+<li>You built the container skills. Today they run a real AI system that lives entirely on your own machine.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">3</div></section>
+<section class="slide s-section" data-index="4"><div class="s-body"><ul>
+<li>Before we deploy one, let us demystify it. There is one trick underneath all of it.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">One Trick, at Enormous Scale</h1><div class="s-body"><ul>
+<li>An LLM does exactly one thing: predict the next <strong>token</strong> given all the tokens so far. Then it repeats.</li>
+<li>It was trained on trillions of tokens; billions of <strong>parameters</strong> (weights) encode the patterns it learned.</li>
+<li>There is no database lookup and no guaranteed reasoning engine. It is a very, very good pattern completer.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">LLM (Large Language Model) = a neural network trained to predict the next chunk of text, one token at a time.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Token = a subword chunk of text, about 4 characters of English on average. The word "cybersecurity" might be 3 tokens.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Parameters (weights) = the billions of numbers learned during training that encode what the model "knows."</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">5</div></section>
+<section class="slide s-diagram" data-index="6"><h1 class="s-title">Next-Token Prediction, Visualized</h1><div class="s-body"><ul>
+<li>The whole loop, drawn once.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 964 238" width="964" height="238" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Predict, append, repeat</text><path d="M 195.0 174.0 L 265.4 174.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 434.4 174.0 L 518.0 174.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 605.0 144.0 Q 359.0 94.0 113.0 144.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><path d="M 687.0 174.0 L 764.0 174.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><polygon points="50.0,144.0 192.0,144.0 176.0,204.0 34.0,204.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="113.0" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Text so far</text><rect x="273.4" y="144.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="352.4" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Model</text><polygon points="542.0,144.0 684.0,144.0 668.0,204.0 526.0,204.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="605.0" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Next token</text><rect x="772.0" y="144.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="851.0" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Full answer</text><rect x="196" y="164" width="69" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="230.2" y="177.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">as tokens</text><rect x="435" y="164" width="83" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="476.2" y="177.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">most likely</text><rect x="304" y="88" width="109" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="359.0" y="101.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">append + repeat</text><rect x="688" y="164" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="725.5" y="177.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">until done</text></svg><figcaption>Each new token is fed back in and the model predicts the next one. Fluent text is just this loop run thousands of times.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">The Vocabulary You Need</h1><div class="s-body"><ul>
+<li><strong>Context window</strong>: how many tokens the model can consider at once. It is the model's working memory; everything past it is forgotten.</li>
+<li><strong>Temperature</strong>: a randomness dial. Near 0 is repeatable-ish; higher is more creative and more erratic.</li>
+<li><strong>Inference</strong> versus <strong>training</strong>; and <strong>quantization</strong> (Lecture 16: 4-bit weights fit consumer VRAM).</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Context window = the maximum number of tokens (system prompt, history, your question, retrieved docs) the model can see at one time.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Temperature = a setting that controls randomness in token selection. Low is focused and repetitive; high is diverse and risky.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">System prompt = standing instructions silently placed before every conversation. Remember this term; it drives next week's lecture.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">Security-Relevant Properties (Write These Down)</h1><div class="s-body"><ul>
+<li><strong>Nondeterministic</strong>: the same input can produce different output, which makes it hard to test and hard to guarantee.</li>
+<li><strong>Hallucination</strong>: fluent, confident, and WRONG. The output is plausible text, not verified fact.</li>
+<li><strong>No innate access control</strong>: the model cannot tell instructions from data, or an authorized asker from an attacker.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Hallucination = confident output that is factually false. The model optimizes for plausible-sounding text, not truth.</span></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">These three properties generate most of the OWASP Top 10 for LLMs, which is the topic two sessions from now. They are features of how the technology works, not bugs to be patched away.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">8</div></section>
+<section class="slide s-section" data-index="9"><div class="s-body"><ul>
+<li>You met Docker only a few sessions ago. Before we deploy, let us re-anchor the three words we need.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">Image vs. Container vs. Compose</h1><div class="s-body"><ul>
+<li>A Docker <strong>image</strong> is a frozen, read-only template: an app plus everything it needs to run.</li>
+<li>A <strong>container</strong> is a running copy of an image, isolated from the rest of your system.</li>
+<li><strong>docker compose</strong> is a way to define several containers in one file and start them together with one command.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Image = a read-only packaged template of an application and its dependencies. Think of it as a class in Python.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Container = a live, running instance of an image, isolated from other containers. Think of it as an object created from that class.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">docker compose = a tool that reads one YAML file describing multiple containers and their settings, then starts them all together.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">An image is a recipe; a container is the finished dish you cooked from it. Compose is the whole menu: several dishes ordered at once with one ticket.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">10</div></section>
+<section class="slide s-diagram" data-index="11"><h1 class="s-title">The Three Docker Words, Related</h1><div class="s-body"><ul>
+<li>One template, many running copies, all orchestrated by compose.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 649 354" width="649" height="354" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">From file to running stack</text><path d="M 195.0 174.0 L 239.0 174.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 408.0 174.0 L 449.0 174.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 408.0 174.0 L 428.5 174.0 L 428.5 282.0 L 449.0 282.0" fill="none" stroke="#f4a0a6" stroke-width="3" marker-end="url(#ah_f4a0a6)"/><path d="M 113.0 144.0 Q 324.5 94.0 536.0 144.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><path d="M 195.0 174.0 L 233.0 174.0 L 233.0 298.0 L 449.0 298.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><polygon points="50.0,144.0 192.0,144.0 176.0,204.0 34.0,204.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="113.0" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">compose file</text><path d="M 247.0 152.0 A 79.0 8 0 0 1 405.0 152.0 L 405.0 196.0 A 79.0 8 0 0 1 247.0 196.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 247.0 152.0 A 79.0 8 0 0 0 405.0 152.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="326.0" y="186.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Images</text><rect x="457.0" y="144.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="536.0" y="179.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Ollama container</text><rect x="457.0" y="260.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="536.0" y="295.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">WebUI container</text><rect x="196" y="164" width="43" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="217.0" y="177.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">pulls</text><rect x="410" y="164" width="36" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="428.5" y="177.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">runs</text><rect x="410" y="218" width="36" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="428.5" y="231.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">runs</text><rect x="303" y="88" width="43" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="324.5" y="101.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">up -d</text><rect x="212" y="226" width="43" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="233.0" y="239.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">up -d</text></svg><figcaption>One compose file pulls the images and runs each as a container. This is the whole local AI stack.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">11</div></section>
+<section class="slide s-section" data-index="12"><div class="s-body"><ul>
+<li>Weights, runtime, interface. Keep these separate in your head and everything else follows.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">12</div></section>
+<section class="slide s-content" data-index="13"><h1 class="s-title">The Three Layers, Defined</h1><div class="s-body"><ul>
+<li><strong>Model weights</strong>: the gguf files, pulled from a registry. That registry is a supply chain, which is next session's topic.</li>
+<li><strong>Runtime, Ollama</strong>: loads the weights onto CPU or GPU and serves an HTTP API on port 11434.</li>
+<li><strong>Interface, Open WebUI</strong>: the browser chat page with user accounts; it talks to Ollama's API.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Ollama = the runtime that loads a model's weights and answers requests over a local HTTP API. It is the engine.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Open WebUI = a browser-based chat interface with accounts and history that sends your messages to Ollama and shows the replies.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">13</div></section>
+<section class="slide s-diagram" data-index="14"><h1 class="s-title">How a Chat Request Flows</h1><div class="s-body"><ul>
+<li>Follow one message from your browser to the model and back.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 668 394" width="668" height="394" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Browser to model and back</text><rect x="40.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="124.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Browser</text><line x1="124.0" y1="80.0" x2="124.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="250.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="334.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Open WebUI</text><line x1="334.0" y1="80.0" x2="334.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="460.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="544.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Ollama</text><line x1="544.0" y1="80.0" x2="544.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><text x="229.0" y="106.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">you type a message</text><line x1="124.0" y1="114.0" x2="324.0" y2="114.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><text x="439.0" y="156.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">POST /api/chat (port 11434)</text><line x1="334.0" y1="164.0" x2="534.0" y2="164.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><rect x="381.0" y="200" width="279.0" height="26" rx="6" fill="#2c2f34" stroke="#5a3034" stroke-width="1"/><text x="520.5" y="218.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">run the model on the tokens</text><text x="439.0" y="256.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">generated tokens</text><line x1="544.0" y1="264.0" x2="344.0" y2="264.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ah)"/><text x="229.0" y="306.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">reply appears in chat</text><line x1="334.0" y1="314.0" x2="134.0" y2="314.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ah)"/></svg><figcaption>The UI never runs the model itself. It forwards your text to Ollama&#x27;s API and displays what comes back.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">14</div></section>
+<section class="slide s-diagram" data-index="15"><h1 class="s-title">The Stack as Containers</h1><div class="s-body"><ul>
+<li>The same three layers, now as the containers you will actually run.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1004 290" width="1004" height="290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">The local AI stack, in containers</text><rect x="290" y="64" width="436" height="92" rx="12" fill="#2a1c1e" fill-opacity="0.45" stroke="#cb333b" stroke-width="1.6" stroke-dasharray="8 6"/><path d="M 195.0 110.0 L 298.4 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 467.4 110.0 L 544.4 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 713.4 110.0 L 803.6 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 631.4 193.0 L 631.4 148.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><rect x="34.0" y="80.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#7be39a" stroke-width="2.2"/><circle cx="54.0" cy="102.0" r="5" fill="none" stroke="#7be39a" stroke-width="2"/><path d="M 46.0 121.0 A 8 8 0 0 1 62.0 121.0" fill="none" stroke="#7be39a" stroke-width="2"/><text x="129.0" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Your browser</text><rect x="306.4" y="80.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="385.4" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Open WebUI</text><rect x="552.4" y="80.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="631.4" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Ollama</text><path d="M 811.5999999999999 88.0 A 79.0 8 0 0 1 969.5999999999999 88.0 L 969.5999999999999 132.0 A 79.0 8 0 0 1 811.5999999999999 132.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 811.5999999999999 88.0 A 79.0 8 0 0 0 969.5999999999999 88.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="890.6" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">GPU /VRAM</text><path d="M 552.4 204.0 A 79.0 8 0 0 1 710.4 204.0 L 710.4 248.0 A 79.0 8 0 0 1 552.4 248.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 552.4 204.0 A 79.0 8 0 0 0 710.4 204.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="631.4" y="238.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Model volume</text><rect x="196" y="100" width="102" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="246.7" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">localhost:3000</text><rect x="468" y="100" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="505.9" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">API :11434</text><rect x="714" y="100" width="89" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="758.5" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">load weights</text><rect x="634" y="161" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="672.4" y="174.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">gguf files</text><rect x="304" y="55" width="182" height="18" rx="5" fill="#0d0e10" stroke="#cb333b" stroke-width="1"/><text x="395.2" y="68.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="700" text-anchor="middle">Docker (private network)</text></svg><figcaption>Two containers on a private Docker network. Only the WebUI is exposed to your browser; Ollama stays internal.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">Why Run It Locally? (First Pass)</h1><div class="s-body"><ul>
+<li>Your prompts and data never leave your machine: confidentiality by architecture, not by a promise.</li>
+<li>No per-token cost, it works offline, and the choice of model is entirely yours.</li>
+<li>The cost is that YOU own the hardware, the patching, and the security. That is the whole point of this course.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Next session goes deep on local versus cloud. Today just plant the flag: local means the data physically never left.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">16</div></section>
+<section class="slide s-section" data-index="17"><div class="s-body"><ul>
+<li>We will not just run it. We will read every line, because you cannot secure what you cannot read.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">17</div></section>
+<section class="slide s-content" data-index="18"><h1 class="s-title">The Compose File Itself</h1><div class="s-body"><ul>
+<li>This one file defines the whole stack. Read it top to bottom; each line is a decision.</li>
+</ul>
+<div class="term"><div class="term-title">docker-compose.yml (the local AI stack)</div><div class="term-body"><div class="t-line t-out">services:</div><div class="t-line t-out">  ollama:</div><div class="t-line t-out">    image: ollama/ollama</div><div class="t-line t-out">    volumes:</div><div class="t-line t-out">      - ollama:/root/.ollama</div><div class="t-line t-out">  open-webui:</div><div class="t-line t-out">    image: ghcr.io/open-webui/open-webui</div><div class="t-line t-out">    ports:</div><div class="t-line t-out">      - &quot;3000:8080&quot;</div><div class="t-line t-out">    depends_on:</div><div class="t-line t-out">      - ollama</div><div class="t-line t-out">volumes:</div><div class="t-line t-out">  ollama:</div></div></div>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Two services, one named volume. We decode it line by line over the next two slides.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">Compose File Decoded (1 of 2)</h1><div class="s-body"><ul>
+<li>The services and where the models are stored.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>services:</code> begins the list of containers to run. Here there are two: <code>ollama</code> and <code>open-webui</code>.</span></li><li><span class="step-n">2</span><span class="step-t"><code>image: ollama/ollama</code> names the image to pull for the runtime; <code>ghcr.io/open-webui/open-webui</code> is the interface image from GitHub's registry.</span></li><li><span class="step-n">3</span><span class="step-t"><code>volumes:</code> under <code>ollama</code> maps a named volume to <code>/root/.ollama</code> so downloaded models survive a container restart.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">Compose File Decoded (2 of 2)</h1><div class="s-body"><ul>
+<li>The ports, the dependency order, and the security decision hiding in plain sight.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>ports: "3000:8080"</code> publishes the WebUI: your browser reaches port 3000, which forwards to port 8080 inside the container.</span></li><li><span class="step-n">2</span><span class="step-t">Notice Ollama has NO <code>ports</code> line. That is deliberate: it is reachable only from other containers on the private network, never from the internet.</span></li><li><span class="step-n">3</span><span class="step-t"><code>depends_on: ollama</code> tells compose to start the runtime before the interface that needs it.</span></li></ol>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Publishing Ollama's port to the internet (adding <code>11434:11434</code>) would let anyone on the network chat on your GPU and read your history. Leave it unpublished.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">20</div></section>
+<section class="slide s-demo" data-index="21"><h1 class="s-title">Live Demo - Deploy the Stack</h1><div class="s-body"><ul>
+<li>Two commands bring the whole stack up. Then we make it hallucinate on purpose.</li>
+</ul>
+<div class="term"><div class="term-title">Bring it up and pull a model</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">compose up -d</span></div><div class="t-line t-out">[+] Running 2/2  ollama Started, open-webui Started</div><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">exec -it ollama ollama pull llama3.2:3b</span></div><div class="t-line t-out">pulling manifest... success</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>docker compose up -d</code> reads the compose file and starts every service in the background (<code>-d</code> is detached).</span></li><li><span class="step-n">2</span><span class="step-t"><code>docker exec -it ollama</code> runs a command INSIDE the already-running <code>ollama</code> container; <code>-it</code> gives it an interactive terminal.</span></li><li><span class="step-n">3</span><span class="step-t"><code>ollama pull llama3.2:3b</code> downloads the 3-billion-parameter model's weights into the volume so it is ready to run.</span></li></ol>
+<ul>
+<li>Browser to <code>localhost:3000</code>, create the FIRST account (note: the first user becomes admin, a provisioning-control moment).</li>
+<li>Ask a factual question, then set a trap: "cite three papers about X" and watch it fabricate citations with total confidence.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">21</div></section>
+<section class="slide s-content" data-index="22"><h1 class="s-title">This Stack Is Just Containers</h1><div class="s-body"><ul>
+<li>Everything from Lectures 9 through 11 applies verbatim: segmentation (Ollama unpublished), volumes (model persistence), and non-root where possible.</li>
+<li>Threat sketch: if the WebUI is exposed to the internet with no authentication, anyone can chat on your GPU and read your history.</li>
+<li>This is not hypothetical. Thousands of exposed Ollama endpoints are indexed on Shodan right now: misconfiguration, not malware.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Shodan = a search engine that indexes internet-connected devices and services, including accidentally exposed ones. Attackers use it to find easy targets.</span></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">The most common local-AI incident is not a clever exploit. It is someone publishing the port and forgetting to require a login.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">22</div></section>
+<section class="slide s-content" data-index="23"><h1 class="s-title">Model Files Are Artifacts Too</h1><div class="s-body"><ul>
+<li>Where did llama3.2 come from? A registry, delivered as layers with checksums (<code>ollama list</code> shows digests).</li>
+<li>Model provenance is a supply-chain question: who trained it, on what data, under what license, and was it tampered with?</li>
+<li>Some model formats can execute code when loaded; gguf is data-only by design. Choosing the format is itself a security control.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Provenance = the documented origin and history of an artifact: who made it, from what, and whether it was altered along the way.</span></div>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">This is the on-ramp to next session. Your model is a dependency, and dependencies have supply chains.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">23</div></section>
+<section class="slide s-content" data-index="24"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li>TODAY your capstone core comes alive. Checkpoint 1 (next session) is a running, segmented, TLS-fronted stack.</li>
+<li><strong>Security+</strong>: misconfiguration and exposed services map to Domain 2.0; data governance for AI use maps to Domain 5.0.</li>
+<li><strong>Next session</strong>: local versus cloud AI, data locality, privacy, and the model supply chain in depth.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">24</div></section>
+<section class="slide s-content" data-index="25"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>An LLM is a next-token predictor with a context window; fluent is not the same as factual.</li>
+<li>The stack is weights plus runtime (Ollama) plus UI (WebUI). It is containers all the way down, and your Module 4 skills govern it.</li>
+<li>First-user-admin, unpublished API ports, and model provenance mean security decisions exist from minute one.</li>
+<li>Lab 7: deploy your own stack and complete its hardening checklist.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Start from the <strong>Lab 7 assignment on Canvas</strong>: your repository invitation plus the step-by-step README. HINTS.md has the hint ladder; <code>bash autograde/run.sh</code> validates your stack.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">25</div></section>
+<section class="slide s-activity" data-index="26"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Hallucination hunt.</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Using the podium stack (or your own if Lab 7 has started), craft up to 3 prompts to elicit a confident falsehood: fake citations, invented UIW history, or wrong-but-plausible technical claims.</span></li><li><span class="step-n">2</span><span class="step-t">Record your best hallucination verbatim in the shared Canvas discussion thread.</span></li><li><span class="step-n">3</span><span class="step-t">Vote on the most convincing one, then discuss: how would a reader detect it?</span></li><li><span class="step-n">4</span><span class="step-t">Frame the lesson: output validation is a control, and trust-but-verify applies to machines too.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">26</div></section>
+<section class="slide s-exit" data-index="27"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Name the three layers of the local AI stack and one security concern for each.</p>
+<p>2. Why can an LLM not reliably distinguish instructions from data in its input?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">27</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

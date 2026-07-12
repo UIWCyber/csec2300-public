@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 7: GitHub Actions CI/CD; Automated Security Scanning</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">GitHub Actions CI/CD; Automated Security Scanning</h1><div class="title-meta">Session 7 &nbsp;·&nbsp; M3 - Agile &amp; Secure SDLC / CI/CD (DevSecOps)</div><div class="title-sub">Outcomes: CO1, CO2 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Explain CI/CD and read a basic GitHub Actions workflow (triggers, jobs, steps, runners).</li><li>Distinguish SAST, DAST, SCA (dependency scanning), and secret scanning, and state what each can and cannot find.</li><li>Add an automated security scan to a repository and interpret its findings.</li><li>Classify pipeline scans as detective or preventive controls in the DevSecOps model.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">2</div></section>
+<section class="slide s-content" data-index="3"><h1 class="s-title">What We Do Today</h1><div class="s-body"><ul>
+<li>Learn what a <strong>pipeline</strong> is: automation that builds and tests your code on every change</li>
+<li>Read a real <strong>GitHub Actions</strong> workflow line by line, then watch one run</li>
+<li>Meet the <strong>scanner alphabet</strong>: SAST, DAST, SCA, and secret scanning, and what each is blind to</li>
+<li>Tie it back: this is how "shift left" from last session actually happens in practice</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Last session you learned <em>why</em> to shift security left. Today you build the machine that does it automatically.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">3</div></section>
+<section class="slide s-section" data-index="4"><div class="s-body"><ul>
+<li>The automation that catches problems in minutes instead of at the end of a project.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">What Is CI/CD?</h1><div class="s-body"><ul>
+<li><strong>Continuous Integration (CI)</strong>: every push is automatically built and tested, so integration problems surface in minutes</li>
+<li><strong>Continuous Delivery/Deployment (CD)</strong>: a build that passes its checks is automatically releasable, or even released</li>
+<li>Security payoff: the pipeline runs <em>every single time</em>, never gets tired, and never skips the check on a Friday afternoon</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Pipeline = an automated sequence of steps (build, test, scan, deploy) that runs by itself whenever your code changes.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">CI is a robot lab partner that re-runs every experiment the instant you change anything, and taps you on the shoulder the moment something breaks.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">5</div></section>
+<section class="slide s-diagram" data-index="6"><h1 class="s-title">The CI Pipeline as a Flow</h1><div class="s-body"><ul>
+<li>One push kicks off a fixed sequence of stages. If any stage fails, the whole run is marked failed.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1279 302" width="1279" height="302" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">What happens on every push</text><path d="M 195.0 122.0 L 236.0 122.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 405.0 122.0 L 446.0 122.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 615.0 122.0 L 656.0 122.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 825.0 122.0 L 852.0 122.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 1049.0 122.0 L 1079.0 122.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 953.0 167.0 L 953.0 200.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><rect x="34.0" y="92.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="113.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">git push</text><rect x="244.0" y="92.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="323.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Trigger fires</text><rect x="454.0" y="92.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="533.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Runner starts</text><rect x="664.0" y="92.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="743.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Checkout + build</text><polygon points="860.0,122.0 953.0,80.0 1046.0,122.0 953.0,164.0" fill="#2c2f34" stroke="#e2a04a" stroke-width="2.2"/><text x="953.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Run scans</text><rect x="1087.0" y="92.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="1166.0" y="127.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Green check</text><rect x="874.0" y="208.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="953.0" y="243.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Block merge</text><rect x="1042" y="112" width="43" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="1064.0" y="125.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">clean</text><rect x="956" y="174" width="56" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="984.1" y="187.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">finding</text></svg><figcaption>A push triggers a runner that builds, then scans. A finding blocks the merge; a clean run posts a green check.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">6</div></section>
+<section class="slide s-section" data-index="7"><div class="s-body"><ul>
+<li>The tool that runs your pipeline, defined in a plain text file inside your own repo.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">GitHub Actions Anatomy</h1><div class="s-body"><ul>
+<li>A <strong>workflow</strong> is a YAML file in <code>.github/workflows/</code> in your repo</li>
+<li>It fires on <strong>triggers</strong> (<code>push</code>, <code>pull_request</code>, <code>schedule</code>) that describe <em>when</em> it should run</li>
+<li><strong>Jobs</strong> run on <strong>runners</strong> (fresh virtual machines, often <code>ubuntu-latest</code>); each job is a list of <strong>steps</strong></li>
+<li>A step either runs a shell command or reuses a packaged <strong>action</strong> (for example <code>actions/checkout</code>)</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Runner = a clean, throwaway virtual machine that GitHub spins up to execute your workflow, then destroys when it finishes.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Action = a reusable, prepackaged step someone else wrote that you pull into your workflow by name.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">A Minimal Workflow</h1><div class="s-body"><ul>
+<li>YAML looks intimidating, but this whole file says: "on any push or PR, check out the code and scan it for secrets."</li>
+</ul>
+<div class="term"><div class="term-title">.github/workflows/ci.yml</div><div class="term-body"><div class="t-line t-out">name: ci                              # a human-readable name</div><div class="t-line t-out">on: [push, pull_request]             # triggers: when to run</div><div class="t-line t-out">jobs:</div><div class="t-line t-out">  scan:                              # one job, named scan</div><div class="t-line t-out">    runs-on: ubuntu-latest           # the runner (a fresh VM)</div><div class="t-line t-out">    steps:</div><div class="t-line t-out">      - uses: actions/checkout@v4    # step 1: get the code</div><div class="t-line t-out">      - uses: gitleaks/gitleaks-action@v2   # step 2: scan for secrets</div></div></div>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Indentation is meaningful in YAML. The nesting (jobs, then scan, then steps) is what groups these lines together.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">The Workflow, Line by Line</h1><div class="s-body"><ul>
+<li>Four keywords carry the whole file. Decode each one.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>name:</code> labels the workflow so you can spot its runs in the Actions tab.</span></li><li><span class="step-n">2</span><span class="step-t"><code>on:</code> lists the <strong>triggers</strong>. Here, any <code>push</code> or <code>pull_request</code> starts the workflow.</span></li><li><span class="step-n">3</span><span class="step-t"><code>runs-on:</code> picks the <strong>runner</strong>: a fresh Ubuntu VM created just for this run.</span></li><li><span class="step-n">4</span><span class="step-t">each <code>- uses:</code> line is a <strong>step</strong> that pulls in a reusable action, pinned to a version like <code>@v4</code>.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">10</div></section>
+<section class="slide s-content" data-index="11"><h1 class="s-title">Watching a Run from the Terminal</h1><div class="s-body"><ul>
+<li>You do not have to click through the website. The <code>gh</code> command-line tool shows runs directly.</li>
+</ul>
+<div class="term"><div class="term-title">Inspect the most recent pipeline runs</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">gh</span> <span class="t-args">run list --limit 3</span></div><div class="t-line t-out">STATUS  NAME  WORKFLOW  BRANCH   EVENT</div><div class="t-line t-out">X       ci    ci        feature  push        # X marks a failed run</div><div class="t-line t-out">ok      ci    ci        main     push</div><div class="t-line t-out">ok      ci    ci        main     pull_request</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>gh</code> is the <strong>program</strong>: GitHub's official command-line client.</span></li><li><span class="step-n">2</span><span class="step-t"><code>run</code> is the <strong>subcommand group</strong>: everything about workflow runs.</span></li><li><span class="step-n">3</span><span class="step-t"><code>list</code> <strong>shows recent runs</strong>; <code>--limit 3</code> caps the output at three.</span></li><li><span class="step-n">4</span><span class="step-t">A failed run here is the same red X you would see on the pull request page.</span></li></ol>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body"><code>gh run view &lt;id&gt; --log</code> prints the full log of a run so you can read exactly which step failed.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">11</div></section>
+<section class="slide s-section" data-index="12"><div class="s-body"><ul>
+<li>Four families of automated scanner, each with a different blind spot. You need all four.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">12</div></section>
+<section class="slide s-content" data-index="13"><h1 class="s-title">SAST - Reading the Source</h1><div class="s-body"><ul>
+<li><strong>Static Application Security Testing</strong> reads your source code <em>without running it</em></li>
+<li>Tools: CodeQL, Semgrep, Bandit. Finds: injection patterns, unsafe functions, hardcoded credentials, tainted data flows</li>
+<li>Blind spots: it produces false positives, and it cannot see runtime configuration or business-logic flaws</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">SAST = static analysis that inspects source code at rest, looking for dangerous patterns without ever executing the program.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">SAST reads the building's blueprints looking for a fire hazard. It never actually walks into the building.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">13</div></section>
+<section class="slide s-content" data-index="14"><h1 class="s-title">DAST - Rattling the Doors</h1><div class="s-body"><ul>
+<li><strong>Dynamic Application Security Testing</strong> probes the <em>running</em> application like an attacker would</li>
+<li>Tools: OWASP ZAP. Finds what is <em>actually exposed</em> at runtime: open endpoints, weak headers, injection that really fires</li>
+<li>Blind spot: it can only test code paths that actually run; unexecuted code is invisible to it</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">DAST = dynamic testing that attacks a live, running instance of the app from the outside to find real exposed weaknesses.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">DAST walks up to the finished building and rattles every door and window to see which ones open.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">SCA - Auditing What You Did Not Write</h1><div class="s-body"><ul>
+<li><strong>Software Composition Analysis</strong> (dependency scanning) checks your third-party packages against known-vulnerability databases (CVEs)</li>
+<li>Tools: Dependabot, <code>npm audit</code>, <code>pip-audit</code>. It compares your dependency versions to the list of publicly disclosed flaws</li>
+<li>Modern reality: a typical app is roughly 80% dependencies, so SCA guards most of the code you <em>never wrote</em></li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">CVE (Common Vulnerabilities and Exposures) = a public catalog entry, with a unique ID, describing one specific known security flaw in a specific product.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">Secret Scanning &amp; Push Protection</h1><div class="s-body"><ul>
+<li><strong>Secret scanning</strong> pattern-matches tokens, keys, and passwords in your code and its history</li>
+<li><strong>Push protection</strong> blocks the push <em>before</em> the secret ever lands in the repo: prevention, not cleanup</li>
+<li>This automates, at the platform level, the leaked-key problem you saw demonstrated earlier in the course</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">A secret that reaches the repo is compromised even if you delete it later. It lives in history and must be rotated. Push protection stops it at the door instead.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">16</div></section>
+<section class="slide s-diagram" data-index="17"><h1 class="s-title">SAST vs DAST vs SCA - One Comparison</h1><div class="s-body"><ul>
+<li>They are complementary, not interchangeable. Each catches what the others miss.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 922 392" width="922" height="392" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Three scanner families side by side</text><rect x="22" y="40" width="878" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">SAST</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">DAST</text><text x="785.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">SCA</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Looks at</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Your source code</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">The running app</text><text x="785.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Your dependencies</text><rect x="22" y="146" width="878" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Runs the app?</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">No</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Yes</text><text x="785.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">No</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Catches</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Unsafe code patterns</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Real exposed flaws</text><text x="785.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Known CVEs in libraries</text><rect x="22" y="258" width="878" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Blind to</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Runtime config</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Unexecuted code</text><text x="785.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Your own logic bugs</text><text x="34.0" y="346.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Example</text><text x="325.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">CodeQL, Bandit</text><text x="555.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">OWASP ZAP</text><text x="785.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Dependabot, pip-audit</text><line x1="210" y1="40" x2="210" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="900" y1="40" x2="900" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="878" height="330" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>SAST reads the blueprint, DAST rattles the doors, SCA audits the parts you bought. Use all three.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">17</div></section>
+<section class="slide s-diagram" data-index="18"><h1 class="s-title">Where Scans Sit - Defense in Depth</h1><div class="s-body"><ul>
+<li>The same finding gets cheaper the earlier it is caught. So scans run at several points, not just one.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 444 430" width="444" height="430" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Layers of automated checking</text><rect x="30" y="40" width="384" height="78" rx="8" fill="#2a1c1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="70.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Developer laptop</text><text x="44.0" y="90.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">pre-commit hook, fastest feedback</text><rect x="30" y="126" width="384" height="78" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="156.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Pull request (CI)</text><text x="44.0" y="176.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">scans block the merge</text><rect x="30" y="212" width="384" height="78" rx="8" fill="#221d1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="242.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Scheduled scan</text><text x="44.0" y="262.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">nightly re-check of main</text><rect x="30" y="298" width="384" height="78" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="328.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Runtime monitoring</text><text x="44.0" y="348.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">watch the live system</text><line x1="320.0" y1="79.0" x2="320.0" y2="165.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="165.0" x2="320.0" y2="251.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="251.0" x2="320.0" y2="337.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><rect x="251" y="54" width="138" height="50" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="76.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">local secret</text><text x="320.0" y="91.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">scan</text><rect x="251" y="140" width="138" height="50" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="169.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">SAST + SCA gate</text><rect x="251" y="226" width="138" height="50" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="255.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">full repo scan</text><rect x="251" y="312" width="138" height="50" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="341.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">alerts</text></svg><figcaption>Multiple layers, each cheaper and earlier than the next. This is shift-left made concrete.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">Scans Are Controls - Preventive or Detective?</h1><div class="s-body"><ul>
+<li>Every scan is a <strong>control</strong>, and you can classify it the same way you classify any other.</li>
+<li><strong>Preventive</strong> control: stops the bad thing from happening (push protection blocks the leak before it lands)</li>
+<li><strong>Detective</strong> control: notices the bad thing after the fact (a nightly scan finds a newly disclosed CVE)</li>
+<li>Which severities should <em>fail the build</em> and block a merge? That is a <strong>managerial</strong> decision, encoded in YAML</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Control = any safeguard that reduces risk. Preventive controls stop an event; detective controls reveal that one occurred.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">19</div></section>
+<section class="slide s-demo" data-index="20"><h1 class="s-title">Live Demo - the Pipeline Catches a Planted Bug</h1><div class="s-body"><ul>
+<li>The demo repo has an old, vulnerable dependency pin and a hardcoded fake AWS key.</li>
+</ul>
+<div class="term"><div class="term-title">Instructor demo: push, then watch the checks</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">git</span> <span class="t-args">commit -am &quot;add feature&quot;</span><span class="t-ann"># includes a fake AKIA... key and old requests pin</span></div><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">git</span> <span class="t-args">push origin feature</span><span class="t-ann"># opens a PR, triggers the pipeline</span></div><div class="t-line t-out"># In the PR: gitleaks flags the key, pip-audit flags the CVE, checks go red</div><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">pip-audit</span><span class="t-ann"># read severity and the fixed version</span></div></div></div>
+<ul>
+<li>Then: bump the pinned version, push again, and watch the checks turn green</li>
+</ul>
+<div class="callout c-why"><span class="c-label">Why it matters</span><span class="c-body">You just performed vulnerability management end to end: detect, assess, remediate, verify. That loop is the whole job.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">20</div></section>
+<section class="slide s-content" data-index="21"><h1 class="s-title">The Pipeline Is Also a Target</h1><div class="s-body"><ul>
+<li>A pipeline runs with real <strong>credentials</strong> (deploy keys, tokens). A poisoned workflow can steal them.</li>
+<li>Preview of next session: typosquatted actions, <code>pull_request_target</code> abuse, unpinned third-party actions</li>
+<li>Two rules of thumb now: pin every action to a specific version, and least-privilege the token with a <code>permissions:</code> block</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">An action you pull in with <code>uses:</code> runs <em>your</em> code with <em>your</em> secrets. Treat third-party actions like any other dependency you must trust.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">21</div></section>
+<section class="slide s-content" data-index="22"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li>Capstone requirement: a security-gated pipeline. At minimum, secret scanning and dependency scanning must pass before any merge to main.</li>
+<li><strong>SY0-701</strong>: vulnerability scanning and the remediation workflow (Domains 2.0 and 4.0); automation and orchestration (Domain 4.0)</li>
+<li>Your lab for this module assembles this exact pipeline on your own repo; the grader checks that your workflow runs and that findings get fixed</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">The lab releases on the schedule posted on the course outline; start from its assignment on Canvas (repository invitation plus the step-by-step README, with HINTS.md for the hint ladder). Confirm your account is on the GitHub Education plan first.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">22</div></section>
+<section class="slide s-content" data-index="23"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>CI/CD automates build, test, and release; Actions expresses it as triggers, jobs, and steps on runners</li>
+<li>SAST reads code, DAST probes the running app, SCA audits dependencies, secret scanning guards credentials: complementary, not interchangeable</li>
+<li>Scans are controls: you choose where they run and which severity blocks a merge</li>
+<li>Next session: supply-chain attacks, where the things you trust turn against you</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">23</div></section>
+<section class="slide s-activity" data-index="24"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Break the build (fork and experiment).</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Fork the demo repo linked on the course hub. It already has a working scan workflow.</span></li><li><span class="step-n">2</span><span class="step-t">Make the pipeline FAIL two different ways: (a) commit a fake secret matching the gitleaks pattern (<code>AKIA...</code>), and (b) pin a known-vulnerable dependency version from the provided list.</span></li><li><span class="step-n">3</span><span class="step-t">Now fix one of the two failures and get a green check. Roughly 7 minutes of work.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief: which failure was preventive and which was detective? What severity threshold would you set to block merges to main?</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">24</div></section>
+<section class="slide s-exit" data-index="25"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Your app uses a library with a critical CVE. Which scanner class catches this: SAST, DAST, or SCA?</p>
+<p>2. Name the workflow trigger that runs checks when someone opens a pull request.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">25</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

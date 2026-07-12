@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 25: Privacy &amp;amp; Compliance; Ethics; Incident Response</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Privacy &amp; Compliance; Ethics; Incident Response</h1><div class="title-meta">Session 25 &nbsp;·&nbsp; M10 - Risk, Policy, Privacy &amp; Compliance</div><div class="title-sub">Outcomes: CO4, CO6 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Map major privacy and compliance regimes (GDPR, HIPAA, FERPA, PCI DSS) to the data they govern.</li><li>Apply privacy principles: data minimization, purpose limitation, and the data lifecycle.</li><li>Reason through an ethics case using a professional code and the legal-vs-ethical distinction.</li><li>Walk the incident response lifecycle and describe each phase's goals.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">2</div></section>
+<section class="slide s-content" data-index="3"><h1 class="s-title">What We Do Today</h1><div class="s-body"><ul>
+<li>The last content lecture ties the whole course together through the lens of rules, ethics, and what happens when prevention fails.</li>
+<li>The path: the compliance landscape, privacy principles, ethics cases, then the incident response lifecycle.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">This is the final content session. The tabletop exercise near the end is the spine; everything else feeds it.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">Compliance vs Security vs Privacy</h1><div class="s-body"><ul>
+<li><strong>Security</strong>: protecting systems and data. <strong>Privacy</strong>: appropriate USE of personal data. <strong>Compliance</strong>: proving you meet external rules.</li>
+<li>You can be compliant and insecure, secure and non-compliant, or secure and privacy-invasive. They are three different targets.</li>
+<li>Callback (L3): compliance is a floor, not a ceiling.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Privacy = the right and the rules governing how personal data is collected, used, and shared, distinct from whether it is technically secure.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">4</div></section>
+<section class="slide s-diagram" data-index="5"><h1 class="s-title">The Three Goals Overlap</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 922 280" width="922" height="280" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Three different targets</text><rect x="22" y="40" width="878" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Goal</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Question it answers</text><text x="785.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Fails when</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Security</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Is the data protected?</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Attacker reads it</text><rect x="22" y="146" width="878" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Privacy</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Is the use appropriate?</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Misused legally</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Compliance</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Do we meet the rules?</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Audit finds a gap</text><line x1="210" y1="40" x2="210" y2="258" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="258" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="258" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="900" y1="40" x2="900" y2="258" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="258" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="878" height="218" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>A guaranteed exam distractor: compliant does not mean secure, and secure does not mean private.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">5</div></section>
+<section class="slide s-diagram" data-index="6"><h1 class="s-title">The Regulation Map</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 922 392" width="922" height="392" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Which regime governs which data</text><rect x="22" y="40" width="878" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Regime</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Data it governs</text><text x="785.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Key obligation</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">GDPR</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">EU persons&#x27; data</text><text x="555.0" y="114.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Consent, breach notice in</text><text x="555.0" y="130.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">72h</text><rect x="22" y="146" width="878" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">HIPAA</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">US health (PHI)</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Safeguard patient records</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">FERPA</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">US education records</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Protect student data</text><rect x="22" y="258" width="878" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">PCI DSS</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Payment card data</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Contract, not a law</text><text x="34.0" y="346.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">CCPA</text><text x="325.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">California residents</text><text x="555.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Access and opt-out rights</text><line x1="210" y1="40" x2="210" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="900" y1="40" x2="900" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="878" height="330" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Jurisdiction plus data TYPE decides which one applies. FERPA governs YOUR records at UIW.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">Privacy Principles That Cut Across All of Them</h1><div class="s-body"><ul>
+<li><strong>Data minimization</strong>: collect only what you need. <strong>Purpose limitation</strong>: use it only for the stated reason.</li>
+<li><strong>Storage limitation / retention</strong>: keep it only as long as needed, then dispose of it securely.</li>
+<li><strong>Data subject rights</strong>: access, correct, and delete (the right to be forgotten).</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Local AI callback (L19): minimization by architecture. Data that never left your machine cannot be misused by a cloud vendor.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">7</div></section>
+<section class="slide s-diagram" data-index="8"><h1 class="s-title">The Data Lifecycle</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1242 244" width="1242" height="244" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Data lifecycle, cradle to grave</text><line x1="56.0" y1="133.0" x2="1186.0" y2="133.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><circle cx="131" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="131" cy="133" r="3.5" fill="#cb333b"/><text x="131.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">1</text><rect x="56" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="131.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Create</text><text x="131.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">collect</text><line x1="131.0" y1="124.0" x2="131.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="327" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="327" cy="133" r="3.5" fill="#cb333b"/><text x="327.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">2</text><rect x="252" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="327.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Store</text><text x="327.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">classify</text><line x1="327.0" y1="142.0" x2="327.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="523" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="523" cy="133" r="3.5" fill="#cb333b"/><text x="523.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">3</text><rect x="448" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="523.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Use</text><text x="523.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">purpose limit</text><line x1="523.0" y1="124.0" x2="523.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="719" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="719" cy="133" r="3.5" fill="#cb333b"/><text x="719.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">4</text><rect x="644" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="719.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Share</text><text x="719.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">controls</text><line x1="719.0" y1="142.0" x2="719.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="915" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="915" cy="133" r="3.5" fill="#cb333b"/><text x="915.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">5</text><rect x="840" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="915.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Archive</text><text x="915.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">retention</text><line x1="915.0" y1="124.0" x2="915.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="1111" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="1111" cy="133" r="3.5" fill="#cb333b"/><text x="1111.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">6</text><rect x="1036" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="1111.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Destroy</text><text x="1111.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">secure wipe</text><line x1="1111.0" y1="142.0" x2="1111.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/></svg><figcaption>A control attaches at every stage. Deletion is not erasure (the Git-history lesson, L5, at data scale).</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Classification Drives Handling</h1><div class="s-body"><ul>
+<li>Classify data (public, internal, confidential, restricted); the label drives how you handle it at every stage.</li>
+<li>Secure disposal matters: deleting a pointer is not erasing the data. Use crypto-shredding or wiping.</li>
+<li>Callback (L5): Git history proved that "deleted" often still exists. The same is true of backups and disks.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Crypto-shredding = destroying the encryption key so the ciphertext becomes permanently unreadable, a fast way to "erase" data at scale.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">9</div></section>
+<section class="slide s-section" data-index="10"><div class="s-body"><ul>
+<li>The law is the floor. Ethics is the harder question of what you should do.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">10</div></section>
+<section class="slide s-content" data-index="11"><h1 class="s-title">The Four Buckets</h1><div class="s-body"><ul>
+<li>Four buckets: legal and ethical; legal but unethical (dark patterns); illegal but arguably ethical (some whistleblowing); illegal and unethical.</li>
+<li>Professional codes: (ISC)2, ACM, IEEE. Common duties: protect the public, disclose responsibly, avoid harm.</li>
+<li>Security-specific dilemmas: responsible disclosure vs full disclosure; dual-use tools (your hashcat skills, your injection skills).</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Responsible disclosure = privately reporting a vulnerability to the vendor and giving them time to fix it before going public.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">11</div></section>
+<section class="slide s-activity" data-index="12"><h1 class="s-title">Ethics Cases</h1><div class="s-body"><ul>
+<li>You find a critical vulnerability in a vendor's product. What do you do, in what order, on what timeline?</li>
+<li>Your employer asks you to build intrusive but legal employee monitoring. Do you? On what grounds?</li>
+<li>An AI agent you built caused harm through an action you did not foresee. Who is accountable? (L23 callback)</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">There are defensible positions here. Reward reasoning and code citation, not a single "right" answer.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">12</div></section>
+<section class="slide s-section" data-index="13"><div class="s-body"><ul>
+<li>Everything you built was preparation. The lifecycle is what you run on the bad day.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">13</div></section>
+<section class="slide s-diagram" data-index="14"><h1 class="s-title">The IR Lifecycle</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1242 244" width="1242" height="244" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Incident response lifecycle</text><line x1="56.0" y1="133.0" x2="1186.0" y2="133.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><circle cx="131" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="131" cy="133" r="3.5" fill="#cb333b"/><text x="131.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">1</text><rect x="56" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="131.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Prepare</text><text x="131.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">plan + backups</text><line x1="131.0" y1="124.0" x2="131.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="327" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="327" cy="133" r="3.5" fill="#cb333b"/><text x="327.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">2</text><rect x="252" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="327.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Detect</text><text x="327.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">analyze scope</text><line x1="327.0" y1="142.0" x2="327.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="523" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="523" cy="133" r="3.5" fill="#cb333b"/><text x="523.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">3</text><rect x="448" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="523.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Contain</text><text x="523.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">isolate</text><line x1="523.0" y1="124.0" x2="523.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="719" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="719" cy="133" r="3.5" fill="#cb333b"/><text x="719.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">4</text><rect x="644" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="719.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Eradicate</text><text x="719.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">remove cause</text><line x1="719.0" y1="142.0" x2="719.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="915" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="915" cy="133" r="3.5" fill="#cb333b"/><text x="915.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">5</text><rect x="840" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="915.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Recover</text><text x="915.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">restore clean</text><line x1="915.0" y1="124.0" x2="915.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="1111" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="1111" cy="133" r="3.5" fill="#cb333b"/><text x="1111.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">6</text><rect x="1036" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="1111.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Learn</text><text x="1111.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">feeds prepare</text><line x1="1111.0" y1="142.0" x2="1111.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/></svg><figcaption>The last phase loops back to the first. Lessons learned make the next preparation stronger.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">Walking an Incident</h1><div class="s-body"><ul>
+<li><strong>Detect</strong> (an alert, a scan finding, a user report), then <strong>Analyze</strong> (scope, severity, is it real?).</li>
+<li><strong>Contain</strong> (isolate, where your segmentation and kill switch from L11/L23 pay off), then <strong>Eradicate</strong> (remove the cause).</li>
+<li><strong>Recover</strong> (restore from known-good: Git revert, a clean image, L4/L10), then <strong>Lessons Learned</strong> (a blameless postmortem, update controls).</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Communication and legal duties run in parallel: breach notification (GDPR's 72h), who speaks publicly, and evidence preservation. Do not wipe the evidence while containing.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">15</div></section>
+<section class="slide s-demo" data-index="16"><h1 class="s-title">Live Activity - Tabletop Incident</h1><div class="s-body"><ul>
+<li>Scenario: your capstone stack's Open WebUI was exposed; logs show unknown users chatting on your GPU and a suspicious RAG document appeared.</li>
+</ul>
+<div class="term"><div class="term-title">What the logs showed</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">logs webui | tail -3</span></div><div class="t-line t-out">POST /api/chat  from 203.0.113.9   user=unknown</div><div class="t-line t-out">POST /api/upload rag_doc=&quot;ignore_all_rules.txt&quot;</div><div class="t-line t-out">GET  /api/models from 203.0.113.9</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">FIRST, contain: pull the published port or stop the container. Stop the bleeding before you investigate.</span></li><li><span class="step-n">2</span><span class="step-t">Then analyze the logs to scope it, eradicate the poisoned document, and recover from a known-good state.</span></li><li><span class="step-n">3</span><span class="step-t">Map each student answer to an IR phase on the board; note which course controls would have prevented or detected it.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">16</div></section>
+<section class="slide s-content" data-index="17"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li>The capstone wiki includes an incident-response note plus the risk register (L24): if X happened to your stack, here is the plan.</li>
+<li>The final review session sweeps all five SY0-701 domains. Today closes Domain 5.0 and touches 4.0 (IR).</li>
+<li>The whole course maps here: everything you built was IR "Preparation" for systems you now understand.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">17</div></section>
+<section class="slide s-content" data-index="18"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>Compliance (rules), security (protection), and privacy (appropriate use) are three distinct goals.</li>
+<li>Data type plus jurisdiction picks the regime; minimization, purpose limitation, and retention cut across all of them.</li>
+<li>Legal is not the same as ethical; professional codes guide the gray zones; dual-use skills carry responsibility.</li>
+<li>IR lifecycle: prepare, detect, contain, eradicate, recover, learn, and preparation was this entire course.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">18</div></section>
+<section class="slide s-activity" data-index="19"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Tabletop incident.</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">The instructor narrates the incident in three escalating injects (exposed service, then data touched, then a notification question).</span></li><li><span class="step-n">2</span><span class="step-t">After each inject, groups of three to four write their next action (two minutes), then two or three groups share; the instructor labels the IR phase.</span></li><li><span class="step-n">3</span><span class="step-t">Closing inject: "a regulator asks if student data was in the RAG documents." Which regulation, and what is the obligation?</span></li><li><span class="step-n">4</span><span class="step-t">Debrief: which of THIS course's controls (segmentation, scanning, logging, backups, guardrails, human gates) would have changed the outcome?</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">19</div></section>
+<section class="slide s-exit" data-index="20"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Which regulation most directly governs a US university's handling of student education records?</p>
+<p>2. Put in order: Eradication, Detection &amp; Analysis, Containment, Recovery.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>5.0 Security Program Management &amp; Oversight · 4.0 Security Operations</span></div><div class="s-num">20</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

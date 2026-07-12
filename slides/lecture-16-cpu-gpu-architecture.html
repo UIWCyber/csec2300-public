@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 16: Computer Architecture: CPU vs. GPU, Memory Hierarchy</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Computer Architecture: CPU vs. GPU, Memory Hierarchy</h1><div class="title-meta">Session 16 &nbsp;·&nbsp; M6 - Computer Architecture &amp; GPUs</div><div class="title-sub">Outcomes: CO1 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Contrast CPU and GPU design goals (latency vs. throughput) and explain why GPUs excel at parallel workloads.</li><li>Sketch the memory hierarchy (registers, cache, RAM, disk) and explain the speed and size tradeoff.</li><li>Explain why GPUs power both AI inference and password cracking, and what that means for defenders.</li><li>Define VRAM constraints and relate model size to hardware requirements for local LLMs.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">2</div></section>
+<section class="slide s-section" data-index="3"><div class="s-body"><ul>
+<li>You cannot secure what you do not understand, and attacks live at every layer, all the way down to the silicon.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">Today's Map</h1><div class="s-body"><ul>
+<li>First we open up the two kinds of processor in your machine: the <strong>CPU</strong> and the <strong>GPU</strong>.</li>
+<li>Then we climb the <strong>memory hierarchy</strong> and see why speed and size fight each other.</li>
+<li>Then the punchline: the same chip that runs your AI model also cracks passwords.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Processor = the chip that actually executes program instructions. Your computer usually has at least two very different kinds.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">One Real Question This Module Answers</h1><div class="s-body"><ul>
+<li>Why does a local AI model need a specific kind of chip, and how much memory does it demand?</li>
+<li>The answer decides which model your capstone team can actually run this semester.</li>
+<li>Next session flips the coin: what can hardware let us <em>trust</em> and <em>prove</em>?</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">This is the hardware floor under the whole AI half of the course. Everything in Module 7 sits on top of what you learn today.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">5</div></section>
+<section class="slide s-section" data-index="6"><div class="s-body"><ul>
+<li>The processor that runs your operating system, your browser, and most of everything else.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">What the CPU Is Built For</h1><div class="s-body"><ul>
+<li>Design goal: <strong>latency</strong>, which means finishing one chain of instructions as fast as humanly possible.</li>
+<li>It has a handful of large, complex cores (8 to 24 is typical) loaded with clever tricks.</li>
+<li>Great at branching logic and operating-system work; poor at doing ten thousand identical things at once.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Latency = how long one single task takes from start to finish. A low-latency chip answers one question very quickly.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Core = one independent worker inside a processor that can execute an instruction stream on its own.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">The Tricks Inside a CPU Core</h1><div class="s-body"><ul>
+<li><strong>Pipelining</strong>: start the next instruction before the last one fully finishes, like an assembly line.</li>
+<li><strong>Branch prediction</strong> and <strong>speculative execution</strong>: guess which way an <em>if</em> will go and start early.</li>
+<li><strong>Big caches</strong>: keep recently used data physically close so the core does not wait on slow memory.</li>
+</ul>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">A CPU core is a master chef. Only a few of them in the kitchen, but each one is fast, flexible, and handles a complicated order end to end.</span></div>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Remember speculative execution. Next session it comes back as the root of the Spectre and Meltdown side-channel flaws.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">8</div></section>
+<section class="slide s-section" data-index="9"><div class="s-body"><ul>
+<li>Born to draw pixels, now the engine of modern AI.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">What the GPU Is Built For</h1><div class="s-body"><ul>
+<li>Design goal: <strong>throughput</strong>, which means pushing the most total work through per second.</li>
+<li>Thousands of small, simple cores apply the <em>same</em> operation to a huge pile of data at once.</li>
+<li>It began life shading millions of pixels per frame; the exact same math runs neural networks.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Throughput = total amount of work finished per unit time, even if any single task is not especially fast.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">GPU (Graphics Processing Unit) = a processor with thousands of simple cores built to do the same operation on massive data in parallel.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">If the CPU is a few master chefs, the GPU is a stadium full of line cooks who all crack one egg at the same instant. Terrible for a complex order, unbeatable for ten thousand identical eggs.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">10</div></section>
+<section class="slide s-diagram" data-index="11"><h1 class="s-title">CPU vs. GPU Side by Side</h1><div class="s-body"><ul>
+<li>Same silicon family, opposite philosophies.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 448" width="692" height="448" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Two designs, two jobs</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">CPU</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">GPU</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Design goal</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Low latency</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">High throughput</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Core count</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">A few (8-24)</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Thousands</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Each core</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Large, complex</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Small, simple</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Best at</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Branching logic</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Parallel math</text><text x="34.0" y="346.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Runs the OS</text><text x="325.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Yes</text><text x="555.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">No</text><rect x="22" y="370" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="402.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Runs an LLM fast</text><text x="325.0" y="402.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">No</text><text x="555.0" y="402.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Yes</text><line x1="210" y1="40" x2="210" y2="426" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="426" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="426" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="426" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="386" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Neither is better. They are built for opposite kinds of work.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">Why Neural Networks Love GPUs</h1><div class="s-body"><ul>
+<li>Running an LLM is mostly enormous <strong>matrix multiplications</strong>: rows and columns of numbers multiplied and added.</li>
+<li>Every one of those multiply-add operations is independent, so all the cores can run at once.</li>
+<li>A CPU can run a small model, just slowly; a GPU makes a local model fast enough to feel interactive.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Matrix multiplication = a grid of numbers combined with another grid by many small multiply-and-add steps. It is the core operation inside a neural network.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Inference = using an already-trained model to produce an answer. This is what happens every time you send a prompt.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">12</div></section>
+<section class="slide s-diagram" data-index="13"><h1 class="s-title">How a GPU Runs an LLM</h1><div class="s-body"><ul>
+<li>Follow one prompt from text to answer.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1157 290" width="1157" height="290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Prompt to answer, on the GPU</text><path d="M 195.0 226.0 L 239.0 226.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 408.0 226.0 L 485.0 226.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 572.0 143.0 L 572.0 188.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><path d="M 654.0 226.0 L 737.6 226.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 906.6 226.0 L 957.2 226.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><rect x="34.0" y="196.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="113.0" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Your prompt</text><polygon points="263.0,196.0 405.0,196.0 389.0,256.0 247.0,256.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="326.0" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Tokens</text><rect x="493.0" y="196.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="572.0" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">GPU cores</text><path d="M 493.0 88.0 A 79.0 8 0 0 1 651.0 88.0 L 651.0 132.0 A 79.0 8 0 0 1 493.0 132.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 493.0 88.0 A 79.0 8 0 0 0 651.0 88.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="572.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Model weights</text><polygon points="761.6,196.0 903.6,196.0 887.6,256.0 745.6,256.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="824.6" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Next token</text><rect x="965.2" y="196.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="1044.2" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Answer text</text><rect x="196" y="216" width="43" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="217.0" y="229.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">split</text><rect x="408" y="216" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="446.5" y="229.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">as numbers</text><rect x="575" y="156" width="36" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="593.2" y="169.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">load</text><rect x="654" y="216" width="83" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="695.8" y="229.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">matrix math</text><rect x="907" y="216" width="50" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="931.9" y="229.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">repeat</text></svg><figcaption>Thousands of cores multiply tokens by the weights in parallel to pick each next token, one at a time.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">13</div></section>
+<section class="slide s-section" data-index="14"><div class="s-body"><ul>
+<li>Speed and size are enemies. Every computer manages the fight with a pyramid.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">The Speed vs. Size Tradeoff</h1><div class="s-body"><ul>
+<li>Fast memory is tiny and expensive; big memory is cheap and slow. You cannot have all three.</li>
+<li>So computers stack layers: a little bit of very fast memory, backed by a lot of slow memory.</li>
+<li>Each step down is roughly ten times slower but a thousand times bigger.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Cache = a small pool of very fast memory that holds recently or frequently used data so the processor does not wait on slower memory.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Locality principle = programs tend to reuse the same data and nearby data, so keeping "hot" data in fast memory pays off.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">15</div></section>
+<section class="slide s-diagram" data-index="16"><h1 class="s-title">The Memory Pyramid</h1><div class="s-body"><ul>
+<li>Top is fastest and smallest; bottom is slowest and biggest.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 365 390" width="365" height="390" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Memory hierarchy</text><rect x="30" y="40" width="305" height="68" rx="8" fill="#2a1c1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="70.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Registers</text><text x="44.0" y="90.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">~1 ns, a few bytes</text><rect x="30" y="116" width="305" height="68" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="146.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">CPU cache</text><text x="44.0" y="166.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">a few ns, KB to MB</text><rect x="30" y="192" width="305" height="68" rx="8" fill="#221d1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="222.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">RAM</text><text x="44.0" y="242.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">~100 ns, GB</text><rect x="30" y="268" width="305" height="68" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="298.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">SSD / disk</text><text x="44.0" y="318.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">slow, TB</text><line x1="241.0" y1="74.0" x2="241.0" y2="150.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="241.0" y1="150.0" x2="241.0" y2="226.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="241.0" y1="226.0" x2="241.0" y2="302.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><rect x="172" y="56" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="241.0" y="78.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">in-core values</text><rect x="172" y="132" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="241.0" y="154.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">hot data</text><rect x="172" y="208" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="241.0" y="230.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">running programs</text><rect x="172" y="284" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="241.0" y="306.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">files + models</text></svg><figcaption>Each level down: about 10x slower, about 1000x bigger. Performance is the art of keeping hot data near the top.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">16</div></section>
+<section class="slide s-diagram" data-index="17"><h1 class="s-title">The Cost of a Cache Miss</h1><div class="s-body"><ul>
+<li>If the data is not in fast memory, the core stalls and waits. The gap is enormous.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 654 410" width="654" height="410" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Roughly how long a lookup takes (ns)</text><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#5a3034" stroke-width="1"/><text x="54.0" y="354.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">0</text><line x1="64.0" y1="275.0" x2="624.0" y2="275.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="279.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">5000</text><line x1="64.0" y1="200.0" x2="624.0" y2="200.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="204.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">10000</text><line x1="64.0" y1="125.0" x2="624.0" y2="125.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="129.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">15000</text><line x1="64.0" y1="50.0" x2="624.0" y2="50.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="54.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">20000</text><line x1="64.0" y1="50.0" x2="64.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><text x="18" y="200.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" text-anchor="middle" transform="rotate(-90 18 200.0)">ns (log-ish)</text><text x="134.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Register</text><text x="274.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">L1 cache</text><text x="414.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">RAM</text><text x="554.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">SSD</text><rect x="85.0" y="350.0" width="95.0" height="0.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="225.0" y="349.9" width="95.0" height="0.1" rx="3" fill="#cb333b" opacity="0.92"/><rect x="365.0" y="348.5" width="95.0" height="1.5" rx="3" fill="#cb333b" opacity="0.92"/><rect x="505.0" y="110.0" width="95.0" height="240.0" rx="3" fill="#cb333b" opacity="0.92"/></svg><figcaption>Reaching to disk is thousands of times slower than a register. This is why caches exist, and why shared caches later become a security problem.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">17</div></section>
+<section class="slide s-section" data-index="18"><div class="s-body"><ul>
+<li>The GPU has its own memory, and it is the hard limit on which models you can run.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">Why VRAM Is the Line in the Sand</h1><div class="s-body"><ul>
+<li>A GPU keeps model weights in its own fast memory called <strong>VRAM</strong>, separate from system RAM.</li>
+<li>If the weights do not fit in VRAM, performance falls off a cliff or the model refuses to load.</li>
+<li>Rough rule: a 7-8 billion parameter model at 4-bit quantization needs about 4-5 GB; a 70B model needs 40+ GB.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">VRAM (Video RAM) = the GPU's own dedicated memory. Model weights must fit here to run fast.</span></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">System RAM and VRAM are different pools. "I have 32 GB of RAM" does not mean your 8 GB graphics card can load a big model.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">Quantization - Squeezing Models to Fit</h1><div class="s-body"><ul>
+<li><strong>Quantization</strong> stores each weight with fewer bits: 16-bit down to 4-bit, sometimes lower.</li>
+<li>Fewer bits means a smaller, faster model with only a modest quality loss.</li>
+<li>This is the single reason a consumer graphics card can run a real large language model at all.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Quantization = reducing the number of bits used to store each model weight, trading a little accuracy for much smaller memory use.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">Quantization is like saving a photo as a smaller JPEG. A little detail is lost, but it fits on the device and looks almost the same.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">20</div></section>
+<section class="slide s-content" data-index="21"><h1 class="s-title">Reading Your GPU's Memory</h1><div class="s-body"><ul>
+<li>Before you pick a model, you need to know how much VRAM you actually have. One command tells you.</li>
+</ul>
+<div class="term"><div class="term-title">Check GPU memory and load</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">nvidia-smi</span></div><div class="t-line t-out">| GPU  Name        | Memory-Usage      |</div><div class="t-line t-out">|   0  RTX 4070    | 1536MiB / 12288MiB |</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>nvidia-smi</code> is the <strong>program</strong>: the NVIDIA System Management Interface, a status tool for the GPU.</span></li><li><span class="step-n">2</span><span class="step-t">It takes no options here, so it prints a full status table for every GPU it finds.</span></li><li><span class="step-n">3</span><span class="step-t">In the output, <code>Memory-Usage</code> reads <code>used / total</code>. Here 1536 MiB are in use out of 12288 MiB (12 GB) total.</span></li><li><span class="step-n">4</span><span class="step-t">That <code>total</code> number is your budget. It decides the largest model you can load: this card fits a quantized 7-8B model comfortably.</span></li></ol>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">No NVIDIA card? On a Mac, open Activity Monitor and use the GPU pane. On Apple Silicon the GPU shares system RAM, which changes the math (see the trends slide).</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">21</div></section>
+<section class="slide s-diagram" data-index="22"><h1 class="s-title">Model Size vs. VRAM</h1><div class="s-body"><ul>
+<li>One picture of what fits where.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 654 410" width="654" height="410" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Approx VRAM to run a model (4-bit)</text><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#5a3034" stroke-width="1"/><text x="54.0" y="354.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">0</text><line x1="64.0" y1="275.0" x2="624.0" y2="275.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="279.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">12.5</text><line x1="64.0" y1="200.0" x2="624.0" y2="200.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="204.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">25</text><line x1="64.0" y1="125.0" x2="624.0" y2="125.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="129.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">37.5</text><line x1="64.0" y1="50.0" x2="624.0" y2="50.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="54.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">50</text><line x1="64.0" y1="50.0" x2="64.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><text x="18" y="200.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" text-anchor="middle" transform="rotate(-90 18 200.0)">GB</text><text x="120.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">1B</text><text x="232.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">3B</text><text x="344.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">8B</text><text x="456.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">13B</text><text x="568.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">70B</text><rect x="80.8" y="344.0" width="75.4" height="6.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="192.8" y="338.0" width="75.4" height="12.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="304.8" y="320.0" width="75.4" height="30.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="416.8" y="302.0" width="75.4" height="48.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="528.8" y="110.0" width="75.4" height="240.0" rx="3" fill="#cb333b" opacity="0.92"/></svg><figcaption>A 12 GB card runs up to roughly a 13B model. A 70B model needs a data-center GPU or several cards.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">22</div></section>
+<section class="slide s-section" data-index="23"><div class="s-body"><ul>
+<li>The same silicon that runs your chatbot cracks your password database.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">23</div></section>
+<section class="slide s-content" data-index="24"><h1 class="s-title">GPUs Crack Passwords Too</h1><div class="s-body"><ul>
+<li>Password cracking is the <em>same</em> parallel math: try billions of guesses, hash each one, compare.</li>
+<li>A single modern GPU running <strong>hashcat</strong> guesses on the order of billions of MD5 or SHA-256 hashes per second.</li>
+<li>This is exactly why argon2 and bcrypt (Lecture 12) are <em>memory-hard</em>: to sabotage GPU parallelism on purpose.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">hashcat = a popular password-cracking tool that uses the GPU to test enormous numbers of guesses in parallel.</span></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Fast hashes like plain SHA-256 are a bad choice for storing passwords precisely because a GPU chews through them. Slow, memory-hard hashes are the defense.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">24</div></section>
+<section class="slide s-diagram" data-index="25"><h1 class="s-title">Same Chip, Two Sides</h1><div class="s-body"><ul>
+<li>One accelerator, opposite intentions.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 336" width="692" height="336" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">The defender&#x27;s engine is the attacker&#x27;s rig</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Defender use</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Attacker use</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Workload</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">LLM inference</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Password cracking</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Core math</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Matrix multiply</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Hash + compare</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Why the GPU</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Parallel tokens</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Parallel guesses</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Your counter</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Fit the VRAM</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Slow, memory-hard hashes</text><line x1="210" y1="40" x2="210" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="274" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Assume the attacker has this throughput. Length plus slow hashing is the counter.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">25</div></section>
+<section class="slide s-content" data-index="26"><h1 class="s-title">Hardware Trends You Should Recognize</h1><div class="s-body"><ul>
+<li><strong>Unified memory</strong> (Apple Silicon): the CPU and GPU share one pool of RAM, which is why some laptops run surprisingly large models.</li>
+<li><strong>NPUs and TPUs</strong>: chips built only for the matrix math, more efficient than a general GPU.</li>
+<li><strong>Supply chain</strong>: GPU scarcity and export controls make hardware itself a geopolitical security topic.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">NPU (Neural Processing Unit) = a chip designed specifically for neural-network math, now common in phones and laptops.</span></div>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">On a unified-memory Mac, "VRAM" and system RAM are the same pool, so a 16 GB Mac can devote more to a model than a 16 GB PC with a small graphics card.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">26</div></section>
+<section class="slide s-demo" data-index="27"><h1 class="s-title">Live Demo - Feel the Parallelism</h1><div class="s-body"><ul>
+<li>Numbers do not land until you watch the clock. We time the same job two ways.</li>
+</ul>
+<div class="term"><div class="term-title">The same matrix multiply, two processors</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">python</span> <span class="t-args">bench.py --device cpu</span><span class="t-ann"># 4096 x 4096 multiply on the CPU</span></div><div class="t-line t-out">CPU time: 8.10 s</div><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">python</span> <span class="t-args">bench.py --device gpu</span><span class="t-ann"># the identical job on the GPU</span></div><div class="t-line t-out">GPU time: 0.12 s</div></div></div>
+<ul>
+<li>Then <code>nvidia-smi</code> while a model loads: watch the VRAM number climb toward your budget.</li>
+<li>Then <code>ollama run llama3.2:1b "hello"</code> on a CPU-only box vs. a GPU box: the tokens-per-second gap is visible to the naked eye.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">27</div></section>
+<section class="slide s-activity" data-index="28"><h1 class="s-title">In-Class Activity - Spec-Sheet Showdown</h1><div class="s-body"><ul>
+<li>Match real machines to the models and threats they can handle.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Take a spec card for one of four machines: gaming desktop (RTX 4070, 12 GB VRAM), MacBook Air (16 GB unified), old office PC (no dedicated GPU, 8 GB RAM), cloud VM (A100, 40 GB).</span></li><li><span class="step-n">2</span><span class="step-t">In groups of 3, for your machine, use the Slide 21 rule of thumb to name the largest model it can run interactively.</span></li><li><span class="step-n">3</span><span class="step-t">Rate its password-cracking threat level as high, medium, or low, and say why.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief: compare against the reference answers, then note which card matches YOUR capstone hardware.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">28</div></section>
+<section class="slide s-content" data-index="29"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li><strong>Capstone</strong>: inventory your team's actual hardware this week and pick a model size that fits (the Lab 6 worksheet).</li>
+<li><strong>Security+</strong>: hardware vocabulary supports Domain 3.0 (architecture), and password-attack economics supports Domain 2.0.</li>
+<li><strong>Next session</strong>: what hardware can <em>prove</em>: TPMs, secure boot, and confidential computing.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">The Lab 6 worksheet lives in the <strong>Lab 6 assignment on Canvas</strong>: your repository invitation plus the step-by-step README in your repo, with HINTS.md for the hint ladder.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">29</div></section>
+<section class="slide s-content" data-index="30"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>CPU means latency and a few smart cores; GPU means throughput and thousands of simple cores.</li>
+<li>The memory pyramid trades speed against size; VRAM is the budget line for local AI.</li>
+<li>Quantization squeezes real models onto consumer hardware.</li>
+<li>Every accelerator is dual-use: the defender's AI engine is the attacker's cracking rig.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">30</div></section>
+<section class="slide s-activity" data-index="31"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Spec-sheet showdown.</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Take a spec card for one of four machines: gaming desktop (RTX 4070, 12 GB VRAM), MacBook Air (16 GB unified), old office PC (no dedicated GPU, 8 GB RAM), cloud VM (A100, 40 GB).</span></li><li><span class="step-n">2</span><span class="step-t">In groups of 3, use the Slide 21 rule of thumb to name the largest model your machine can run interactively.</span></li><li><span class="step-n">3</span><span class="step-t">Rate its password-cracking threat level high, medium, or low, and defend the rating.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief with the reference answers, then flag which card matches your capstone hardware.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">31</div></section>
+<section class="slide s-exit" data-index="32"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Why does an LLM run dramatically faster on a GPU than on a CPU?</p>
+<p>2. Your model needs 6 GB of memory but the GPU has only 4 GB of VRAM. Name one option that still lets you run it locally.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">32</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 27: Capstone Project Presentations (Day 1)</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Capstone Project Presentations (Day 1)</h1><div class="title-meta">Session 27 &nbsp;·&nbsp; Capstone - Secure Local-AI Stack</div><div class="title-sub">Outcomes: CO2, CO3, CO4, CO5, CO6 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Present a secure, containerized, version-controlled local-AI stack and defend its design (CO5).</li><li>Map implemented controls to course outcomes and SY0-701 domains (CO6).</li><li>Explain mitigations for network, LLM, and agent attacks (CO2), crypto and access controls (CO3), and privacy and policy choices (CO4).</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">2</div></section>
+<section class="slide s-section" data-index="3"><div class="s-body"><ul>
+<li>A semester of building, defended in one talk per team.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">Opening - Setup &amp; Rules</h1><div class="s-body"><ul>
+<li>Presentation order is posted; roughly ten to twelve minutes per team (about eight to present plus two or three for Q&amp;A), split across both days by team count.</li>
+<li>The rubric is on screen; the peer-feedback form (file: Capstone Peer Feedback Form) is linked on Canvas (participation credit).</li>
+<li>Demo readiness: each team's stack runs on their own machine; HDMI and USB-C tested; the fallback is a recorded demo video required in the repo.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Test the projector connection before your slot, not during it. A failed cable should never eat your presentation time.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">What Each Team Covers</h1><div class="s-body"><ul>
+<li>Every team walks the same five beats, in order, so scoring stays fair.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Architecture diagram plus a live demo of the running stack.</span></li><li><span class="step-n">2</span><span class="step-t">Controls mapped to CO and SY0-701 domains.</span></li><li><span class="step-n">3</span><span class="step-t">One attack they defended (injection, an exposed service, and so on).</span></li><li><span class="step-n">4</span><span class="step-t">Risks accepted plus the IR note.</span></li><li><span class="step-n">5</span><span class="step-t">Lessons learned.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">5</div></section>
+<section class="slide s-diagram" data-index="6"><h1 class="s-title">The Rubric at a Glance</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 654 410" width="654" height="410" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Capstone rubric weight (%)</text><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#5a3034" stroke-width="1"/><text x="54.0" y="354.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">0</text><line x1="64.0" y1="275.0" x2="624.0" y2="275.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="279.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">12.5</text><line x1="64.0" y1="200.0" x2="624.0" y2="200.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="204.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">25</text><line x1="64.0" y1="125.0" x2="624.0" y2="125.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="129.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">37.5</text><line x1="64.0" y1="50.0" x2="624.0" y2="50.0" stroke="#5a3034" stroke-width="1" stroke-dasharray="6 5"/><text x="54.0" y="54.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="end">50</text><line x1="64.0" y1="50.0" x2="64.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><line x1="64.0" y1="350.0" x2="624.0" y2="350.0" stroke="#f4f4f4" stroke-width="1.6"/><text x="18" y="200.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" text-anchor="middle" transform="rotate(-90 18 200.0)">percent</text><text x="120.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Demo</text><text x="232.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Controls</text><text x="344.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Attack</text><text x="456.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Governance</text><text x="568.0" y="370.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">Delivery</text><rect x="80.8" y="200.0" width="75.4" height="150.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="192.8" y="170.0" width="75.4" height="180.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="304.8" y="230.0" width="75.4" height="120.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="416.8" y="260.0" width="75.4" height="90.0" rx="3" fill="#cb333b" opacity="0.92"/><rect x="528.8" y="290.0" width="75.4" height="60.0" rx="3" fill="#cb333b" opacity="0.92"/></svg><figcaption>Controls and mapping carry the most weight; the working demo is next.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">Rubric Detail</h1><div class="s-body"><ul>
+<li><strong>Architecture &amp; working demo (25%)</strong>: the stack runs; segmentation, TLS, and containers are evident.</li>
+<li><strong>Security controls &amp; mapping (30%)</strong>: controls named, classified, and mapped to a CO and a SY0-701 domain.</li>
+<li><strong>Attack &amp; defense narrative (20%)</strong>: a real attack shown and mitigated, with honest residual risk.</li>
+<li><strong>Governance artifacts (15%)</strong>: risk register, AI-use policy, IR note, and clean Git and board history.</li>
+<li><strong>Delivery &amp; teamwork (10%)</strong>: every member speaks; clear, on time, and answers questions.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">During Each Talk</h1><div class="s-body"><ul>
+<li>The instructor scores live on the rubric and notes one strength plus one gap per team for written feedback.</li>
+<li>Peers submit the feedback form during each talk; Q&amp;A stays crisp (two questions maximum, instructor moderates).</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Reward honest security reasoning over a polished demo. "Injection X still partially works, here is our compensating control" shows the deepest learning (callback to L21/L23).</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Close &amp; Preview</h1><div class="s-body"><ul>
+<li>Confirm all Day-1 teams submitted their repo, wiki, and board links on Canvas.</li>
+<li>Preview the next session: remaining teams present, then a full Security+ SY0-701 five-domain review for the final.</li>
+<li>The final review guide posts after the review session; the final exam is during finals week.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">No late work is accepted. Final deliverables are due at the posted deadline on Canvas or they score zero.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">9</div></section>
+<section class="slide s-exit" data-index="10"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Name one control your team implemented and the SY0-701 domain it maps to.</p>
+<p>2. What is your team's honestly-stated biggest residual risk, and why did you accept it?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 · 2.0 · 3.0 · 4.0 · 5.0</span></div><div class="s-num">10</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

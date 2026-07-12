@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 9: Containers vs. VMs; Docker Images &amp;amp; Isolation</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Containers vs. VMs; Docker Images &amp; Isolation</h1><div class="title-meta">Session 9 &nbsp;·&nbsp; M4 - Docker &amp; Container Isolation</div><div class="title-sub">Outcomes: CO1, CO2 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Explain the problem containers solve and define container, image, and registry.</li><li>Contrast virtual machines and containers by isolation boundary, overhead, and threat model.</li><li>Run, inspect, and stop containers with basic <code>docker</code> commands and explain image vs. container.</li><li>Identify what containers do NOT isolate (the shared kernel) and why that matters for security.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">2</div></section>
+<section class="slide s-content" data-index="3"><h1 class="s-title">What We Do Today</h1><div class="s-body"><ul>
+<li>Start from zero: <strong>what problem do containers even solve?</strong> (no Docker experience assumed)</li>
+<li>Define the three words you will hear all module: <strong>container</strong>, <strong>image</strong>, <strong>registry</strong></li>
+<li>Meet the older idea they build on, the <strong>virtual machine</strong>, and compare the two</li>
+<li>Run your first containers by hand, then see the one thing containers do <em>not</em> protect</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">You have never used Docker, and that is exactly who this lecture is written for. We define every term and decode every command.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">3</div></section>
+<section class="slide s-section" data-index="4"><div class="s-body"><ul>
+<li>Before any tool, the pain it removes. Why did the whole industry adopt containers?</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">"It Works on My Machine"</h1><div class="s-body"><ul>
+<li>You write code that runs perfectly on your laptop. You send it to a teammate and it breaks instantly.</li>
+<li>Why? Their machine has a different Python version, a missing library, a different operating system setting</li>
+<li>The software depended on your laptop's exact setup, and that setup did not travel with the code</li>
+</ul>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">It is like mailing someone a recipe that secretly assumes your specific oven, your altitude, and your brand of flour. It fails in their kitchen through no fault of theirs.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">5</div></section>
+<section class="slide s-content" data-index="6"><h1 class="s-title">The Dependency-Conflict Problem</h1><div class="s-body"><ul>
+<li>Now run two apps on one server: App A needs version 1 of a library, App B needs version 2</li>
+<li>Install one and you break the other. They cannot coexist cleanly on the same machine.</li>
+<li>We need a way to give each app its <em>own</em> private, complete, portable environment</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Dependency = a piece of software your program needs in order to run (a specific library, tool, or language version). A dependency conflict is when two programs need incompatible versions of the same thing.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">6</div></section>
+<section class="slide s-section" data-index="7"><div class="s-body"><ul>
+<li>The idea that packages your app <em>with</em> everything it needs, so it runs the same everywhere.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">A Container, in Plain Words</h1><div class="s-body"><ul>
+<li>A <strong>container</strong> bundles your app together with every library, tool, and setting it needs, sealed into one portable package</li>
+<li>That package runs the same on your laptop, a teammate's laptop, and a server in a data center</li>
+<li>Each container is isolated: what runs inside one does not see or disturb what runs in another</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Container = a lightweight, isolated package that holds an application together with everything it needs to run, so it behaves identically on any machine that can run containers.</span></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">A shipping container revolutionized freight because the same steel box fits on a truck, a train, and a ship without repacking. A software container is the same idea: pack once, run anywhere, and what is inside stays sealed off from the next box.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Image, Container, Registry - Three Words</h1><div class="s-body"><ul>
+<li>These three words get mixed up constantly. Pin them down now.</li>
+<li>An <strong>image</strong> is the sealed template (the blueprint). A <strong>container</strong> is one running copy made from that image.</li>
+<li>A <strong>registry</strong> is the online library where images are stored and shared, like Docker Hub or GHCR</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Image = a read-only template that contains an app and its dependencies; nothing runs yet, it is the packaged blueprint.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Container = a running instance created from an image; you can start many containers from one image.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Registry = a server that stores and distributes images so people can download (pull) and upload (push) them.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">9</div></section>
+<section class="slide s-diagram" data-index="10"><h1 class="s-title">From Image to Container - the Lifecycle</h1><div class="s-body"><ul>
+<li>One image can spawn many containers. Follow the flow from a registry to a running app.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 977 290" width="977" height="290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Image to container lifecycle</text><path d="M 195.0 110.0 L 278.6 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 447.6 110.0 L 524.6 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 447.6 110.0 L 486.1 110.0 L 486.1 226.0 L 524.6 226.0" fill="none" stroke="#f4a0a6" stroke-width="3" marker-end="url(#ah_f4a0a6)"/><path d="M 693.6 110.0 L 777.2 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 34.0 88.0 A 79.0 8 0 0 1 192.0 88.0 L 192.0 132.0 A 79.0 8 0 0 1 34.0 132.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 34.0 88.0 A 79.0 8 0 0 0 192.0 88.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="113.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Registry</text><polygon points="302.6,80.0 444.6,80.0 428.6,140.0 286.6,140.0" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="365.6" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Image (template)</text><rect x="532.6" y="80.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="611.6" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Container 1</text><rect x="532.6" y="196.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="611.6" y="231.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Container 2</text><rect x="785.2" y="80.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="864.2" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Stopped/removed</text><rect x="196" y="100" width="83" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="236.8" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">docker pull</text><rect x="448" y="100" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="486.1" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">docker run</text><rect x="448" y="158" width="76" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="486.1" y="171.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">docker run</text><rect x="694" y="100" width="83" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="735.4" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">docker stop</text></svg><figcaption>Pull an image once, then run many containers from it. Each container is a live, disposable copy.</figcaption></figure></div>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">The image is a cookie cutter; each container is a cookie. One cutter stamps out many cookies, and eating one does not change the cutter.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">10</div></section>
+<section class="slide s-section" data-index="11"><div class="s-body"><ul>
+<li>Containers are not the first way we isolated workloads. Meet the older, heavier approach they are compared to.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">The Older Idea - a Virtual Machine</h1><div class="s-body"><ul>
+<li>A <strong>virtual machine (VM)</strong> is a whole fake computer running inside your real computer, complete with its own operating system</li>
+<li>A program called a <strong>hypervisor</strong> creates these fake computers and hands each one pretend hardware</li>
+<li>Because each VM runs its own full operating system, the wall between VMs is very strong, but very heavy</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Virtual machine (VM) = a software-simulated computer that runs a complete operating system of its own, isolated from the real machine it runs on.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Hypervisor = the program that creates and runs virtual machines, giving each one virtual hardware. A whole operating system, called the kernel, runs inside every VM.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">12</div></section>
+<section class="slide s-content" data-index="13"><h1 class="s-title">The Kernel - the Word That Makes This Click</h1><div class="s-body"><ul>
+<li>Every operating system has a <strong>kernel</strong>: the core program that talks to the hardware and manages everything running on it</li>
+<li>A VM carries its <em>own</em> kernel. That is why it is heavy (gigabytes) and slow to start (minutes).</li>
+<li>A container does <em>not</em> carry its own kernel. It borrows the <strong>host</strong> machine's kernel. That is why it is tiny (megabytes) and starts in milliseconds.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Kernel = the innermost core of an operating system; it controls the hardware and every running program. Sharing one is the key difference between containers and VMs.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">13</div></section>
+<section class="slide s-content" data-index="14"><h1 class="s-title">How Containers Isolate Without Their Own Kernel</h1><div class="s-body"><ul>
+<li>If containers share one kernel, how are they kept apart? The kernel itself does the walling-off, using two features.</li>
+<li><strong>Namespaces</strong>: give each container its own private <em>view</em>, its own processes, its own network, its own filesystem, so it thinks it is alone</li>
+<li><strong>cgroups</strong> (control groups): cap how much CPU, memory, and disk each container may use, so one cannot starve the others</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Namespace = a kernel feature that gives a container a private, walled-off view of the system (its own process list, network, and files), even though it shares the kernel.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">cgroup = a kernel feature that limits how much CPU, memory, and input/output a container is allowed to consume; this protects availability.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">14</div></section>
+<section class="slide s-diagram" data-index="15"><h1 class="s-title">VM vs. Container - Side by Side</h1><div class="s-body"><ul>
+<li>Rule of thumb: containers isolate <em>applications</em>, VMs isolate <em>systems</em>; hostile workloads get a VM, or a container inside one.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 392" width="692" height="392" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Virtual machine vs. container</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Virtual machine</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Container</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Runs its own kernel?</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Yes, a full OS each</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">No, shares the host kernel</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Size</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Gigabytes</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Megabytes</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Start time</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Minutes</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Milliseconds</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Isolation boundary</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Virtual hardware (strong)</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Kernel features (lighter)</text><text x="34.0" y="346.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">To escape, breach</text><text x="325.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">The hypervisor (rare)</text><text x="555.0" y="338.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">The shared kernel (bigger</text><text x="555.0" y="354.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">target)</text><line x1="210" y1="40" x2="210" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="330" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>VMs isolate whole systems with a heavy, strong wall. Containers isolate apps with a light, thinner wall.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">15</div></section>
+<section class="slide s-diagram" data-index="16"><h1 class="s-title">The Container Stack, Layer by Layer</h1><div class="s-body"><ul>
+<li>What is actually stacked under a running container? From the metal up.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 444 466" width="444" height="466" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">What a running container sits on</text><rect x="30" y="40" width="384" height="68" rx="8" fill="#2a1c1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="70.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Container</text><text x="44.0" y="90.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">your app + its dependencies, running</text><rect x="30" y="116" width="384" height="68" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="146.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Image</text><text x="44.0" y="166.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">the read-only template it started from</text><rect x="30" y="192" width="384" height="68" rx="8" fill="#221d1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="222.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Container runtime</text><text x="44.0" y="242.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">Docker: starts and stops containers</text><rect x="30" y="268" width="384" height="68" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="298.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Host kernel</text><text x="44.0" y="318.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">one shared kernel for all containers</text><rect x="30" y="344" width="384" height="68" rx="8" fill="#2e1d1f" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="374.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Host hardware</text><text x="44.0" y="394.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">the real machine</text><line x1="320.0" y1="74.0" x2="320.0" y2="150.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="150.0" x2="320.0" y2="226.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="226.0" x2="320.0" y2="302.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="302.0" x2="320.0" y2="378.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><rect x="251" y="56" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="78.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">your app</text><rect x="251" y="132" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="154.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">layers</text><rect x="251" y="208" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="230.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">docker</text><rect x="251" y="284" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="306.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">shared kernel</text><rect x="251" y="360" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="382.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">CPU + RAM</text></svg><figcaption>Notice: one host kernel is shared by every container. There is no per-container kernel, unlike a VM.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">16</div></section>
+<section class="slide s-section" data-index="17"><div class="s-body"><ul>
+<li>Enough theory. Let us actually start a container and look inside it.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">17</div></section>
+<section class="slide s-content" data-index="18"><h1 class="s-title">docker run - Start a Container</h1><div class="s-body"><ul>
+<li><code>docker run</code> creates and starts a container from an image. This is the command you will type most.</li>
+</ul>
+<div class="term"><div class="term-title">Start a tiny Linux container and get a shell inside it</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">run --rm -it alpine sh</span></div><div class="t-line t-out">/ # whoami</div><div class="t-line t-out">root</div><div class="t-line t-out">/ # exit</div></div></div>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">The <code>/ #</code> prompt means you are now <em>inside</em> the container, as its root user. Type <code>exit</code> to leave and (because of <code>--rm</code>) discard it.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">docker run, Decoded Piece by Piece</h1><div class="s-body"><ul>
+<li>One command, six parts. Read each one and the command stops looking cryptic.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>docker</code> is the <strong>program</strong>: the container tool.</span></li><li><span class="step-n">2</span><span class="step-t"><code>run</code> is the <strong>subcommand</strong>: create and start a container.</span></li><li><span class="step-n">3</span><span class="step-t"><code>--rm</code> is an <strong>option</strong>: automatically delete the container when it exits (no clutter left behind).</span></li><li><span class="step-n">4</span><span class="step-t"><code>-it</code> is an <strong>option</strong>: give you an interactive terminal <em>inside</em> the container.</span></li><li><span class="step-n">5</span><span class="step-t"><code>alpine</code> is the <strong>image argument</strong>: a very small Linux image to start from.</span></li><li><span class="step-n">6</span><span class="step-t"><code>sh</code> is the <strong>command argument</strong>: the program to run inside, here a shell.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">docker ps - List Running Containers</h1><div class="s-body"><ul>
+<li>From a <em>second</em> terminal on the host, see what is running. This is your view from outside.</li>
+</ul>
+<div class="term"><div class="term-title">List containers</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">ps</span></div><div class="t-line t-out">CONTAINER ID   IMAGE    COMMAND   STATUS         NAMES</div><div class="t-line t-out">3f1a9c2b7e04   alpine   &quot;sh&quot;      Up 10 seconds  brave_kirch</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>ps</code> is the <strong>subcommand</strong>: list <em>running</em> containers (add <code>-a</code> to include stopped ones).</span></li><li><span class="step-n">2</span><span class="step-t"><code>CONTAINER ID</code> is a unique short fingerprint you use to target a specific container.</span></li><li><span class="step-n">3</span><span class="step-t"><code>IMAGE</code> shows which template it started from; <code>STATUS</code> shows how long it has been up.</span></li><li><span class="step-n">4</span><span class="step-t"><code>NAMES</code> is a friendly auto-generated name you can use instead of the ID.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">20</div></section>
+<section class="slide s-content" data-index="21"><h1 class="s-title">Look Inside, Then Stop It</h1><div class="s-body"><ul>
+<li>Two more everyday commands: step into a running container, and shut one down.</li>
+</ul>
+<div class="term"><div class="term-title">Enter a running container, then stop it</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">exec -it 3f1a9c2b sh</span><span class="t-ann"># open a shell in an already-running container</span></div><div class="t-line t-out">/ # exit</div><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">stop 3f1a9c2b</span><span class="t-ann"># gracefully stop that container</span></div><div class="t-line t-out">3f1a9c2b</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>exec</code> runs a new command <em>inside</em> a container that is already running (great for debugging).</span></li><li><span class="step-n">2</span><span class="step-t"><code>-it</code> again gives you an interactive terminal.</span></li><li><span class="step-n">3</span><span class="step-t"><code>stop</code> sends the container a polite shutdown signal; it prints the ID once stopped.</span></li></ol>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">A container is disposable ("cattle, not pets"). With <code>--rm</code>, stopping it deletes it and its changes. Anything you want to keep must live outside the container.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">21</div></section>
+<section class="slide s-content" data-index="22"><h1 class="s-title">Reading an Image Reference</h1><div class="s-body"><ul>
+<li>Image names look cryptic until you split them at the punctuation.</li>
+</ul>
+<div class="term"><div class="term-title">Anatomy of one image reference</div><div class="term-body"><div class="t-line t-out">ghcr.io/owner/app:1.4.2</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>ghcr.io</code> is the <strong>registry</strong>: which server the image lives on.</span></li><li><span class="step-n">2</span><span class="step-t"><code>owner/app</code> is the <strong>namespace and name</strong>: whose image and what it is called.</span></li><li><span class="step-n">3</span><span class="step-t"><code>:1.4.2</code> is the <strong>tag</strong>: a human-friendly label for a specific version.</span></li></ol>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Tags are <em>mutable</em>. The image behind <code>:latest</code> today may be different code tomorrow. A digest (<code>@sha256:...</code>) is immutable: same lesson as pinning GitHub Actions to a SHA last module.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">22</div></section>
+<section class="slide s-demo" data-index="23"><h1 class="s-title">Live Demo - First Containers</h1><div class="s-body"><ul>
+<li>Watch isolation and the shared-kernel truth on one screen.</li>
+</ul>
+<div class="term"><div class="term-title">Instructor demo: who am I, what can I see?</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">docker</span> <span class="t-args">run --rm -it alpine sh</span></div><div class="t-line t-out">/ # whoami        # root, inside the container</div><div class="t-line t-out">/ # ps aux        # only the container&#x27;s own processes are visible (namespaces!)</div><div class="t-line t-out">/ # hostname      # a made-up hostname, not the real machine</div></div></div>
+<ul>
+<li>Second terminal: <code>docker ps</code>, then <code>docker exec</code>, then <code>docker stop</code></li>
+<li>Then run again with <code>--user 1000</code>: <code>whoami</code> is no longer root, foreshadowing next session's least-privilege hardening</li>
+</ul>
+<div class="callout c-why"><span class="c-label">Why it matters</span><span class="c-body"><code>ps aux</code> inside the container shows almost nothing running. The namespace hid the host's processes. That private view is the isolation, in action.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">23</div></section>
+<section class="slide s-section" data-index="24"><div class="s-body"><ul>
+<li>The single most important security point in this lecture. Do not miss it.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">24</div></section>
+<section class="slide s-content" data-index="25"><h1 class="s-title">One Shared Kernel Is the Weak Point</h1><div class="s-body"><ul>
+<li>Every container on a host shares that host's <strong>one</strong> kernel. That shared kernel is the boundary.</li>
+<li>A flaw in the kernel that a container can exploit can become a compromise of the <em>host</em> and every other container on it</li>
+<li>By default the user inside a container is <strong>root</strong>, and a misconfiguration (mounting the whole host, or <code>--privileged</code>) can turn that into near-root on the host</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">The Docker socket (<code>/var/run/docker.sock</code>) mounted into a container is game over: it lets that container control every other container. Treat it as a crown jewel, never hand it out casually.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">25</div></section>
+<section class="slide s-content" data-index="26"><h1 class="s-title">Container Escapes and the Architecture Answer</h1><div class="s-body"><ul>
+<li><strong>Escape paths</strong> seen in the real world: kernel vulnerabilities, misconfiguration (<code>--privileged</code>, host mounts), and runtime bugs</li>
+<li>Defenses (next session): run as a non-root user, use a read-only filesystem, drop unneeded privileges, use minimal images</li>
+<li>The architecture answer for truly hostile code: put containers <em>inside</em> a VM, so a container escape still hits a strong VM wall (defense in depth, exactly how cloud CI runners are built)</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Container escape = an attacker breaking out of a container's isolation to reach the host or other containers, usually by exploiting the shared kernel or a misconfiguration.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">26</div></section>
+<section class="slide s-content" data-index="27"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li>Your capstone stack (a local AI model, its web UI, and your agent) runs as containers. Today you can explain <em>why</em> that architecture and where its limits are.</li>
+<li><strong>SY0-701 Domain 3.0</strong>: virtualization, containerization, isolation, and segmentation vocabulary</li>
+<li>The module lab has you run, inspect, and then harden containers; it releases on the schedule posted on the course outline</li>
+<li>When it opens, start from the <strong>Lab 4 assignment on Canvas</strong>: your repository invitation plus the step-by-step README in your repo, with HINTS.md for the hint ladder</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Never describe a container as a "sandbox" for hostile code. It reduces blast radius; it is not an escape-proof jail.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">27</div></section>
+<section class="slide s-content" data-index="28"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>Containers solve "works on my machine" by packing an app with everything it needs into one portable, isolated box</li>
+<li>Image = template, container = running instance, registry = where images live</li>
+<li>VMs carry their own kernel (heavy, strong wall); containers share the host kernel (light, thinner wall)</li>
+<li>Namespaces give a private view, cgroups cap resources, and the shared kernel is the boundary you must respect</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">28</div></section>
+<section class="slide s-activity" data-index="29"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Demo-along: whoami, where am I? (follow live, or pair with someone who has Docker).</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Run <code>docker run --rm -it alpine sh</code>, then inside run <code>whoami</code>, <code>ps aux</code>, and <code>ls /</code>. Note out loud what you can and cannot see.</span></li><li><span class="step-n">2</span><span class="step-t">Exit, then run again with <code>--user 1000</code>. Compare <code>whoami</code>, and try <code>apk add curl</code> (it fails: no permission). Discuss why.</span></li><li><span class="step-n">3</span><span class="step-t">On the host, run <code>docker ps -a</code>. Nothing is running after <code>--rm</code>. Discuss why containers are disposable.</span></li><li><span class="step-n">4</span><span class="step-t">Whip-around, two questions: what did the process namespace hide, and what did <code>--user</code> change?</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">29</div></section>
+<section class="slide s-exit" data-index="30"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. A container and its host were both compromised through a single exploit. Which shared component most likely made that possible?</p>
+<p>2. Give a one-sentence definition of an image and a one-sentence definition of a container.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture</span></div><div class="s-num">30</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

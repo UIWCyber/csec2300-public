@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 14: Identity &amp;amp; Access Management; Midterm Review</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Identity &amp; Access Management; Midterm Review</h1><div class="title-meta">Session 14 &nbsp;·&nbsp; M5 - Cryptography &amp; Identity/Access Management</div><div class="title-sub">Outcomes: CO3, CO6 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Trace the IAM lifecycle: provisioning, authentication, authorization, accounting, deprovisioning.</li><li>Compare authentication factors and evaluate MFA options and their phishing resistance.</li><li>Distinguish access-control models: DAC, MAC, RBAC, ABAC, and least privilege in each.</li><li>Self-assess readiness for the Modules 1-5 midterm through structured review.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">2</div></section>
+<section class="slide s-section" data-index="3"><div class="s-body"><ul>
+<li>The network wall is gone. In cloud and remote work, the question is no longer where you are but who you are.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">Why Identity Matters Most Now</h1><div class="s-body"><ul>
+<li>Cloud services and remote work dissolved the old network boundary; access now hinges on proven identity.</li>
+<li>Most breaches start with credentials (phishing, password reuse, stuffing), not clever exploits.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">IAM = Identity and Access Management, the practice of governing who exists in a system, how they prove it, and what they may do.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">The IAM Lifecycle</h1><div class="s-body"><ul>
+<li>Every account moves through five stages. Security gaps hide at the edges, especially at the end.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1046 244" width="1046" height="244" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">The IAM lifecycle</text><line x1="56.0" y1="133.0" x2="990.0" y2="133.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><circle cx="131" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="131" cy="133" r="3.5" fill="#cb333b"/><text x="131.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">1</text><rect x="56" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="131.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Provision</text><text x="131.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">create the account</text><line x1="131.0" y1="124.0" x2="131.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="327" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="327" cy="133" r="3.5" fill="#cb333b"/><text x="327.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">2</text><rect x="252" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="327.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Authenticate</text><text x="327.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">prove identity</text><line x1="327.0" y1="142.0" x2="327.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="523" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="523" cy="133" r="3.5" fill="#cb333b"/><text x="523.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">3</text><rect x="448" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="523.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Authorize</text><text x="523.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">grant permissions</text><line x1="523.0" y1="124.0" x2="523.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="719" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="719" cy="133" r="3.5" fill="#cb333b"/><text x="719.0" y="167.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">4</text><rect x="644" y="173" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="719.0" y="191.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Account</text><text x="719.0" y="210.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">log what they did</text><line x1="719.0" y1="142.0" x2="719.0" y2="173.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><circle cx="915" cy="133" r="9" fill="#0d0e10" stroke="#cb333b" stroke-width="3"/><circle cx="915" cy="133" r="3.5" fill="#cb333b"/><text x="915.0" y="107.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="700" text-anchor="middle">5</text><rect x="840" y="38" width="150" height="55" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1.4"/><text x="915.0" y="56.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="middle">Deprovision</text><text x="915.0" y="75.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">remove on exit</text><line x1="915.0" y1="124.0" x2="915.0" y2="93.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/></svg><figcaption>Offboarding failures leave ghost accounts: valid credentials nobody is watching.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">5</div></section>
+<section class="slide s-section" data-index="6"><div class="s-body"><ul>
+<li>Proving who you are comes down to three kinds of evidence. Mixing kinds is what makes it strong.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">The Three Factors</h1><div class="s-body"><ul>
+<li>Something you <strong>know</strong> (password, PIN), something you <strong>have</strong> (phone, security key), something you <strong>are</strong> (fingerprint, face).</li>
+<li><strong>MFA</strong> means two or more DIFFERENT factors. A password plus a security question is still just one factor.</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">MFA = Multi-Factor Authentication, requiring evidence from two or more different factor categories.</span></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Two things you know (password plus PIN) is not MFA. Both are the "know" factor and both fall to one phishing page.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">Not All MFA Is Equal</h1><div class="s-body"><ul>
+<li>The factor category matters, but so does the delivery method. Some are far easier to phish than others.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 336" width="692" height="336" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">MFA methods by phishing resistance</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Method</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Resistance</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">SMS code</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">texted number</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">weak: SIM swap</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">TOTP app</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">6-digit code</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">better, still phishable</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Push approve</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">tap yes</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">fatigue attacks</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">FIDO2 passkey</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">hardware key</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">strong: origin-bound</text><line x1="210" y1="40" x2="210" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="274" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Passkeys are origin-bound, so a phishing site cannot relay them. Rank: passkey &gt; TOTP &gt; SMS.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Passwords and Passkeys Today</h1><div class="s-body"><ul>
+<li>Length beats complexity; unique per site; a password manager is the practical control that makes both possible.</li>
+<li><strong>Passkeys</strong> are asymmetric key pairs, one per site: nothing shared to steal, nothing to phish.</li>
+</ul>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">A passkey is your signed Git commit for logging in: you keep the private half, the site keeps the public half, and only you can produce the proof. This is the Lecture 12 payoff.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">9</div></section>
+<section class="slide s-section" data-index="10"><div class="s-body"><ul>
+<li>Once you are authenticated, something must decide what you are allowed to do. Four models, four deciders.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">10</div></section>
+<section class="slide s-content" data-index="11"><h1 class="s-title">DAC, MAC, RBAC, ABAC</h1><div class="s-body"><ul>
+<li><strong>DAC:</strong> the resource owner decides (file permissions, GitHub repo collaborators).</li>
+<li><strong>MAC:</strong> the system enforces labels and clearances; owners cannot override (military systems, SELinux).</li>
+<li><strong>RBAC:</strong> permissions attach to roles, and users get roles (org teams: admin, maintain, write, read).</li>
+<li><strong>ABAC:</strong> policy evaluates attributes of user, resource, and context (time, device, location). Most flexible, most complex.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 336" width="692" height="336" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Who makes the access decision?</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Model</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Decider</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">DAC</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">owner grants</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">the resource owner</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">MAC</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">labels rule</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">the system, centrally</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">RBAC</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">role-based</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">your assigned role</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">ABAC</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">policy-based</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">attributes + context</text><line x1="210" y1="40" x2="210" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="274" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Anchor each model on its decider. That single question separates them on the exam.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">Least Privilege and Friends</h1><div class="s-body"><ul>
+<li><strong>Least privilege:</strong> the minimum access needed to do the job, reviewed and time-bound. JIT (just-in-time) access is the modern form.</li>
+<li>Related principles: separation of duties, need-to-know, and deny-by-default.</li>
+<li>You have already implemented all of these: branch protection, non-root containers, backend-only networks.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">For each control you built this semester, be able to name the principle behind it. That mapping is exam gold.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">12</div></section>
+<section class="slide s-content" data-index="13"><h1 class="s-title">Worked Example - IAM on Your Capstone</h1><div class="s-body"><ul>
+<li><strong>Provision:</strong> a teammate is added as a repo collaborator with the write role, not admin.</li>
+<li><strong>Authenticate:</strong> MFA plus SSH keys. <strong>Authorize:</strong> branch protection limits what write can do to main.</li>
+<li><strong>Account:</strong> the audit log and signed commits. <strong>Deprovision:</strong> what happens when a teammate drops the class?</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 392" width="692" height="392" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Lifecycle mapped to your capstone</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Stage</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Your artifact</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Provision</text><text x="325.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">add teammate</text><text x="555.0" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">repo collaborator (write)</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="178.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Authenticate</text><text x="325.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">prove identity</text><text x="555.0" y="178.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">MFA + SSH keys</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Authorize</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">limit actions</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">branch protection</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Account</text><text x="325.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">record actions</text><text x="555.0" y="290.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">signed commits + logs</text><text x="34.0" y="346.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Deprovision</text><text x="325.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">remove access</text><text x="555.0" y="346.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">revoke on class drop</text><line x1="210" y1="40" x2="210" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="370" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="330" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Your capstone already implements the full IAM lifecycle. Name each part.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">13</div></section>
+<section class="slide s-section" data-index="14"><div class="s-body"><ul>
+<li>IAM closes Module 5. Now we turn to the midterm, which covers Modules 1 through 5.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">Midterm Logistics</h1><div class="s-body"><ul>
+<li>In class, closed notes, one attempt, delivered through Canvas with a lockdown browser.</li>
+<li>Format: roughly forty multiple-choice questions plus four short scenario answers; scratch paper provided.</li>
+<li>Coverage is even: each of Modules 1 through 5 is about a fifth of the exam. Every question maps to a stated objective.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Exact timing and coverage will be confirmed verbally this session and again next session. Watch Canvas for the posted details.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">What to Study, in Priority Order</h1><div class="s-body"><ul>
+<li>The control classification grid (category by function): near-guaranteed.</li>
+<li>Threat versus vulnerability versus risk; the actor taxonomy; the policy hierarchy.</li>
+<li>Git: the three areas, hash chaining, signed commits, and the secret-remediation order.</li>
+<li>CI scanners (SAST, DAST, SCA, secret scanning): which finds what; supply-chain cases; branch protection.</li>
+<li>Containers: shared kernel, the hardening six; and crypto's primitive-selection table.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">16</div></section>
+<section class="slide s-content" data-index="17"><h1 class="s-title">Modules 1-5 at a Glance</h1><div class="s-body"><div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1058 364" width="1058" height="364" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">The whole course so far</text><line x1="529.0" y1="96.0" x2="121.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="121.0" y1="192.0" x2="121.0" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="529.0" y1="96.0" x2="325.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="325.0" y1="192.0" x2="325.0" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="529.0" y1="96.0" x2="529.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="529.0" y1="192.0" x2="529.0" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="529.0" y1="96.0" x2="733.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="733.0" y1="192.0" x2="733.0" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="529.0" y1="96.0" x2="937.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="937.0" y1="192.0" x2="937.0" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><rect x="30.0" y="238.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="121.0" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">CIA + controls</text><rect x="30.0" y="142.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="121.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">M1 InfoSec</text><rect x="234.0" y="238.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="325.0" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">integrity + secrets</text><rect x="234.0" y="142.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="325.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">M2 Git</text><rect x="438.0" y="238.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="529.0" y="260.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">scanners + supply</text><text x="529.0" y="276.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">chain</text><rect x="438.0" y="142.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="529.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">M3 CI/CD</text><rect x="642.0" y="238.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="733.0" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">hardening + networks</text><rect x="642.0" y="142.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="733.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">M4 Docker</text><rect x="846.0" y="238.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="937.0" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">TLS + access control</text><rect x="846.0" y="142.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="937.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">M5 Crypto + IAM</text><rect x="438.0" y="46.0" width="182" height="50" rx="9" fill="#2c2f34" stroke="#cb333b" stroke-width="2.4"/><text x="529.0" y="76.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Modules 1-5</text></svg><figcaption>One connected story: build a system, then defend it at every layer. The exam tests the connections.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">17</div></section>
+<section class="slide s-activity" data-index="18"><h1 class="s-title">In-Class Activity - Rapid Rounds</h1><div class="s-body"><ol class="steps"><li><span class="step-n">1</span><span class="step-t">Twenty timed questions, projected quiz-mode, drawn one per major objective across Modules 1 through 5 (question set: handout H14, projected in class).</span></li><li><span class="step-n">2</span><span class="step-t">Answer solo on your phone or laptop; a leaderboard shows on screen (pseudonyms are fine).</span></li><li><span class="step-n">3</span><span class="step-t">After each question: a thirty-second explanation of the right answer. Flag any question you want reviewed.</span></li><li><span class="step-n">4</span><span class="step-t">Final minutes: the three most-flagged topics get whiteboard time. Wrong answers here are free; on the midterm they are not.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">Capstone and Security+ Connection</h1><div class="s-body"><ul>
+<li>IAM closes Module 5: your stack now has identity (keys and MFA), authorization (roles and rules), and accounting (logs).</li>
+<li>SY0-701 places IAM, MFA, and access-control models in Domains 1.0 and 4.0, with heavy exam weight.</li>
+<li>After the midterm the course pivots to hardware (GPUs, TPMs) and then the AI half begins.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>Authenticate the identity, authorize the action, account for everything, and deprovision on exit.</li>
+<li>MFA quality varies: passkeys and FIDO2 beat TOTP, which beats SMS.</li>
+<li>Know the four access models by their decider: owner (DAC), system (MAC), role (RBAC), policy and attributes (ABAC).</li>
+<li>Sleep beats cramming. See you at the midterm.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">20</div></section>
+<section class="slide s-activity" data-index="21"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Midterm review rapid rounds.</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Twenty timed questions (quiz-mode projection), drawn one per major objective from Modules 1 through 5. Question set: handout H14, projected in class.</span></li><li><span class="step-n">2</span><span class="step-t">Solo answers on phones or laptops; leaderboard on screen (pseudonyms fine).</span></li><li><span class="step-n">3</span><span class="step-t">After each question: a thirty-second explanation of the right answer; students flag any question for deeper review.</span></li><li><span class="step-n">4</span><span class="step-t">Final minutes: address the three most-flagged topics on the whiteboard; post the review deck to Canvas afterward.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">21</div></section>
+<section class="slide s-exit" data-index="22"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Rank SMS codes, TOTP apps, and passkeys by phishing resistance.</p>
+<p>2. Which access-control model does GitHub's admin/maintain/write/read scheme most resemble?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">22</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

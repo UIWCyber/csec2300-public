@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSEC 2300 · Foundations of Cyber Security · Fall 2026 - Course Hub</title>
+<style>
+:root{
+  --red:#CB333B;
+  --red-dark:#A32830;
+  --red-soft:rgba(203,51,59,.10);
+  --bg:#f7f7f9;
+  --surface:#ffffff;
+  --surface-2:#f1f1f4;
+  --text:#1c1e22;
+  --muted:#5b616b;
+  --line:#e2e3e8;
+  --accent-ink:#ffffff;
+  --ok:#1a7f4e;
+  --shadow:0 1px 3px rgba(20,22,26,.07),0 8px 24px rgba(20,22,26,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#131518;
+    --surface:#1c1f24;
+    --surface-2:#24282e;
+    --text:#e8e9ec;
+    --muted:#9aa1ab;
+    --line:#33383f;
+    --red-soft:rgba(203,51,59,.20);
+    --ok:#4cc38a;
+    --shadow:0 1px 3px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.30);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.55;font-size:16px;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--red);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+h2{font-size:1.45rem;margin:0 0 .35rem;letter-spacing:-.01em}
+h3{font-size:1.05rem;margin:1.2rem 0 .5rem}
+.kicker{color:var(--red);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin:0 0 .3rem}
+.sub{color:var(--muted);margin:0 0 1.2rem;font-size:.95rem}
+section{padding:2.6rem 0 .6rem}
+
+/* ---------- hero ---------- */
+.hero{
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 70%);
+  color:#fff;padding:2.8rem 0 2.4rem;
+}
+.hero .eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.14em;opacity:.85;margin:0 0 .5rem;font-weight:600}
+.hero h1{font-size:clamp(1.7rem,4.5vw,2.6rem);margin:0 0 .35rem;line-height:1.15;letter-spacing:-.02em}
+.hero .tagline{font-size:1.05rem;opacity:.92;margin:0 0 1.4rem;max-width:46rem}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.8rem}
+.hero-card{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  border-radius:12px;padding:.85rem 1rem;backdrop-filter:blur(2px);
+}
+.hero-card .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.8;font-weight:700;margin-bottom:.2rem}
+.hero-card .val{font-size:.95rem;font-weight:600}
+.hero-card .val small{display:block;font-weight:400;opacity:.9;font-size:.85rem;margin-top:.1rem}
+.hero-card a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+.hero-card a.btn-book{
+  display:inline-block;margin-top:.45rem;background:#fff;color:var(--red);
+  font-weight:700;font-size:.85rem;padding:.4rem .85rem;border-radius:999px;text-decoration:none;
+}
+.hero-card a.btn-book:hover{transform:translateY(-1px)}
+
+/* ---------- nav ---------- */
+nav.hubnav{
+  position:sticky;top:0;z-index:50;background:var(--surface);
+  border-bottom:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+nav.hubnav .wrap{display:flex;gap:.25rem;overflow-x:auto;padding-top:.55rem;padding-bottom:.55rem}
+nav.hubnav a{
+  white-space:nowrap;font-size:.87rem;font-weight:600;color:var(--muted);
+  padding:.35rem .75rem;border-radius:999px;
+}
+nav.hubnav a:hover{color:var(--red);background:var(--red-soft);text-decoration:none}
+
+/* ---------- this week ---------- */
+.tw-card{
+  background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--red);
+  border-radius:14px;box-shadow:var(--shadow);padding:1.3rem 1.4rem;
+}
+.tw-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
+.tw-head .big{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
+.tw-head .range{color:var(--muted);font-size:.92rem}
+.tw-sessions{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tw-session{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:.7rem .85rem;font-size:.92rem;
+}
+.tw-session.is-today{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.tw-session .d{font-weight:700;font-size:.8rem;color:var(--red);text-transform:uppercase;letter-spacing:.06em}
+.tw-session .t{margin:.15rem 0 .3rem;font-weight:600}
+.tw-session.noclass .t{color:var(--muted);font-style:italic;font-weight:500}
+.tw-note{margin-top:.75rem;font-size:.88rem;color:var(--muted)}
+.countdown{display:flex;align-items:center;flex-wrap:wrap;gap:1.2rem}
+.countdown .num{font-size:3rem;font-weight:800;color:var(--red);line-height:1}
+.countdown .cap{font-size:1rem;color:var(--muted);max-width:28rem}
+
+/* ---------- badges ---------- */
+.badge{
+  display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;padding:.13rem .5rem;border-radius:999px;
+  border:1px solid transparent;margin:.1rem .15rem .1rem 0;white-space:nowrap;
+}
+.b-lab{background:rgba(37,99,235,.12);color:#2563eb;border-color:rgba(37,99,235,.3)}
+.b-quiz{background:rgba(217,119,6,.12);color:#d97706;border-color:rgba(217,119,6,.3)}
+.b-exam{background:var(--red-soft);color:var(--red);border-color:var(--red)}
+.b-capstone{background:rgba(124,58,237,.12);color:#7c3aed;border-color:rgba(124,58,237,.3)}
+.b-milestone{background:rgba(22,163,74,.12);color:var(--ok);border-color:rgba(22,163,74,.3)}
+.b-noclass{background:var(--surface-2);color:var(--muted);border-color:var(--line)}
+@media (prefers-color-scheme: dark){
+  .b-lab{color:#7ba7f7}.b-quiz{color:#efa94b}.b-capstone{color:#b394f5}
+}
+
+/* ---------- schedule ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
+.chip{
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  font:inherit;font-size:.85rem;font-weight:600;padding:.35rem .9rem;
+  border-radius:999px;cursor:pointer;
+}
+.chip:hover{border-color:var(--red);color:var(--red)}
+.chip.active{background:var(--red);border-color:var(--red);color:#fff}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+table.sched{border-collapse:collapse;width:100%;font-size:.92rem;min-width:640px}
+.sched th{
+  text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--muted);padding:.7rem .85rem;border-bottom:2px solid var(--line);
+  background:var(--surface-2);position:sticky;top:0;
+}
+.sched td{padding:.6rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+.sched tr:last-child td{border-bottom:none}
+.sched td.wk{color:var(--muted);font-weight:700;white-space:nowrap}
+.sched td.date{white-space:nowrap;font-weight:600}
+.sched tr.noclass td{color:var(--muted)}
+.sched tr.noclass td .topic{font-style:italic}
+.sched tr.current-week td{background:var(--red-soft)}
+.sched tr.is-today td{box-shadow:inset 3px 0 0 var(--red)}
+.sched tr.hidden-row{display:none}
+.now-tag{
+  display:inline-block;background:var(--red);color:#fff;font-size:.62rem;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;padding:.1rem .45rem;border-radius:4px;margin-left:.4rem;vertical-align:1px;
+}
+.sched-empty{padding:1rem;text-align:center;color:var(--muted);display:none}
+
+/* ---------- labs ---------- */
+.labs-grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.lab-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:.9rem 1rem;box-shadow:var(--shadow);
+}
+.lab-card .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:2.1rem;height:1.35rem;padding:0 .4rem;border-radius:6px;background:var(--red);color:#fff;
+  font-weight:800;font-size:.75rem;margin-right:.5rem;letter-spacing:.03em;
+}
+.lab-card .name{font-weight:700;font-size:.97rem}
+.lab-card p{margin:.45rem 0 0;font-size:.88rem;color:var(--muted)}
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:1.1rem 1.3rem;box-shadow:var(--shadow);margin-top:1rem;
+}
+.panel h3{margin-top:0}
+.hint-tiers{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:.6rem 0 0}
+.tier{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:.7rem .85rem;font-size:.88rem}
+.tier .tname{font-weight:700;color:var(--red);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
+.steps{counter-reset:step;list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.55rem}
+.steps li{position:relative;padding-left:2.2rem;font-size:.92rem}
+.steps li::before{
+  counter-increment:step;content:counter(step);
+  position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;
+  background:var(--red);color:#fff;font-weight:800;font-size:.78rem;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ---------- grading ---------- */
+.gbar{display:flex;height:2.6rem;border-radius:10px;overflow:hidden;box-shadow:var(--shadow);margin:.9rem 0 .5rem}
+.gbar .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.85rem;min-width:0}
+.gbar .seg span{white-space:nowrap;overflow:hidden;text-overflow:clip;padding:0 .2rem}
+.g-labs{background:#2563eb}.g-quiz{background:#d97706}.g-mid{background:var(--red)}
+.g-final{background:#8d2026}.g-cap{background:#7c3aed}.g-att{background:#16a34a}
+.glegend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-size:.87rem;color:var(--muted);margin-bottom:1rem}
+.glegend .dot{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+.two-col{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start}
+.panel ul{margin:.4rem 0 0;padding-left:1.2rem}
+.panel li{margin:.3rem 0;font-size:.92rem}
+.cap-break{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.5rem}
+.cap-break td{padding:.4rem .2rem;border-bottom:1px solid var(--line)}
+.cap-break tr:last-child td{border-bottom:none}
+.cap-break td:last-child{text-align:right;font-weight:700;color:var(--red);white-space:nowrap}
+.callout{
+  border-left:4px solid var(--red);background:var(--red-soft);
+  border-radius:0 10px 10px 0;padding:.75rem 1rem;font-size:.9rem;margin-top:.9rem;
+}
+code{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:5px;
+  padding:.08rem .35rem;font-size:.85em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+/* ---------- resources ---------- */
+.res-grid{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.res{
+  display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:.75rem .95rem;box-shadow:var(--shadow);color:var(--text);
+}
+.res:hover{border-color:var(--red);text-decoration:none}
+.res .rname{font-weight:700;font-size:.93rem}
+.res .rdesc{font-size:.84rem;color:var(--muted);margin-top:.1rem}
+.res .rurl{font-size:.78rem;color:var(--red);margin-top:.25rem;word-break:break-all}
+
+/* ---------- policies ---------- */
+.pol-grid{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.pol{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.95rem 1.1rem;box-shadow:var(--shadow)}
+.pol h3{margin:0 0 .4rem;font-size:.98rem;color:var(--red)}
+.pol p,.pol li{font-size:.89rem;margin:.25rem 0}
+.pol ul{margin:.3rem 0 0;padding-left:1.15rem}
+
+/* ---------- footer ---------- */
+footer{
+  margin-top:3rem;background:var(--surface);border-top:1px solid var(--line);
+  padding:1.8rem 0 2.2rem;font-size:.86rem;color:var(--muted);
+}
+footer .links{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-bottom:.8rem}
+footer .links a{font-weight:600}
+
+/* ---------- print ---------- */
+@media print{
+  :root{--bg:#fff;--surface:#fff;--surface-2:#f4f4f4;--text:#000;--muted:#444;--line:#bbb;--shadow:none}
+  body{font-size:11pt}
+  nav.hubnav,.filters,.btn-book,.now-tag{display:none!important}
+  .hero{background:#fff!important;color:#000;border-bottom:3px solid var(--red);padding:1rem 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hero-card{background:#fff;border:1px solid #bbb;color:#000}
+  .hero h1{color:var(--red)}
+  section{padding:1rem 0 .2rem;break-inside:avoid-page}
+  .sched tr.hidden-row{display:table-row}
+  .sched tr.current-week td{background:#fff}
+  .gbar .seg{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .table-scroll{overflow:visible;box-shadow:none}
+  a[href^="http"]::after{content:""}
+  tr,td,.lab-card,.pol,.panel{break-inside:avoid}
+}
+@media (max-width:560px){
+  .countdown .num{font-size:2.3rem}
+  .hero{padding:2rem 0 1.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">University of the Incarnate Word · Fall 2026 · Section 01</p>
+    <h1>CSEC 2300 - Foundations of Cyber Security</h1>
+    <p class="tagline">Security+ foundations taught through the real tools of the trade - Git, CI/CD, Docker, GPUs, local LLMs, and AI agents. You build one secure local-AI stack all semester, and it becomes your capstone.</p>
+    <div class="hero-grid">
+      <div class="hero-card">
+        <div class="lbl">Class Meetings</div>
+        <div class="val">Mon &amp; Wed · 3:00–4:15 PM<small>Founders Hall G008 · Aug 24 – Dec 11</small></div>
+      </div>
+      <div class="hero-card">
+        <div class="lbl">Instructor</div>
+        <div class="val">Dr. Gonzalo D Parra<small><a href="mailto:gdparra@uiwtx.edu">gdparra@uiwtx.edu</a> · (210) 829-3146</small></div>
+      </div>
+      <div class="hero-card">
+        <div class="lbl">Office Hours</div>
+        <div class="val">Mon–Thu · 1:30–3:00 PM<small>Founders Hall G009 · scheduled meeting required</small>
+        <a class="btn-book" href="https://outlook.office.com/book/Advising@studentuiwtx.onmicrosoft.com/" target="_blank" rel="noopener">Book a slot →</a></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= NAV ================= -->
+<nav class="hubnav" aria-label="Course hub sections">
+  <div class="wrap">
+    <a href="#this-week">This Week</a>
+    <a href="#schedule">Schedule</a>
+    <a href="#labs">Labs</a>
+    <a href="#grading">Grading</a>
+    <a href="#setup">Setup</a>
+    <a href="#resources">Resources</a>
+    <a href="#policies">Policies</a>
+  </div>
+</nav>
+
+<!-- ================= THIS WEEK ================= -->
+<section id="this-week">
+  <div class="wrap">
+    <p class="kicker">Right Now</p>
+    <h2>This Week</h2>
+    <p class="sub">Updates automatically from the Fall 2026 calendar. The matching rows are highlighted in the schedule below.</p>
+    <div class="tw-card" id="tw-card">
+      <noscript>Enable JavaScript to see the live "this week" view - or just find today's date in the schedule below.</noscript>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCHEDULE ================= -->
+<section id="schedule">
+  <div class="wrap">
+    <p class="kicker">Semester Map</p>
+    <h2>Full Schedule</h2>
+    <p class="sub">All 16 weeks. The outline is a guideline - changes are announced on Canvas. Filter by what you need to find:</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter schedule">
+      <button class="chip active" data-filter="all">All sessions</button>
+      <button class="chip" data-filter="lecture">Lectures</button>
+      <button class="chip" data-filter="lab">Labs due / assigned</button>
+      <button class="chip" data-filter="quiz">Quizzes</button>
+      <button class="chip" data-filter="exam">Exams</button>
+      <button class="chip" data-filter="capstone">Capstone</button>
+    </div>
+    <div class="table-scroll">
+      <table class="sched" id="sched-table">
+        <thead>
+          <tr><th>Wk</th><th>Date</th><th>Topic</th><th>Due / In-class</th></tr>
+        </thead>
+        <tbody id="sched-body"><!-- rendered by JS --></tbody>
+      </table>
+      <div class="sched-empty" id="sched-empty">No sessions match this filter.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LABS ================= -->
+<section id="labs">
+  <div class="wrap">
+    <p class="kicker">Hands-On</p>
+    <h2>The 12 Labs</h2>
+    <p class="sub">Lab 0 plus 11 graded labs - roughly 60% of your class time is hands-on, and each lab layers a new piece onto your semester-long secure local-AI stack.</p>
+    <div class="labs-grid">
+      <div class="lab-card"><span class="num">Lab 0</span><span class="name">Environment &amp; identity setup</span><p>Configure Git, SSH keys, and your GitHub account, and smoke-test Docker + GPU so nothing blocks you later.</p></div>
+      <div class="lab-card"><span class="num">Lab 1</span><span class="name">Framework mapping</span><p>Map a real security scenario onto NIST CSF and CIS Controls to learn how professionals organize defenses.</p></div>
+      <div class="lab-card"><span class="num">Lab 2</span><span class="name">Git &amp; GitHub workflow</span><p>Branch, open pull requests, sign commits, and keep secrets out of the repo - collaboration with an audit trail.</p></div>
+      <div class="lab-card"><span class="num">Lab 3</span><span class="name">CI/DevSecOps pipeline</span><p>Build a GitHub Actions pipeline that runs SAST, secret, and dependency scanning on every push.</p></div>
+      <div class="lab-card"><span class="num">Lab 4</span><span class="name">Docker hardening</span><p>Ship a non-root, minimal-base container image that passes a vulnerability scan with capabilities dropped.</p></div>
+      <div class="lab-card"><span class="num">Lab 5</span><span class="name">Crypto &amp; TLS</span><p>Hash, generate key pairs, and TLS-terminate a containerized service with a working certificate.</p></div>
+      <div class="lab-card"><span class="num">Lab 6</span><span class="name">GPU &amp; architecture</span><p>Inspect your GPU, run an accelerated workload, and report on TPM / secure boot - hardware as the root of trust.</p></div>
+      <div class="lab-card"><span class="num">Lab 7</span><span class="name">Local LLM stack</span><p>Deploy Ollama + Open WebUI in Docker on the GPU and write up the privacy case for local inference.</p></div>
+      <div class="lab-card"><span class="num">Lab 8</span><span class="name">LLM attack &amp; defense</span><p>Execute a prompt injection against your own stack, add a guardrail, and prove the mitigation works.</p></div>
+      <div class="lab-card"><span class="num">Lab 9</span><span class="name">Build an ADK agent</span><p>Create a tool-using AI agent on a local model - with authorization limits that keep it on a leash.</p></div>
+      <div class="lab-card"><span class="num">Lab 10</span><span class="name">Policy analysis</span><p>Analyze your stack against GDPR / HIPAA / FERPA - the written policy paper that assesses privacy directly.</p></div>
+      <div class="lab-card"><span class="num">Lab 11</span><span class="name">Capstone integration</span><p>Wire everything into one hardened, CI-gated repository - the final assembly of your semester's work.</p></div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Stuck? Use the hint ladder</h3>
+        <p style="font-size:.9rem;margin:.2rem 0 0">Every lab ships with three tiers of hints in its README. Climb only as far as you need - <strong>hints never change the grader</strong>; you always earn what your submission proves.</p>
+        <div class="hint-tiers">
+          <div class="tier"><div class="tname">Tier 1 · Nudge</div>Points you to the concept and the doc to read. No commands. Little or no point cost.</div>
+          <div class="tier"><div class="tname">Tier 2 · Guided</div>Names the exact tool or flag and the shape of the solution. Modest point cost.</div>
+          <div class="tier"><div class="tname">Tier 3 · Near-solution</div>Shows the command pattern with a blank to fill. Larger point cost - unblocks you without giving the grade away.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>How autograding works</h3>
+        <ol class="steps">
+          <li>Accept the lab through <strong>your GitHub assignment repository</strong> - you get your own repo from the template.</li>
+          <li>Work locally, commit, and <strong>push</strong>. Every push triggers the automated grader (a GitHub Actions workflow).</li>
+          <li>Read your <strong>per-criterion score and feedback</strong> in the Actions run - file checks, container checks, TLS handshakes, injection tests.</li>
+          <li><strong>Revise and push again</strong> as many times as you want before the deadline. Your last push counts.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GRADING ================= -->
+<section id="grading">
+  <div class="wrap">
+    <p class="kicker">How You're Graded</p>
+    <h2>Grading Breakdown</h2>
+    <p class="sub">Autograded labs carry the most weight - this course rewards doing.</p>
+
+    <div class="gbar" role="img" aria-label="Grade weights: Labs 30%, Quizzes 15%, Midterm 15%, Final 20%, Capstone 15%, Attendance 5%">
+      <div class="seg g-labs" style="flex:30"><span>Labs 30%</span></div>
+      <div class="seg g-quiz" style="flex:15"><span>Quizzes 15%</span></div>
+      <div class="seg g-mid" style="flex:15"><span>Midterm 15%</span></div>
+      <div class="seg g-final" style="flex:20"><span>Final 20%</span></div>
+      <div class="seg g-cap" style="flex:15"><span>Capstone 15%</span></div>
+      <div class="seg g-att" style="flex:5"><span>5%</span></div>
+    </div>
+    <div class="glegend">
+      <span><span class="dot g-labs"></span>Hands-on Labs (autograded) - 30%</span>
+      <span><span class="dot g-quiz"></span>Quizzes (8, on Canvas) - 15%</span>
+      <span><span class="dot g-mid"></span>Midterm Exam - 15%</span>
+      <span><span class="dot g-final"></span>Final Exam - 20%</span>
+      <span><span class="dot g-cap"></span>Capstone Project - 15%</span>
+      <span><span class="dot g-att"></span>Attendance &amp; Participation - 5%</span>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Capstone: the 15%, broken down</h3>
+        <p style="font-size:.9rem;margin:.2rem 0 0">A semester-long <strong>team</strong> project: build, harden, and document a secure local-AI stack (Dockerized Ollama + Open WebUI + an ADK agent) delivered through a security-gated CI pipeline.</p>
+        <table class="cap-break">
+          <tr><td>Capstone proposal (approved by instructor)</td><td>3%</td></tr>
+          <tr><td>Final presentation (Week 15)</td><td>5%</td></tr>
+          <tr><td>GitHub repository &amp; project documentation</td><td>4%</td></tr>
+          <tr><td>GitHub Wiki page - the final report</td><td>3%</td></tr>
+        </table>
+        <div class="callout">Missing your scheduled presentation slot costs an automatic <strong>15% off your team's total capstone grade</strong>.</div>
+      </div>
+      <div class="panel">
+        <h3>Team GitHub requirements</h3>
+        <ul>
+          <li><strong>Teams of 2 to 3 students - no solo capstones.</strong> Before you commit to a team, compare schedules with your prospective teammates: you will collaborate and learn together all semester, so make sure you share workable meeting times.</li>
+          <li>Create a <strong>team GitHub repository</strong> - all advancements and contributions live there.</li>
+          <li>Add <code>gdparra-edu</code> and <code>cyberknowledge</code> as <strong>collaborators</strong>.</li>
+          <li>Manage all project activity on the repo's integrated <strong>GitHub Project board</strong>.</li>
+          <li>Write the final report as a <strong>GitHub Wiki page</strong>; keep presentation materials in the repo.</li>
+          <li>Submit the repo + Project links through the Capstone assignment on <strong>Canvas</strong>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESOURCES ================= -->
+<section id="setup">
+  <div class="wrap">
+    <p class="kicker">Setup Addendum</p>
+    <h2>Set Up Your Machine</h2>
+    <p class="sub">Everything the labs need on your own computer. Full step-by-step instructions live in the Lab 0 assignment on Canvas; this is the quick reference and download list.</p>
+    <div class="two-col">
+      <div>
+        <h3>Install these (in order)</h3>
+        <ol>
+          <li><strong>Git</strong> - <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a> (Windows: accept the default options)</li>
+          <li><strong>Docker Desktop</strong> - <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">docker.com/products/docker-desktop</a> (Windows: it will enable WSL 2 for you; say yes and reboot when asked)</li>
+          <li><strong>Ollama</strong> - <a href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com/download</a> (needed from the Local AI module onward)</li>
+          <li><strong>VS Code</strong> (recommended editor) - <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a></li>
+          <li><strong>GitHub account</strong> - <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a> (use a professional username; you will show this repo to employers)</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Check yourself</h3>
+        <p>Open a terminal (Windows: PowerShell) and run each line. Every one should print a version, not an error:</p>
+        <pre style="background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;overflow-x:auto;font-size:.88rem"><code>git --version
+docker --version
+docker run hello-world
+ollama --version</code></pre>
+        <p style="font-size:.9rem;color:var(--muted)">If <code>docker run hello-world</code> fails, Docker Desktop is probably not running - start it and retry. Anything else: bring the exact error message to office hours or post it on the Canvas discussion board. The classroom GPU workstations have all of this pre-installed, so a personal machine is convenient but never required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="resources">
+  <div class="wrap">
+    <p class="kicker">Free &amp; Open</p>
+    <h2>Resources</h2>
+    <p class="sub">No required textbook - all readings come through Canvas. These free resources power the labs:</p>
+    <div class="res-grid">
+      <a class="res" href="https://learngitbranching.js.org/" target="_blank" rel="noopener">
+        <div class="rname">Learn Git Branching</div>
+        <div class="rdesc">Interactive, visual Git practice - the backbone of Module 2.</div>
+        <div class="rurl">learngitbranching.js.org</div>
+      </a>
+      <a class="res" href="https://gitmastery.me/" target="_blank" rel="noopener">
+        <div class="rname">Git Mastery</div>
+        <div class="rdesc">Hands-on Git exercises used in the graded Git labs.</div>
+        <div class="rurl">gitmastery.me</div>
+      </a>
+      <a class="res" href="https://docs.docker.com/" target="_blank" rel="noopener">
+        <div class="rname">Docker Documentation</div>
+        <div class="rdesc">Your reference for images, isolation, networking, and hardening.</div>
+        <div class="rurl">docs.docker.com</div>
+      </a>
+      <a class="res" href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener">
+        <div class="rname">OWASP Top 10 for LLM Applications</div>
+        <div class="rdesc">The threat model for Module 8: prompt injection, data leakage, and more.</div>
+        <div class="rurl">owasp.org/…/large-language-model-applications</div>
+      </a>
+      <a class="res" href="https://ollama.com/" target="_blank" rel="noopener">
+        <div class="rname">Ollama</div>
+        <div class="rdesc">Local LLM runtime you'll deploy (GPU-enabled) in Lab 7 and the capstone.</div>
+        <div class="rurl">ollama.com</div>
+      </a>
+      <a class="res" href="https://openwebui.com/" target="_blank" rel="noopener">
+        <div class="rname">Open WebUI</div>
+        <div class="rdesc">The web front-end for your local model stack, run as a Docker container.</div>
+        <div class="rurl">openwebui.com</div>
+      </a>
+      <a class="res" href="https://adk.dev/" target="_blank" rel="noopener">
+        <div class="rname">Agent Development Kit (ADK)</div>
+        <div class="rdesc">Build tool-using AI agents against your local Ollama endpoint (Module 9).</div>
+        <div class="rurl">adk.dev</div>
+      </a>
+      <a class="res" href="https://www.comptia.org/certifications/security" target="_blank" rel="noopener">
+        <div class="rname">CompTIA Security+ SY0-701 Objectives</div>
+        <div class="rdesc">The certification blueprint every quiz and exam is mapped to.</div>
+        <div class="rurl">comptia.org/certifications/security</div>
+      </a>
+    </div>
+    <div class="callout" style="margin-top:1rem">Optional reference (not required): <em>CompTIA Security+ Guide to Network Security Fundamentals</em>, Mark Ciampa, 8th ed. - ISBN-13 9798214027784.</div>
+  </div>
+</section>
+
+<!-- ================= POLICIES ================= -->
+<section id="policies">
+  <div class="wrap">
+    <p class="kicker">The Fine Print, Digested</p>
+    <h2>Policies You'll Actually Ask About</h2>
+    <p class="sub">The full versions live in the course outline and syllabus on Canvas - this is the quick reference.</p>
+    <div class="pol-grid">
+      <div class="pol">
+        <h3>Late work</h3>
+        <ul>
+          <li><strong>No late work is accepted.</strong> Every deliverable - labs, quizzes, papers, and all capstone components - is due at the posted deadline; missing it means a zero for that item.</li>
+          <li>Documented emergency? Contact Dr. Parra <strong>before</strong> the deadline - accommodations are case by case at the instructor's discretion.</li>
+          <li>Pushing early and often is free insurance: the autograder shows your score before the deadline.</li>
+        </ul>
+      </div>
+      <div class="pol">
+        <h3>Attendance</h3>
+        <ul>
+          <li>Up to <strong>3 absences</strong> without penalty, excused or not. The <strong>4th absence forfeits</strong> the entire 5% attendance grade.</li>
+          <li>Arriving <strong>10+ minutes late</strong> counts as tardy; <strong>3 tardies = 1 unexcused absence</strong>.</li>
+          <li>Planned university/religious/military absences: written notice at least two weeks ahead. Four or more absences without officially dropping results in a failing grade per university policy.</li>
+        </ul>
+      </div>
+      <div class="pol">
+        <h3>Academic integrity</h3>
+        <p>Highest standards of academic honesty apply. Cheating and plagiarism are handled per the <a href="https://my.uiw.edu/student-advocacy-and-accountability/student-accountability/student-handbook.html" target="_blank" rel="noopener">UIW Student Handbook</a> (Section 5, Part D). In a course about security, integrity <em>is</em> the discipline - signed commits leave an audit trail, and so do you.</p>
+      </div>
+      <div class="pol">
+        <h3>This outline is a guideline</h3>
+        <p>The schedule and procedures may change under extenuating circumstances or when it benefits the class. Prominent changes are announced through <strong>Canvas Announcements</strong> - check it and your university email regularly; that's the official channel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="https://my.uiw.edu/student-advocacy-and-accountability/student-accountability/student-handbook.html" target="_blank" rel="noopener">UIW Student Handbook</a>
+      <a href="https://www.uiw.edu/sds/" target="_blank" rel="noopener">Student Disability Services</a>
+      <a href="https://www.uiw.edu/titleix/" target="_blank" rel="noopener">Title IX (Non-Discrimination)</a>
+    </div>
+    <p>CSEC 2300-01 · Foundations of Cyber Security · Fall 2026 · University of the Incarnate Word · School of Mathematics, Science and Engineering - Dept. of Engineering, Computing, and Cybersecurity.<br>
+    Dr. Gonzalo D Parra · <a href="mailto:gdparra@uiwtx.edu">gdparra@uiwtx.edu</a> · Founders Hall G009 · (210) 829-3146. Students seeking disability or pregnancy accommodations should contact Student Disability Services.</p>
+  </div>
+</footer>
+
+<script>
+/*__CORE_START__*/
+"use strict";
+
+/* ---- Fall 2026 session data (authoritative, from the course outline) ---- */
+var SESSIONS = [
+  {wk:1,  date:"2026-08-24", day:"Mon", topic:"Course launch · security landscape · CIA triad · environment setup", note:"Syllabus review · Lab 0 assigned", tags:["lecture","lab"]},
+  {wk:1,  date:"2026-08-26", day:"Wed", topic:"M1: Threat actors, control types, security frameworks (NIST/CIS)", note:"Quiz 1 opens", tags:["lecture","quiz"]},
+  {wk:2,  date:"2026-08-31", day:"Mon", topic:"M1: Security management & GRC fundamentals", note:"Lab 1 (frameworks)", tags:["lecture","lab"]},
+  {wk:2,  date:"2026-09-02", day:"Wed", topic:"M2: Version control fundamentals; the Git model", note:"Mass of the Holy Spirit (may run adjusted schedule)", tags:["lecture"]},
+  {wk:3,  date:"2026-09-07", day:"Mon", topic:"No class - Labor Day (UIW closed)", note:"", tags:["noclass"]},
+  {wk:3,  date:"2026-09-09", day:"Wed", topic:"M2: Branching, pull requests, GitHub Projects; signed commits & secrets hygiene", note:"Lab 2 (Git/GitHub)", tags:["lecture","lab"]},
+  {wk:4,  date:"2026-09-14", day:"Mon", topic:"M2→M3: Repository audit trails; Agile/Scrum & the secure SDLC", note:"Census date · Quiz 2", tags:["lecture","quiz","milestone"]},
+  {wk:4,  date:"2026-09-16", day:"Wed", topic:"M3: GitHub Actions CI/CD; automated security scanning (SAST, deps, secrets)", note:"Lab 3 (CI/DevSecOps)", tags:["lecture","lab"]},
+  {wk:5,  date:"2026-09-21", day:"Mon", topic:"M3: Software supply-chain security; branch protection", note:"Capstone teams + proposal due", tags:["lecture","capstone"]},
+  {wk:5,  date:"2026-09-23", day:"Wed", topic:"M4: Containers vs. VMs; Docker images & isolation", note:"Quiz 3", tags:["lecture","quiz"]},
+  {wk:6,  date:"2026-09-28", day:"Mon", topic:"M4: Dockerfile hardening; image scanning; least privilege", note:"Lab 4 (Docker hardening)", tags:["lecture","lab"]},
+  {wk:6,  date:"2026-09-30", day:"Wed", topic:"M4: Container networking, segmentation, secrets management", note:"", tags:["lecture"]},
+  {wk:7,  date:"2026-10-05", day:"Mon", topic:"M5: Cryptography - symmetric, asymmetric, hashing", note:"Quiz 4", tags:["lecture","quiz"]},
+  {wk:7,  date:"2026-10-07", day:"Wed", topic:"M5: PKI, TLS & certificates; securing a containerized service", note:"Lab 5 (crypto/TLS)", tags:["lecture","lab"]},
+  {wk:8,  date:"2026-10-12", day:"Mon", topic:"M5: Identity & access management · Midterm review", note:"", tags:["lecture"]},
+  {wk:8,  date:"2026-10-14", day:"Wed", topic:"MIDTERM EXAM - Modules 1–5 (SY0-701 domains 1–3)", note:"Midterm", tags:["exam"]},
+  {wk:9,  date:"2026-10-19", day:"Mon", topic:"M6: Computer architecture - CPU vs. GPU, memory hierarchy", note:"Lab 6 (GPU/arch)", tags:["lecture","lab"]},
+  {wk:9,  date:"2026-10-21", day:"Wed", topic:"M6: Hardware root of trust - TPM, secure boot, confidential computing", note:"Quiz 5", tags:["lecture","quiz"]},
+  {wk:10, date:"2026-10-26", day:"Mon", topic:"M7: LLM fundamentals; deploying Ollama + Open WebUI in Docker", note:"Lab 7 (local LLM stack)", tags:["lecture","lab"]},
+  {wk:10, date:"2026-10-28", day:"Wed", topic:"M7: Local vs. cloud AI - data locality, privacy, model supply chain", note:"Capstone checkpoint 1", tags:["lecture","capstone"]},
+  {wk:11, date:"2026-11-02", day:"Mon", topic:"M8: Prompt & context engineering; retrieval-augmented generation", note:"Quiz 6", tags:["lecture","quiz"]},
+  {wk:11, date:"2026-11-04", day:"Wed", topic:"M8: LLM security - OWASP LLM Top 10, prompt injection, guardrails", note:"Lab 8 (LLM attack/defense)", tags:["lecture","lab"]},
+  {wk:12, date:"2026-11-09", day:"Mon", topic:"M9: AI agents & tool use; Agent Development Kit (ADK)", note:"Lab 9 (ADK agent)", tags:["lecture","lab"]},
+  {wk:12, date:"2026-11-11", day:"Wed", topic:"M9: Agent authorization, autonomous-system risk, human-in-the-loop", note:"Quiz 7", tags:["lecture","quiz"]},
+  {wk:13, date:"2026-11-16", day:"Mon", topic:"M10: Risk assessment & management; policy management", note:"Drop deadline · Policy paper (Lab 10)", tags:["lecture","lab","milestone"]},
+  {wk:13, date:"2026-11-18", day:"Wed", topic:"M10: Privacy & compliance (GDPR/HIPAA/FERPA); ethics; incident response", note:"Quiz 8", tags:["lecture","quiz"]},
+  {wk:14, date:"2026-11-23", day:"Mon", topic:"M10: Governance wrap-up · capstone work session", note:"Capstone checkpoint 2", tags:["lecture","capstone"]},
+  {wk:14, date:"2026-11-25", day:"Wed", topic:"No class - Wednesday classes do not meet (Thanksgiving)", note:"", tags:["noclass"]},
+  {wk:15, date:"2026-11-30", day:"Mon", topic:"Capstone Project Presentations - secure local-AI stack demos", note:"Capstone due", tags:["capstone"]},
+  {wk:15, date:"2026-12-02", day:"Wed", topic:"Capstone Presentations (cont.) · Security+ SY0-701 domain review", note:"Final review guide", tags:["lecture","capstone"]},
+  {wk:16, date:"2026-12-07", endDate:"2026-12-11", day:"Mon–Fri", topic:"FINALS WEEK - comprehensive final exam (slot per registrar finals grid)", note:"Final Exam", tags:["exam"]}
+];
+
+var TERM_START = "2026-08-24"; // first day of class (a Monday)
+var LAST_WEEK  = 16;           // finals week
+
+/* ---- pure date helpers (local-time, date-only) ---- */
+function parseISO(s){
+  var p = s.split("-");
+  return new Date(+p[0], +p[1]-1, +p[2]); // local midnight
+}
+function toISO(d){
+  var m = d.getMonth()+1, day = d.getDate();
+  return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(day<10?"0":"")+day;
+}
+function mondayOf(d){
+  var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay()+6)%7)); // Mon=0 … Sun=6
+  return x;
+}
+function addDays(d,n){
+  var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate()+n);
+  return x;
+}
+function diffDays(a,b){ // whole days from b to a (DST-safe via rounding)
+  return Math.round((a.getTime()-b.getTime())/864e5);
+}
+
+/* ---- the pure "this week" state machine ---- */
+function computeWeekState(todayISO){
+  var today = parseISO(todayISO);
+  var start = parseISO(TERM_START);
+
+  if (today < start){
+    return { phase:"pre", daysUntil: diffDays(start, today) };
+  }
+
+  var mon = mondayOf(today);
+  var sun = addDays(mon, 6);
+  var week = Math.round(diffDays(mon, mondayOf(start))/7) + 1;
+
+  if (week > LAST_WEEK){
+    return { phase:"post" };
+  }
+
+  var sessions = SESSIONS.filter(function(s){
+    var a = parseISO(s.date);
+    var b = s.endDate ? parseISO(s.endDate) : a;
+    return b >= mon && a <= sun;
+  });
+
+  return {
+    phase: week === LAST_WEEK ? "finals" : "term",
+    week: week,
+    weekStartISO: toISO(mon),
+    weekEndISO: toISO(sun),
+    todayISO: todayISO,
+    sessions: sessions
+  };
+}
+/*__CORE_END__*/
+
+/* ---- rendering ---- */
+var TAG_LABEL = {lab:"Lab", quiz:"Quiz", exam:"Exam", capstone:"Capstone", milestone:"Milestone", noclass:"No class"};
+var TAG_CLASS = {lab:"b-lab", quiz:"b-quiz", exam:"b-exam", capstone:"b-capstone", milestone:"b-milestone", noclass:"b-noclass"};
+
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function badges(tags){
+  return tags.filter(function(t){return t!=="lecture";}).map(function(t){
+    return '<span class="badge '+TAG_CLASS[t]+'">'+TAG_LABEL[t]+'</span>';
+  }).join("");
+}
+function fmtHuman(iso){
+  var d = parseISO(iso);
+  var M = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return M[d.getMonth()]+" "+d.getDate();
+}
+
+function renderSchedule(state){
+  var body = document.getElementById("sched-body");
+  var html = "";
+  SESSIONS.forEach(function(s, i){
+    var cls = [];
+    if (s.tags.indexOf("noclass") !== -1) cls.push("noclass");
+    var isCurrent = false, isToday = false;
+    if (state.phase==="term" || state.phase==="finals"){
+      var a = parseISO(s.date), b = s.endDate ? parseISO(s.endDate) : a;
+      var mon = parseISO(state.weekStartISO), sun = parseISO(state.weekEndISO);
+      isCurrent = (b >= mon && a <= sun);
+      var t = parseISO(state.todayISO);
+      isToday = (t >= a && t <= b);
+    }
+    if (isCurrent) cls.push("current-week");
+    if (isToday) cls.push("is-today");
+    var dateLabel = s.endDate
+      ? fmtHuman(s.date)+"–"+parseISO(s.endDate).getDate()
+      : s.day+" "+fmtHuman(s.date);
+    html += '<tr class="'+cls.join(" ")+'" data-tags="'+s.tags.join(" ")+'" data-idx="'+i+'">'
+      + '<td class="wk">'+s.wk+'</td>'
+      + '<td class="date">'+esc(dateLabel)+(isToday?'<span class="now-tag">Today</span>':"")+'</td>'
+      + '<td><span class="topic">'+esc(s.topic)+'</span></td>'
+      + '<td>'+(s.note?esc(s.note)+" ":"")+badges(s.tags)+'</td>'
+      + '</tr>';
+  });
+  body.innerHTML = html;
+}
+
+function renderThisWeek(state){
+  var card = document.getElementById("tw-card");
+  var html = "";
+  if (state.phase === "pre"){
+    var n = state.daysUntil;
+    html = '<div class="countdown">'
+      + '<div><div class="num">'+n+'</div><div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">day'+(n===1?"":"s")+' to go</div></div>'
+      + '<div class="cap"><strong>First class: Monday, August 24, 2026</strong> - 3:00 PM, Founders Hall G008.<br>'
+      + 'Get ahead: make sure you can log in to Canvas and GitHub. Lab 0 (environment setup) is assigned on day one.</div>'
+      + '</div>';
+  } else if (state.phase === "post"){
+    html = '<div class="tw-head"><span class="big">That\'s a wrap.</span></div>'
+      + '<p style="margin:0;font-size:.95rem">The Fall 2026 semester is complete. Final grades post to Canvas per the registrar\'s calendar. '
+      + 'Continuing in cybersecurity? CSEC 2300 leads directly into <strong>CIS 3353</strong> and the CompTIA Security+ (SY0-701) exam. Great work this semester.</p>';
+  } else {
+    var isFinals = state.phase === "finals";
+    html = '<div class="tw-head">'
+      + '<span class="big">'+(isFinals?"Finals Week":"Week "+state.week+" of 16")+'</span>'
+      + '<span class="range">'+fmtHuman(state.weekStartISO)+' – '+fmtHuman(state.weekEndISO)+'</span>'
+      + '</div>';
+    html += '<div class="tw-sessions">';
+    state.sessions.forEach(function(s){
+      var a = parseISO(s.date), b = s.endDate ? parseISO(s.endDate) : a;
+      var t = parseISO(state.todayISO);
+      var isToday = (t >= a && t <= b);
+      var noclass = s.tags.indexOf("noclass") !== -1;
+      html += '<div class="tw-session'+(isToday?" is-today":"")+(noclass?" noclass":"")+'">'
+        + '<div class="d">'+esc(s.day)+' · '+fmtHuman(s.date)+(s.endDate?"–"+parseISO(s.endDate).getDate():"")+(isToday?" - today":"")+'</div>'
+        + '<div class="t">'+esc(s.topic)+'</div>'
+        + (s.note?'<div style="font-size:.85rem;color:var(--muted)">'+esc(s.note)+'</div>':"")
+        + badges(s.tags)
+        + '</div>';
+    });
+    html += '</div>';
+    if (isFinals){
+      html += '<div class="tw-note">Exact exam slot follows the registrar\'s MW finals grid - confirm on Canvas. The final is comprehensive and blueprinted to the SY0-701 domains.</div>';
+    } else {
+      html += '<div class="tw-note">Class meets Mon &amp; Wed 3:00–4:15 PM in Founders Hall G008 · Office hours Mon–Thu 1:30–3:00 PM in Founders Hall G009, scheduled meeting required: book through the Microsoft Teams link on Canvas.</div>';
+    }
+  }
+  card.innerHTML = html;
+}
+
+/* ---- filtering ---- */
+function initFilters(){
+  var chips = document.querySelectorAll("#filters .chip");
+  chips.forEach(function(chip){
+    chip.addEventListener("click", function(){
+      chips.forEach(function(c){ c.classList.remove("active"); });
+      chip.classList.add("active");
+      var f = chip.getAttribute("data-filter");
+      var rows = document.querySelectorAll("#sched-body tr");
+      var visible = 0;
+      rows.forEach(function(r){
+        var tags = r.getAttribute("data-tags").split(" ");
+        var show = (f === "all") || tags.indexOf(f) !== -1;
+        r.classList.toggle("hidden-row", !show);
+        if (show) visible++;
+      });
+      document.getElementById("sched-empty").style.display = visible ? "none" : "block";
+    });
+  });
+}
+
+/* ---- boot ---- */
+(function(){
+  var now = new Date();
+  var todayISO = toISO(now);
+  var state = computeWeekState(todayISO);
+  renderThisWeek(state);
+  renderSchedule(state);
+  initFilters();
+})();
+</script>
+</body>
+</html>

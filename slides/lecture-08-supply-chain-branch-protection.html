@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 8: Software Supply-Chain Security; Branch Protection</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Software Supply-Chain Security; Branch Protection</h1><div class="title-meta">Session 8 &nbsp;·&nbsp; M3 - Agile &amp; Secure SDLC / CI/CD (DevSecOps)</div><div class="title-sub">Outcomes: CO1, CO2 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Define the software supply chain and identify its attack surfaces (dependencies, build systems, maintainers, registries).</li><li>Summarize two landmark supply-chain attacks and the control failures behind each.</li><li>Explain mitigations: dependency pinning, lockfiles, SBOMs, artifact signing, and vendor risk assessment.</li><li>Configure branch protection rules that enforce review, status checks, and signed commits.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">2</div></section>
+<section class="slide s-content" data-index="3"><h1 class="s-title">What We Do Today</h1><div class="s-body"><ul>
+<li>Face an uncomfortable fact: <strong>most of your software is other people's software</strong></li>
+<li>Map the <strong>supply chain</strong> and every point where an attacker can poison it</li>
+<li>Study two real, landmark attacks and the exact control that failed in each</li>
+<li>Build the defenses: pin, lock, inventory, sign, and lock down <code>main</code> with <strong>branch protection</strong></li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Last session you built a pipeline that scans your code. Today you learn to distrust the code you did not write, and the delivery path it arrives through.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">3</div></section>
+<section class="slide s-section" data-index="4"><div class="s-body"><ul>
+<li>Where your code actually comes from, and why that is a security problem.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">You Did Not Write Most of Your Software</h1><div class="s-body"><ul>
+<li>A typical application is roughly 10 to 20% <em>your</em> code, plus a large tree of open-source <strong>dependencies</strong></li>
+<li>One <code>pip install flask</code> pulls in dozens of packages you never read, and <em>their</em> dependencies too (transitive)</li>
+<li>The trust question: who wrote each package, who built it, who can change it, and how would you even know?</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Software supply chain = every person, tool, and system that contributes to the software you run, from the code's original authors through the build and delivery path to your machine.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Dependency = a piece of software your project relies on but did not write; a transitive dependency is a dependency <em>of</em> a dependency.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">5</div></section>
+<section class="slide s-diagram" data-index="6"><h1 class="s-title">The Supply-Chain Attack Surface</h1><div class="s-body"><ul>
+<li>An attacker does not need to breach you. They can poison any hop between the original author and your <code>install</code>.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 1170 290" width="1170" height="290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Where an attacker can get in</text><path d="M 195.0 110.0 L 252.2 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 421.2 110.0 L 471.8 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 640.8 110.0 L 711.2 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 880.2 110.0 L 970.4 110.0" fill="none" stroke="#c9ccd1" stroke-width="3" marker-end="url(#ah)"/><path d="M 113.0 193.0 L 113.0 148.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><path d="M 558.8 193.0 L 558.8 148.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><path d="M 798.2 193.0 L 798.2 148.0" fill="none" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ahs)"/><rect x="34.0" y="80.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#7be39a" stroke-width="2.2"/><circle cx="54.0" cy="102.0" r="5" fill="none" stroke="#7be39a" stroke-width="2"/><path d="M 46.0 121.0 A 8 8 0 0 1 62.0 121.0" fill="none" stroke="#7be39a" stroke-width="2"/><text x="129.0" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Maintainer</text><path d="M 260.2 88.0 A 79.0 8 0 0 1 418.2 88.0 L 418.2 132.0 A 79.0 8 0 0 1 260.2 132.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 260.2 88.0 A 79.0 8 0 0 0 418.2 88.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="339.2" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Source repo</text><rect x="479.79999999999995" y="80.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="558.8" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Build system</text><path d="M 719.1999999999999 88.0 A 79.0 8 0 0 1 877.1999999999999 88.0 L 877.1999999999999 132.0 A 79.0 8 0 0 1 719.1999999999999 132.0 Z" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><path d="M 719.1999999999999 88.0 A 79.0 8 0 0 0 877.1999999999999 88.0" fill="none" stroke="#f4f4f4" stroke-width="2"/><text x="798.2" y="122.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Registry</text><rect x="978.3999999999999" y="80.0" width="158" height="60" rx="30.0" fill="#2c2f34" stroke="#cb333b" stroke-width="2.2"/><text x="1057.4" y="115.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Your install</text><rect x="34.0" y="196.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#a8acb3" stroke-width="2" stroke-dasharray="7 5"/><text x="113.0" y="231.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Account takeover</text><rect x="479.79999999999995" y="196.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#a8acb3" stroke-width="2" stroke-dasharray="7 5"/><text x="558.8" y="231.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Poisoned build</text><rect x="719.1999999999999" y="196.0" width="158" height="60" rx="9" fill="#2c2f34" stroke="#a8acb3" stroke-width="2" stroke-dasharray="7 5"/><text x="798.2" y="231.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Fake package</text><rect x="196" y="100" width="56" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="223.6" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">commits</text><rect x="422" y="100" width="50" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="446.5" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">builds</text><rect x="641" y="100" width="69" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="676.0" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">publishes</text><rect x="881" y="100" width="89" height="19" rx="4" fill="#0d0e10" stroke="#5a3034" stroke-width="0.8"/><text x="925.3" y="113.5" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="middle">you download</text></svg><figcaption>Every hop from author to your machine is an attack surface. Dashed arrows are the ways in.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">Three Places the Chain Breaks</h1><div class="s-body"><ul>
+<li><strong>Source</strong>: maintainer account takeover, a malicious contributor, or <strong>typosquatting</strong> (<code>requets</code> instead of <code>requests</code>)</li>
+<li><strong>Build</strong>: a compromised CI system, poisoned build tools, or <strong>dependency confusion</strong> (an internal package name published publicly)</li>
+<li><strong>Distribution</strong>: a compromised registry, a tampered mirror, or unsigned artifacts nobody verifies</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Typosquatting = registering a package name that looks almost identical to a popular one, hoping developers install the fake by a typo.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Dependency confusion = tricking a build into pulling a public package that shadows a company's private, internal package of the same name.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">7</div></section>
+<section class="slide s-diagram" data-index="8"><h1 class="s-title">How a Poisoned Dependency Reaches You</h1><div class="s-body"><ul>
+<li>Follow one malicious package from an attacker's keyboard into your running application.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 878 394" width="878" height="394" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">A poisoned-dependency attack</text><rect x="40.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="124.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Attacker</text><line x1="124.0" y1="80.0" x2="124.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="250.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="334.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Registry</text><line x1="334.0" y1="80.0" x2="334.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="460.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="544.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">CI Build</text><line x1="544.0" y1="80.0" x2="544.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><rect x="670.0" y="42" width="168" height="38" rx="8" fill="#2c2f34" stroke="#cb333b" stroke-width="2"/><text x="754.0" y="66.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12.5" font-weight="600" text-anchor="middle">Your App</text><line x1="754.0" y1="80.0" x2="754.0" y2="366.0" stroke="#5a3034" stroke-width="1.4" stroke-dasharray="6 5"/><text x="229.0" y="106.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">publish malicious version</text><line x1="124.0" y1="114.0" x2="324.0" y2="114.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><text x="439.0" y="156.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">install latest (unpinned)</text><line x1="544.0" y1="164.0" x2="344.0" y2="164.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><text x="439.0" y="206.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">delivers poisoned package</text><line x1="334.0" y1="214.0" x2="534.0" y2="214.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/><text x="649.0" y="256.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">bundled into the build</text><line x1="544.0" y1="264.0" x2="744.0" y2="264.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ah)"/><text x="439.0" y="306.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="11" font-weight="400" text-anchor="middle">code runs, phones home</text><line x1="754.0" y1="314.0" x2="134.0" y2="314.0" stroke="#cb333b" stroke-width="3" marker-end="url(#ah)"/></svg><figcaption>Because the build asked for the latest version, the attacker&#x27;s update flowed straight into production.</figcaption></figure></div>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Asking for "the latest" version is convenient and dangerous. It means an attacker who publishes a new version chooses your code for you.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Case Study 1 - a Poisoned Build System</h1><div class="s-body"><ul>
+<li>In one landmark incident, attackers compromised a software vendor's <strong>build system</strong>, not its source</li>
+<li>Malicious code was injected into the official, digitally <strong>signed</strong> updates the vendor shipped</li>
+<li>Roughly 18,000 customers installed the trojaned update, including US federal agencies</li>
+</ul>
+<div class="callout c-why"><span class="c-label">Why it matters</span><span class="c-body">A signature proves <em>who</em> shipped the update, not that the factory that produced it was clean. Build integrity is its own problem, separate from signing.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">Case Study 2 - a Poisoned Maintainer</h1><div class="s-body"><ul>
+<li>In another landmark case, an attacker spent years building trust to become a co-maintainer of a core compression library</li>
+<li>They slipped in a backdoor targeting the SSH daemon; it was caught almost by accident when an engineer investigated a tiny (roughly 500ms) slowdown</li>
+<li>Two lessons: <strong>maintainer trust is itself an attack surface</strong>, and the library's open history is what made the forensic investigation possible</li>
+</ul>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">This is a mole, not a burglar. The attacker was not breaking in; they were handed a key after patiently earning it.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">10</div></section>
+<section class="slide s-section" data-index="11"><div class="s-body"><ul>
+<li>No single control saves you. The layering is the defense.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">Mitigation Layer 1 - Know and Pin Your Dependencies</h1><div class="s-body"><ul>
+<li><strong>Pin</strong> exact versions and commit a <strong>lockfile</strong> (<code>package-lock.json</code>, <code>poetry.lock</code>) so every build is reproducible</li>
+<li>Generate an <strong>SBOM</strong>, a machine-readable inventory of every component you ship (SPDX or CycloneDX format)</li>
+<li>SBOM plus dependency scanning means you can answer "are we affected?" in minutes, not weeks, when the next big CVE drops</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Lockfile = a file that records the exact version and checksum of every dependency, so the same build produces the same result every time.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">SBOM (Software Bill of Materials) = a complete, machine-readable list of every component in your software, like an ingredients label.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">12</div></section>
+<section class="slide s-diagram" data-index="13"><h1 class="s-title">Mitigation Layer 2 - Verify What You Consume</h1><div class="s-body"><ul>
+<li>Do not just download and trust. Verify origin, and pin to something an attacker cannot silently move.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 444 390" width="444" height="390" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Defense in depth for the supply chain</text><rect x="30" y="40" width="384" height="68" rx="8" fill="#2a1c1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="70.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Know</text><text x="44.0" y="90.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">pin versions, lockfiles, SBOM inventory</text><rect x="30" y="116" width="384" height="68" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="146.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Verify</text><text x="44.0" y="166.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">checksums, signed commits and tags</text><rect x="30" y="192" width="384" height="68" rx="8" fill="#221d1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="222.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Pin tightly</text><text x="44.0" y="242.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">actions to a commit SHA, not a floating tag</text><rect x="30" y="268" width="384" height="68" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="298.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Govern</text><text x="44.0" y="318.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">vendor and third-party risk assessment</text><line x1="320.0" y1="74.0" x2="320.0" y2="150.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="150.0" x2="320.0" y2="226.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><line x1="320.0" y1="226.0" x2="320.0" y2="302.0" stroke="#cb333b" stroke-width="3" stroke-dasharray="6 5"/><rect x="251" y="56" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="78.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">poetry.lock</text><rect x="251" y="132" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="154.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">signed tags</text><rect x="251" y="208" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="230.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">@&lt;sha&gt;</text><rect x="251" y="284" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="320.0" y="306.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">risk review</text></svg><figcaption>Layers, not a single wall. Each control covers what the layer above it misses.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">13</div></section>
+<section class="slide s-content" data-index="14"><h1 class="s-title">Pin to a SHA, Not a Tag</h1><div class="s-body"><ul>
+<li>A version tag like <code>@v2</code> is convenient, but the maintainer can silently move it to point at new code.</li>
+</ul>
+<div class="term"><div class="term-title">Three ways to reference an action, weakest to strongest</div><div class="term-body"><div class="t-line t-out">- uses: actions/checkout@main    # weakest: whatever main is right now</div><div class="t-line t-out">- uses: actions/checkout@v4      # better: a version, but the tag can move</div><div class="t-line t-out">- uses: actions/checkout@a1b2c3d # strongest: this exact, unchangeable commit</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>@main</code> follows a moving branch: today's code may not be tomorrow's.</span></li><li><span class="step-n">2</span><span class="step-t"><code>@v4</code> is a tag a human can repoint to different code without changing the name.</span></li><li><span class="step-n">3</span><span class="step-t"><code>@a1b2c3d</code> is a content fingerprint. If even one byte changes, the SHA changes, so it is immutable. Same lesson you will meet with container image digests.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">14</div></section>
+<section class="slide s-section" data-index="15"><div class="s-body"><ul>
+<li>Turning all of these good intentions into a rule a server enforces, not a policy people forget.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">Branch Protection - Your Repo's Perimeter</h1><div class="s-body"><ul>
+<li>Protection rules on <code>main</code> can require: a pull request with N approvals, passing <strong>status checks</strong> (your scanners), no force-pushes, signed commits, and a restricted list of who may push</li>
+<li>This composes everything from the module: review, CI gates, and signatures, into one enforced policy</li>
+<li>It is <strong>policy as code</strong>: a written standard that a machine enforces on every push, not a PDF that hopes people comply</li>
+</ul>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Branch protection = repository rules that block changes to a protected branch unless they satisfy required conditions like review and passing checks.</span></div>
+<div class="callout c-def"><span class="c-label">Definition</span><span class="c-body">Status check = a pass/fail result (often from your CI pipeline) that branch protection can require to be green before a merge is allowed.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">16</div></section>
+<section class="slide s-demo" data-index="17"><h1 class="s-title">Live Demo - Lock Down a Repo</h1><div class="s-body"><ul>
+<li>On the course demo repo: Settings, then Branches, then add a rule for <code>main</code>.</li>
+<li>Enable: require a pull request, 1 approval, a required <code>ci/scan</code> status check, block force-pushes, require signed commits</li>
+</ul>
+<div class="term"><div class="term-title">Then prove the rule works from the terminal</div><div class="term-body"><div class="t-line t-in"><span class="t-prompt">$</span> <span class="t-cmd">git</span> <span class="t-args">push origin main</span></div><div class="t-line t-out">! [remote rejected] main -&gt; main (protected branch hook declined)</div><div class="t-line t-out">error: failed to push some refs</div></div></div>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">The push is <strong>rejected by the server</strong>, not by a polite request. The rule is enforced, not suggested.</span></li><li><span class="step-n">2</span><span class="step-t">A pull request with a failing scan check is blocked from merging the same way.</span></li><li><span class="step-n">3</span><span class="step-t">The rule change itself is written to the audit log, so even the policy has an audit trail.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">17</div></section>
+<section class="slide s-content" data-index="18"><h1 class="s-title">Residual Risk - What Branch Protection Cannot Do</h1><div class="s-body"><ul>
+<li>It cannot stop a malicious-but-approved reviewer (collusion), a compromised maintainer account (so require MFA), or a malicious dependency that passes every check</li>
+<li>The answer is <strong>defense in depth</strong>: protection rules plus scanning plus SBOM plus least privilege plus monitoring</li>
+<li>No single control is the answer. The <em>layering</em> is the answer.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Branch protection is a strong seatbelt, not a force field. It reduces risk; it does not eliminate it. Always assume some risk remains.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">Capstone &amp; Security+ Connection</h1><div class="s-body"><ul>
+<li>Capstone requirement: branch protection on <code>main</code> with required reviews and required scan checks, verifiable by the instructor accounts</li>
+<li><strong>SY0-701</strong>: supply-chain attacks and third-party risk (Domains 2.0 and 5.0); hardening and baseline enforcement (Domain 4.0)</li>
+<li>Next session opens Module 4 (Docker): your dependencies will grow to include entire operating-system images</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Capstone proposals are due on the deadline posted on the course outline. Confirm scope and team before starting the module's capstone work.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">Key Takeaways</h1><div class="s-body"><ul>
+<li>Your software is mostly other people's software; trust must be <em>verified</em> at the source, the build, and the distribution</li>
+<li>The two case studies: one poisoned build, one poisoned maintainer. Different hop, same lesson.</li>
+<li>Pin, lock, inventory (SBOM), sign, and gate merges with branch protection</li>
+<li>No single control wins. Layering does.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">20</div></section>
+<section class="slide s-activity" data-index="21"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Supply-chain threat mapping (groups of 3).</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Each group gets the attack-surface diagram from earlier as a handout and is assigned one hop: source, build, registry, or consumer.</span></li><li><span class="step-n">2</span><span class="step-t">For your hop, list two realistic attacks against it. Roughly 3 minutes.</span></li><li><span class="step-n">3</span><span class="step-t">For each attack, name a control that addresses it and tag the control preventive or detective. Roughly 2 minutes.</span></li><li><span class="step-n">4</span><span class="step-t">Each group reports for 60 seconds; the instructor fills gaps and marks which controls already exist in the class capstone stack.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">21</div></section>
+<section class="slide s-exit" data-index="22"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Why is pinning a GitHub Action to a commit SHA stronger than pinning to a version tag?</p>
+<p>2. Which artifact lets an organization answer "do we ship the vulnerable library?" within minutes?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">22</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>
