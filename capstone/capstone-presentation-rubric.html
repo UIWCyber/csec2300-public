@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Presentation Rubric - CSEC 2300</title>
+<style>
+  :root {
+    --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --border: #cccccc;
+    --panel: #f7f7f8; --panel-2: #eef0f2; --input-bg: #ffffff; --input-border: #b7bcc2; --shadow: rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  }
+  :root[data-theme="light"] { --bg:#fff; --fg:#1a1a1a; --muted:#555; --border:#ccc; --panel:#f7f7f8; --panel-2:#eef0f2; --input-bg:#fff; --input-border:#b7bcc2; --shadow:rgba(0,0,0,0.08); }
+  :root[data-theme="dark"] { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; font-size: 16px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 1.5rem 1.25rem 5rem; }
+  header.doc { border-top: 6px solid var(--cardinal); padding-top: 1rem; margin-bottom: 1.25rem; }
+  h1 { color: var(--cardinal); font-size: 1.9rem; margin: 0.2rem 0 0.3rem; }
+  h2 { color: var(--cardinal); font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; margin-top: 2rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.3rem; margin-bottom: 0.4rem; }
+  .sub { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+  .callout { background: var(--panel); border-left: 4px solid var(--cardinal); padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; font-size: 0.95rem; }
+  p.note { color: var(--muted); font-size: 0.92rem; }
+  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.55rem; text-align: left; vertical-align: top; font-size: 0.92rem; }
+  th { background: var(--panel-2); font-weight: 700; }
+  .field { margin: 0.75rem 0; }
+  .field > label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem; }
+  input[type="text"], input[type="number"], textarea { width: 100%; background: var(--input-bg); color: var(--fg); border: 1px solid var(--input-border); border-radius: 4px; padding: 0.4rem 0.5rem; font: inherit; font-size: 0.92rem; }
+  textarea { resize: vertical; min-height: 3.2rem; }
+  input:focus, textarea:focus { outline: 2px solid var(--cardinal); outline-offset: 1px; border-color: var(--cardinal); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .crit { border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; margin: 1rem 0; background: var(--panel); }
+  .crit .head { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+  .crit .head h3 { margin: 0; flex: 1 1 auto; }
+  .crit .weight { background: var(--cardinal); color: #fff; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.8rem; font-weight: 700; }
+  .crit .scorebox { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; }
+  .crit .scorebox input { width: 5rem; text-align: right; }
+  .crit .scorebox .max { color: var(--muted); font-weight: 600; }
+  .descriptors { margin-top: 0.7rem; display: grid; gap: 0.5rem; }
+  .desc-row { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.6rem; font-size: 0.9rem; }
+  .desc-row .lvl { font-weight: 700; }
+  .lvl.exc { color: #1f8a4c; } .lvl.adq { color: #b8860b; } .lvl.miss { color: var(--cardinal); }
+  @media (prefers-color-scheme: dark) { .lvl.exc { color: #4ecb7d; } .lvl.adq { color: #e0b64a; } }
+  .totalbar { position: sticky; top: 3.1rem; z-index: 40; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; margin: 1rem 0; font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; justify-content: space-between; }
+  .totalbar .val { color: var(--cardinal); font-size: 1.4rem; }
+  .btn { background: var(--cardinal); color: #fff; border: none; border-radius: 5px; padding: 0.5rem 0.9rem; font: inherit; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+  .btn:hover { background: var(--cardinal-dark); }
+  .btn.secondary { background: transparent; color: var(--fg); border: 1px solid var(--input-border); }
+  .btn.secondary:hover { background: var(--panel-2); }
+  .toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0.6rem 1.25rem; box-shadow: 0 2px 6px var(--shadow); }
+  .toolbar .title { font-weight: 700; color: var(--cardinal); margin-right: auto; font-size: 0.95rem; }
+  .deduct { background: var(--panel); border: 1px solid var(--cardinal); border-radius: 6px; padding: 0.7rem 0.9rem; margin: 1rem 0; font-size: 0.92rem; }
+  label.inline { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+  input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--cardinal); }
+  ol.beats { font-size: 0.93rem; }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } .wrap { padding: 1rem 0.8rem 4rem; } .desc-row { grid-template-columns: 1fr; gap: 0.15rem; } }
+  @media print {
+    .toolbar, .no-print, button { display: none !important; }
+    body { font-size: 11pt; background: #fff; color: #000; }
+    .wrap { max-width: 100%; padding: 0; }
+    :root { --bg:#fff; --fg:#000; --panel:#fff; --panel-2:#f0f0f0; --border:#999; --input-border:#999; }
+    .totalbar { position: static; }
+    .crit { page-break-inside: avoid; }
+    input, textarea { border: 1px solid #999 !important; }
+    @page { size: letter; margin: 0.6in; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar no-print">
+  <span class="title">Capstone Presentation Rubric</span>
+  <button class="btn" id="btnPrint">Download PDF</button>
+  <button class="btn secondary" id="btnTheme">Toggle Theme</button>
+  <button class="btn secondary" id="btnClear">Clear Form</button>
+</div>
+<div class="wrap">
+  <header class="doc">
+    <h1>Capstone Presentation Rubric</h1>
+    <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
+  </header>
+
+  <div class="callout">
+    The final presentation is worth 5% of your course grade (part of the 15% capstone). Teams present in posted time slots during the scheduled Capstone Presentations sessions (order posted on Canvas). Each team gets roughly ten to twelve minutes: about eight to present plus two or three for Q&amp;A.
+  </div>
+
+  <h2>Hard Rules</h2>
+  <ul style="font-size:0.93rem;">
+    <li><strong>Every member speaks.</strong> Delivery credit requires a speaking part from each team member.</li>
+    <li><strong>Missing your slot costs 15%.</strong> Failure to present during the scheduled Capstone Presentations results in an automatic 15% deduction from the team's total capstone grade.</li>
+    <li><strong>No late work.</strong> The final repo, wiki, and board are due at the posted deadline on Canvas or they score zero.</li>
+    <li><strong>Demo fallback required.</strong> A recorded demo video must be in the repo. If the live demo fails, you switch to the recording and keep going; a working artifact is not penalized heavily for a failed cable.</li>
+  </ul>
+
+  <h2>Required Structure (five beats, in order)</h2>
+  <ol class="beats">
+    <li>Architecture diagram plus a live demo of the running stack.</li>
+    <li>Controls mapped to course outcomes (CO) and SY0-701 domains.</li>
+    <li>One attack you defended (injection, an exposed service, and so on).</li>
+    <li>Risks accepted plus the incident-response note.</li>
+    <li>Lessons learned.</li>
+  </ol>
+
+  <h2>Team Under Review</h2>
+  <div class="grid-2">
+    <div class="field"><label for="team-name">Team name</label><input type="text" id="team-name" placeholder="Team name"></div>
+    <div class="field"><label for="presenters">Presenters (every member speaking)</label><input type="text" id="presenters" placeholder="Member names"></div>
+  </div>
+
+  <h2>Scoring Criteria and Weights</h2>
+  <p class="note">Enter a SCORE (0 to that criterion's max points) for each criterion. The weighted total out of 100 computes automatically. Descriptors are shown as reference.</p>
+
+  <div class="totalbar">
+    <span>Presentation total</span>
+    <span><span class="val" id="totalVal">0</span> / 100</span>
+  </div>
+
+  <div class="crit" data-crit="demo" data-max="25">
+    <div class="head">
+      <h3>Architecture and working demo</h3>
+      <span class="weight">25%</span>
+      <span class="scorebox">Score <input type="number" id="score-demo" min="0" max="25" step="0.5" placeholder="0"> <span class="max">/ 25</span></span>
+    </div>
+    <div class="descriptors">
+      <div class="desc-row"><span class="lvl exc">Excellent</span><span>The stack runs live. Segmentation, TLS at the edge, and containerization are visibly demonstrated, not just claimed. The architecture diagram matches what is actually running.</span></div>
+      <div class="desc-row"><span class="lvl adq">Adequate</span><span>The stack runs (live or via the required recording) and the diagram is accurate, but one or two hardening features are described rather than shown.</span></div>
+      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>No working stack shown live or recorded, the diagram contradicts the deployment, or the stack is a stock install with no evident hardening.</span></div>
+    </div>
+  </div>
+
+  <div class="crit" data-crit="controls" data-max="30">
+    <div class="head">
+      <h3>Security controls and mapping</h3>
+      <span class="weight">30%</span>
+      <span class="scorebox">Score <input type="number" id="score-controls" min="0" max="30" step="0.5" placeholder="0"> <span class="max">/ 30</span></span>
+    </div>
+    <div class="descriptors">
+      <div class="desc-row"><span class="lvl exc">Excellent</span><span>Each implemented control is named, classified (preventive, detective, or corrective), and mapped to a specific CO and SY0-701 domain. The mapping is correct and the team can defend it under questioning.</span></div>
+      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Controls are listed and mostly mapped, but some classifications or domain mappings are vague, wrong, or unexplained.</span></div>
+      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>Controls are named without mapping, the mapping is copied boilerplate the team cannot explain, or few real controls exist.</span></div>
+    </div>
+  </div>
+
+  <div class="crit" data-crit="attack" data-max="20">
+    <div class="head">
+      <h3>Attack and defense narrative</h3>
+      <span class="weight">20%</span>
+      <span class="scorebox">Score <input type="number" id="score-attack" min="0" max="20" step="0.5" placeholder="0"> <span class="max">/ 20</span></span>
+    </div>
+    <div class="descriptors">
+      <div class="desc-row"><span class="lvl exc">Excellent</span><span>A real attack is shown against the stack and its mitigation is demonstrated, with honest residual risk stated. "This injection still partially works; here is our compensating control" earns full credit. Honest security reasoning outranks a polished demo.</span></div>
+      <div class="desc-row"><span class="lvl adq">Adequate</span><span>An attack and defense are described credibly but demonstrated only partially, or the residual risk discussion is thin.</span></div>
+      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>No concrete attack, a purely hypothetical scenario with no evidence, or claims of perfect security with no residual risk acknowledged.</span></div>
+    </div>
+  </div>
+
+  <div class="crit" data-crit="governance" data-max="15">
+    <div class="head">
+      <h3>Governance artifacts</h3>
+      <span class="weight">15%</span>
+      <span class="scorebox">Score <input type="number" id="score-governance" min="0" max="15" step="0.5" placeholder="0"> <span class="max">/ 15</span></span>
+    </div>
+    <div class="descriptors">
+      <div class="desc-row"><span class="lvl exc">Excellent</span><span>The risk register, AI-use policy, and incident-response note are complete in the wiki, and the Git history and Project board show steady, distributed work all semester.</span></div>
+      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Artifacts exist but one is thin or stale, or the board and commit history show bursts rather than steady collaboration.</span></div>
+      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>One or more artifacts absent, an empty or stale Project board, or commit history concentrated in a single member.</span></div>
+    </div>
+  </div>
+
+  <div class="crit" data-crit="delivery" data-max="10">
+    <div class="head">
+      <h3>Delivery and teamwork</h3>
+      <span class="weight">10%</span>
+      <span class="scorebox">Score <input type="number" id="score-delivery" min="0" max="10" step="0.5" placeholder="0"> <span class="max">/ 10</span></span>
+    </div>
+    <div class="descriptors">
+      <div class="desc-row"><span class="lvl exc">Excellent</span><span>Every member speaks with a substantive part. The talk is clear, hits the five beats in order, lands on time, and the team answers questions directly.</span></div>
+      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Every member speaks but parts are uneven, timing slips, or answers wander.</span></div>
+      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>A member does not speak, the talk runs well over or under time, or questions go unanswered.</span></div>
+    </div>
+  </div>
+
+  <div class="deduct">
+    <label class="inline"><input type="checkbox" id="deduct-slot"> Missed scheduled slot (automatic 15% off the team's total capstone grade)</label>
+  </div>
+
+  <div class="field"><label for="strength">One strength</label><textarea id="strength" placeholder="What this team did well"></textarea></div>
+  <div class="field"><label for="gap">One gap</label><textarea id="gap" placeholder="What to harden or improve"></textarea></div>
+  <div class="field"><label for="comments">Additional comments</label><textarea id="comments" placeholder="Notes for the team"></textarea></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "csec2300-capstone-rubric:";
+  var scoreIds = ["score-demo", "score-controls", "score-attack", "score-governance", "score-delivery"];
+  var maxes = { "score-demo": 25, "score-controls": 30, "score-attack": 20, "score-governance": 15, "score-delivery": 10 };
+
+  function clampScore(el) {
+    var max = maxes[el.id];
+    var v = parseFloat(el.value);
+    if (isNaN(v)) return;
+    if (v < 0) el.value = 0;
+    else if (v > max) el.value = max;
+  }
+  function updateTotal() {
+    var total = 0;
+    scoreIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      var v = parseFloat(el.value);
+      if (!isNaN(v)) total += v;
+    });
+    total = Math.round(total * 10) / 10;
+    document.getElementById("totalVal").textContent = total;
+  }
+
+  // generic persistence
+  function saveEl(el) {
+    if (!el.id) return;
+    if (el.type === "checkbox") localStorage.setItem(NS + el.id, el.checked ? "1" : "0");
+    else localStorage.setItem(NS + el.id, el.value);
+  }
+  function restoreAll() {
+    document.querySelectorAll("input, textarea").forEach(function (el) {
+      if (!el.id) return;
+      if (el.type === "checkbox") {
+        var v = localStorage.getItem(NS + el.id);
+        if (v !== null) el.checked = v === "1";
+      } else {
+        var val = localStorage.getItem(NS + el.id);
+        if (val !== null) el.value = val;
+      }
+    });
+  }
+  restoreAll();
+  updateTotal();
+
+  document.addEventListener("input", function (e) {
+    if (scoreIds.indexOf(e.target.id) !== -1) { clampScore(e.target); updateTotal(); }
+    saveEl(e.target);
+  });
+  document.addEventListener("change", function (e) {
+    if (scoreIds.indexOf(e.target.id) !== -1) { clampScore(e.target); updateTotal(); }
+    saveEl(e.target);
+  });
+
+  document.getElementById("btnPrint").addEventListener("click", function () { window.print(); });
+  document.getElementById("btnClear").addEventListener("click", function () {
+    if (!confirm("Clear this rubric and erase its saved data on this device? This cannot be undone.")) return;
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(NS) === 0) keys.push(k);
+    }
+    keys.forEach(function (k) { localStorage.removeItem(k); });
+    location.reload();
+  });
+
+  var THEME_KEY = NS + "meta:theme";
+  var savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  document.getElementById("btnTheme").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var isDark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    var typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+    if (!typing && (e.key === "p" || e.key === "P")) { e.preventDefault(); window.print(); }
+  });
+})();
+</script>
+</body>
+</html>

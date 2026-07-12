@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Team Formation - CSEC 2300</title>
+<style>
+  :root {
+    --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --border: #cccccc;
+    --panel: #f7f7f8; --panel-2: #eef0f2; --input-bg: #ffffff; --input-border: #b7bcc2; --shadow: rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  }
+  :root[data-theme="light"] { --bg:#fff; --fg:#1a1a1a; --muted:#555; --border:#ccc; --panel:#f7f7f8; --panel-2:#eef0f2; --input-bg:#fff; --input-border:#b7bcc2; --shadow:rgba(0,0,0,0.08); }
+  :root[data-theme="dark"] { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; font-size: 16px; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1.25rem 5rem; }
+  header.doc { border-top: 6px solid var(--cardinal); padding-top: 1rem; margin-bottom: 1.25rem; }
+  h1 { color: var(--cardinal); font-size: 1.9rem; margin: 0.2rem 0 0.3rem; }
+  h2 { color: var(--cardinal); font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; margin-top: 2rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.3rem; }
+  .sub { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+  .callout { background: var(--panel); border-left: 4px solid var(--cardinal); padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; font-size: 0.95rem; }
+  p.note { color: var(--muted); font-size: 0.92rem; }
+  ul, ol { font-size: 0.95rem; }
+  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.55rem; text-align: left; vertical-align: top; font-size: 0.92rem; }
+  th { background: var(--panel-2); font-weight: 700; }
+  .avail th, .avail td { text-align: center; }
+  .avail td.blk { text-align: left; font-weight: 600; }
+  .avail td label { display: flex; justify-content: center; }
+  input[type="checkbox"] { width: 1.05rem; height: 1.05rem; accent-color: var(--cardinal); }
+  input[type="text"], textarea { width: 100%; background: var(--input-bg); color: var(--fg); border: 1px solid var(--input-border); border-radius: 4px; padding: 0.4rem 0.5rem; font: inherit; font-size: 0.92rem; }
+  textarea { resize: vertical; min-height: 3rem; }
+  input:focus, textarea:focus { outline: 2px solid var(--cardinal); outline-offset: 1px; border-color: var(--cardinal); }
+  .field { margin: 0.75rem 0; }
+  .field > label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem; }
+  .memberpick { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .memberpick label { font-weight: 600; font-size: 0.9rem; }
+  .memberpick input { max-width: 16rem; }
+  .btn { background: var(--cardinal); color: #fff; border: none; border-radius: 5px; padding: 0.5rem 0.9rem; font: inherit; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+  .btn:hover { background: var(--cardinal-dark); }
+  .btn.secondary { background: transparent; color: var(--fg); border: 1px solid var(--input-border); }
+  .btn.secondary:hover { background: var(--panel-2); }
+  .toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0.6rem 1.25rem; box-shadow: 0 2px 6px var(--shadow); }
+  .toolbar .title { font-weight: 700; color: var(--cardinal); margin-right: auto; font-size: 0.95rem; }
+  @media (max-width: 640px) { .wrap { padding: 1rem 0.8rem 4rem; } table { font-size: 0.78rem; } }
+  @media print {
+    .toolbar, .no-print, button { display: none !important; }
+    body { font-size: 11pt; background: #fff; color: #000; }
+    .wrap { max-width: 100%; padding: 0; }
+    :root { --bg:#fff; --fg:#000; --panel:#fff; --panel-2:#f0f0f0; --border:#999; --input-border:#999; }
+    h2 { page-break-after: avoid; }
+    table, tr { page-break-inside: avoid; }
+    input, textarea { border: 1px solid #999 !important; }
+    @page { size: letter; margin: 0.6in; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar no-print">
+  <span class="title">Capstone Team Formation</span>
+  <button class="btn" id="btnPrint">Download PDF</button>
+  <button class="btn secondary" id="btnTheme">Toggle Theme</button>
+  <button class="btn secondary" id="btnClear">Clear Form</button>
+</div>
+<div class="wrap">
+  <header class="doc">
+    <h1>Capstone Team Formation Guide</h1>
+    <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
+  </header>
+
+  <h2>The Rule</h2>
+  <div class="callout">
+    Teams are <strong>2 to 3 students</strong>. No solo capstones, no exceptions, and no teams of four. You will build, harden, and document your secure local-AI stack with the same people all semester, so choose deliberately.
+  </div>
+
+  <h2>Compare Schedules Before You Commit</h2>
+  <p class="note">The single biggest predictor of capstone pain is a team that cannot find time to meet. Before you commit to a team, compare schedule availability with your prospective teammates: you will collaborate and learn together all semester, so make sure you share workable meeting times.</p>
+  <p class="note">Have every prospective teammate fill in this grid, then overlay them. If you cannot find at least two shared blocks per week, keep looking. Enter each member's name, then check the blocks that member can meet.</p>
+
+  <div class="memberpick">
+    <label for="grid-member">Filling this grid for member:</label>
+    <input type="text" id="grid-member" placeholder="member name (fill and compare one member at a time, or print blank copies)">
+  </div>
+  <table class="avail">
+    <thead><tr><th>Time Block</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+    <tbody id="availBody"></tbody>
+  </table>
+  <div class="field">
+    <label for="shared-blocks">Shared blocks found (need at least two per week)</label>
+    <input type="text" id="shared-blocks" placeholder="e.g., Tue evening, Sat morning">
+  </div>
+
+  <h3>Also compare honestly, before committing:</h3>
+  <ul>
+    <li><strong>Work and family load.</strong> A teammate with a heavy outside schedule is fine if everyone knows it up front and plans around it.</li>
+    <li><strong>Where you work best.</strong> On campus, remote, or mixed. Agree on your default.</li>
+    <li><strong>Response expectations.</strong> Agree how fast you answer team messages (for example, within one day on weekdays).</li>
+  </ul>
+  <div class="field"><label for="agree-load">Notes: work and family load</label><textarea id="agree-load" placeholder="What each member has going on outside class"></textarea></div>
+  <div class="field"><label for="agree-place">Agreed default work location</label><input type="text" id="agree-place" placeholder="on campus / remote / mixed"></div>
+  <div class="field"><label for="agree-response">Agreed response expectations</label><input type="text" id="agree-response" placeholder="e.g., reply within one day on weekdays"></div>
+
+  <h2>Split Roles Fairly Across the Semester</h2>
+  <p class="note">Every member must contribute real commits all semester; the grader checks contribution spread, and the presentation rubric scores teamwork. A fair split is not "one person does Docker forever."</p>
+  <ul>
+    <li><strong>Name a starting owner per area</strong>: containers and compose; CI pipeline and repo hygiene; agent and guardrails; documentation, wiki, and board.</li>
+    <li><strong>Rotate at the checkpoints.</strong> Swapping at least one area at each checkpoint means everyone touches infrastructure, security, and writing before presentation day, where every member speaks.</li>
+    <li><strong>Pair on the scary parts.</strong> TLS, CI gates, and agent guardrails go faster and stick better with two people on them.</li>
+    <li><strong>Track it on the board.</strong> Assign every Project board issue to a person. The board is your evidence of fair contribution, and it is graded.</li>
+  </ul>
+
+  <h3>Role Rotation Assignment</h3>
+  <p class="note">Fill in the starting owner and how the area rotates at each checkpoint.</p>
+  <table>
+    <thead><tr><th style="width:28%">Area</th><th>Starting Owner</th><th>Owner after Checkpoint 1</th><th>Owner after Checkpoint 2</th></tr></thead>
+    <tbody>
+      <tr><td>Containers and compose</td>
+        <td><input type="text" id="role-containers-start"></td>
+        <td><input type="text" id="role-containers-cp1"></td>
+        <td><input type="text" id="role-containers-cp2"></td></tr>
+      <tr><td>CI pipeline and repo hygiene</td>
+        <td><input type="text" id="role-ci-start"></td>
+        <td><input type="text" id="role-ci-cp1"></td>
+        <td><input type="text" id="role-ci-cp2"></td></tr>
+      <tr><td>Agent and guardrails</td>
+        <td><input type="text" id="role-agent-start"></td>
+        <td><input type="text" id="role-agent-cp1"></td>
+        <td><input type="text" id="role-agent-cp2"></td></tr>
+      <tr><td>Documentation, wiki, and board</td>
+        <td><input type="text" id="role-docs-start"></td>
+        <td><input type="text" id="role-docs-cp1"></td>
+        <td><input type="text" id="role-docs-cp2"></td></tr>
+    </tbody>
+  </table>
+
+  <h2>If a Team Falls Apart</h2>
+  <p class="note">It happens: a teammate drops the course, goes silent, or stops contributing. The playbook (reference):</p>
+  <ol>
+    <li><strong>Talk inside the team first.</strong> Raise it directly and early; most stalls are a schedule collision, not bad faith.</li>
+    <li><strong>Talk to the instructor early.</strong> If a direct conversation does not fix it within a week, email Dr. Gonzalo D Parra or come to office hours. Early means fixable: rebalancing work, adjusting expectations, or in rare cases restructuring teams. A message the week of presentations is too late to help you.</li>
+    <li><strong>Keep committing.</strong> Whatever happens, keep your own contributions flowing into the repo and the board. Your individual history is visible and protects you.</li>
+    <li><strong>Never carry silently.</strong> Doing a vanished teammate's work without telling anyone hides the problem, burns you out, and skews the grade evidence.</li>
+  </ol>
+  <div class="callout">
+    A team of 3 that loses a member becomes a legitimate team of 2 and continues. A team of 2 that loses a member must contact the instructor immediately to be placed, since solo capstones are not allowed.
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "csec2300-capstone-teamformation:";
+
+  var blocks = ["Morning (before noon)", "Early afternoon", "Late afternoon", "Evening"];
+  var days = ["mon","tue","wed","thu","fri","sat","sun"];
+  var availBody = document.getElementById("availBody");
+  blocks.forEach(function (label, bi) {
+    var tr = document.createElement("tr");
+    var td0 = document.createElement("td");
+    td0.className = "blk";
+    td0.textContent = label;
+    tr.appendChild(td0);
+    days.forEach(function (d) {
+      var td = document.createElement("td");
+      var lab = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = "avail-" + bi + "-" + d;
+      lab.appendChild(cb);
+      td.appendChild(lab);
+      tr.appendChild(td);
+    });
+    availBody.appendChild(tr);
+  });
+
+  function saveEl(el) {
+    if (!el.id) return;
+    if (el.type === "checkbox") localStorage.setItem(NS + el.id, el.checked ? "1" : "0");
+    else localStorage.setItem(NS + el.id, el.value);
+  }
+  function restoreAll() {
+    document.querySelectorAll("input, textarea").forEach(function (el) {
+      if (!el.id) return;
+      if (el.type === "checkbox") {
+        var v = localStorage.getItem(NS + el.id);
+        if (v !== null) el.checked = v === "1";
+      } else {
+        var val = localStorage.getItem(NS + el.id);
+        if (val !== null) el.value = val;
+      }
+    });
+  }
+  restoreAll();
+
+  document.addEventListener("input", function (e) { saveEl(e.target); });
+  document.addEventListener("change", function (e) { saveEl(e.target); });
+
+  document.getElementById("btnPrint").addEventListener("click", function () { window.print(); });
+  document.getElementById("btnClear").addEventListener("click", function () {
+    if (!confirm("Clear this form and erase its saved data on this device? This cannot be undone.")) return;
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(NS) === 0) keys.push(k);
+    }
+    keys.forEach(function (k) { localStorage.removeItem(k); });
+    location.reload();
+  });
+
+  var THEME_KEY = NS + "meta:theme";
+  var savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  document.getElementById("btnTheme").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var isDark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    var typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+    if (!typing && (e.key === "p" || e.key === "P")) { e.preventDefault(); window.print(); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Readiness Checklist - CSEC 2300</title>
+<style>
+  :root {
+    --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --border: #cccccc;
+    --panel: #f7f7f8; --panel-2: #eef0f2; --input-bg: #ffffff; --input-border: #b7bcc2; --shadow: rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47;
+      --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="light"] { --bg:#fff; --fg:#1a1a1a; --muted:#555; --border:#ccc; --panel:#f7f7f8; --panel-2:#eef0f2; --input-bg:#fff; --input-border:#b7bcc2; --shadow:rgba(0,0,0,0.08); }
+  :root[data-theme="dark"] { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; font-size: 16px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 1.5rem 1.25rem 5rem; }
+  header.doc { border-top: 6px solid var(--cardinal); padding-top: 1rem; margin-bottom: 1.25rem; }
+  h1 { color: var(--cardinal); font-size: 1.9rem; margin: 0.2rem 0 0.3rem; }
+  h2 { color: var(--cardinal); font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; margin-top: 2rem; }
+  .sub { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+  .callout { background: var(--panel); border-left: 4px solid var(--cardinal); padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; font-size: 0.95rem; }
+  .item { display: flex; gap: 0.7rem; padding: 0.75rem 0.2rem; border-bottom: 1px solid var(--border); }
+  .item input[type="checkbox"] { width: 1.3rem; height: 1.3rem; margin-top: 0.15rem; accent-color: var(--cardinal); flex: 0 0 auto; cursor: pointer; }
+  .item .body { flex: 1 1 auto; }
+  .item .title { font-weight: 700; font-size: 0.98rem; }
+  .item .verify { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
+  .item.done .title { color: var(--muted); }
+  code { background: var(--panel-2); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.85em; }
+  .btn { background: var(--cardinal); color: #fff; border: none; border-radius: 5px; padding: 0.5rem 0.9rem; font: inherit; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+  .btn:hover { background: var(--cardinal-dark); }
+  .btn.secondary { background: transparent; color: var(--fg); border: 1px solid var(--input-border); }
+  .btn.secondary:hover { background: var(--panel-2); }
+  .toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0.6rem 1.25rem; box-shadow: 0 2px 6px var(--shadow); }
+  .toolbar .title { font-weight: 700; color: var(--cardinal); margin-right: auto; font-size: 0.95rem; }
+  .counter { position: sticky; top: 3.1rem; z-index: 40; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1rem 0 0.5rem; font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 0.8rem; }
+  .counter .bar { flex: 1 1 auto; height: 0.6rem; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .counter .bar > span { display: block; height: 100%; width: 0; background: var(--cardinal); transition: width 0.2s ease; }
+  .counter .pct { color: var(--cardinal); }
+  @media (max-width: 640px) { .wrap { padding: 1rem 0.8rem 4rem; } }
+  @media print {
+    .toolbar, .no-print, button { display: none !important; }
+    body { font-size: 11pt; background: #fff; color: #000; }
+    .wrap { max-width: 100%; padding: 0; }
+    :root { --bg:#fff; --fg:#000; --panel:#fff; --panel-2:#f0f0f0; --border:#999; }
+    .counter { position: static; }
+    .item { page-break-inside: avoid; }
+    @page { size: letter; margin: 0.6in; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar no-print">
+  <span class="title">Capstone Readiness Checklist</span>
+  <button class="btn" id="btnPrint">Download PDF</button>
+  <button class="btn secondary" id="btnTheme">Toggle Theme</button>
+  <button class="btn secondary" id="btnClear">Clear Form</button>
+</div>
+<div class="wrap">
+  <header class="doc">
+    <h1>Capstone Readiness Checklist</h1>
+    <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
+  </header>
+
+  <div class="callout">
+    Run this self-audit before presentation day. Check each item you have verified. This checklist mirrors the grading criteria: fix anything that is both a rubric line and currently unchecked before you polish anything else. Final deliverables are due at the posted deadline on Canvas; no late work is accepted.
+  </div>
+
+  <div class="counter" id="counter">
+    <span id="counterText">0 of 0 complete</span>
+    <span class="bar"><span id="counterBar"></span></span>
+    <span class="pct" id="counterPct">0%</span>
+  </div>
+
+  <div id="checklist"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "csec2300-capstone-readiness:";
+
+  var sections = [
+    { title: "Pipeline and Repository", items: [
+      { id: "ci-green", title: "CI is green on HEAD.", desc: "The latest commit on your default branch passes every pipeline stage: lint, secret scan, and dependency audit.",
+        verify: "Open the Actions tab for your latest commit, or run <code>gh run list --limit 1</code> and confirm the conclusion is success. The workflow must include a linter (such as ruff or hadolint), a secret scanner (such as gitleaks or trufflehog), and a dependency audit (such as pip-audit or osv-scanner)." },
+      { id: "no-secrets", title: "No committed secrets.", desc: "No private keys, API keys, or tokens anywhere in the tree or history.",
+        verify: "Run <code>gitleaks detect --source .</code> (or your CI secret scanner locally) and confirm zero findings. Secrets belong in files excluded by <code>.gitignore</code> or in Docker secrets, never in compose <code>environment:</code> blocks." },
+      { id: "repo-hygiene", title: "Repo hygiene is done.", desc: "Branch protection on the default branch, signed commits, <code>gdparra-edu</code> and <code>cyberknowledge</code> added as collaborators, and a README that describes the system.",
+        verify: "Settings &gt; Branches shows a protection rule; <code>git log --show-signature -5</code> shows verified signatures; Settings &gt; Collaborators lists both accounts." },
+      { id: "contribution-spread", title: "Contribution spread is real.", desc: "Commits come from every team member across the semester, not one author or one weekend.",
+        verify: "Run <code>git shortlog -sne</code> and confirm every member appears with a meaningful count." }
+    ]},
+    { title: "Containers and Network", items: [
+      { id: "dockerfile-hardened", title: "Dockerfile is hardened.", desc: "Non-root <code>USER</code>, a <code>HEALTHCHECK</code>, and a pinned base image (a version tag or digest, never <code>:latest</code>).",
+        verify: "Run <code>grep -E '^(USER|HEALTHCHECK|FROM)' Dockerfile</code> and inspect: the last USER is not root, HEALTHCHECK exists, and every FROM is pinned." },
+      { id: "compose-isolated", title: "Compose is isolated and pinned.", desc: "Every image pinned (no <code>:latest</code>), resource limits set, and the Ollama port NOT published to the host; only the reverse proxy is exposed.",
+        verify: "Run <code>grep -nE 'image:|ports:|mem_limit|cpus:' docker-compose.yml</code>. Ollama must have no <code>ports:</code> mapping; services talk over an internal compose network. Then <code>docker compose config</code> to confirm it parses." },
+      { id: "tls-edge", title: "TLS at the edge.", desc: "The stack is fronted by a reverse proxy terminating TLS; plain HTTP is not the entry point.",
+        verify: "Run <code>curl -kI https://localhost</code> (or your proxy port) and confirm a TLS response from the proxy; <code>curl -I http://localhost:11434</code> from outside the compose network should fail." }
+    ]},
+    { title: "AI Layer", items: [
+      { id: "agent-guarded", title: "The agent is guarded.", desc: "Tool scopes are limited, output validation is in place, a human gate protects any sensitive tool, and agent actions are traced or logged.",
+        verify: "Demonstrate one blocked action: send the agent a prompt that tries to trigger a sensitive tool and show the gate or validation stopping it, with the attempt visible in the trace or log." },
+      { id: "llm-guardrails", title: "LLM guardrails are documented.", desc: "Prompt-injection defenses and their known limits are written up (in the wiki or threat model), including residual risk you accepted.",
+        verify: "The write-up names at least one injection technique you tested, what blocked it, and what still partially works." }
+    ]},
+    { title: "Documentation and Governance", items: [
+      { id: "threat-model", title: "threat-model.md is complete.", desc: "STRIDE categories, assets, and mitigations are all filled in, with no TODO markers left.",
+        verify: "Run <code>grep -c TODO threat-model.md</code> and expect 0; confirm the STRIDE table covers assets and mitigations for each category." },
+      { id: "wiki-report", title: "The wiki report is done.", desc: "The GitHub Wiki contains the final report with Overview, Architecture, Controls, Findings, and Next Steps, plus the governance artifacts: risk register, AI-use policy, and incident-response note.",
+        verify: "Open the wiki and walk each page; no stubs, no TODO markers, and the controls section maps each control to a CO and an SY0-701 domain." },
+      { id: "board-current", title: "The Project board is current.", desc: "The GitHub Project board reflects real, up-to-date work: done items closed, in-progress items assigned, and a \"definition of done for presentation day\" issue present.",
+        verify: "Open the board and confirm no stale cards; the most recent activity should be from this week, not from checkpoint 1." }
+    ]},
+    { title: "Demo", items: [
+      { id: "demo-dryrun", title: "Demo dry-run is done.", desc: "The full stack starts clean on the actual presentation machine, the demo path was rehearsed end to end, and display output (HDMI or USB-C) was tested.",
+        verify: "Run <code>docker compose down &amp;&amp; docker compose up -d</code>, wait for healthchecks, and walk the exact demo script on the machine you will present from, connected to an external display." },
+      { id: "recorded-fallback", title: "The recorded fallback exists.", desc: "A recorded demo video is committed or linked in the repo in case the live demo fails.",
+        verify: "The README links the recording and a teammate has confirmed it plays." }
+    ]},
+    { title: "Submission", items: [
+      { id: "links-submitted", title: "Links submitted on Canvas.", desc: "The GitHub repository and GitHub Project links are submitted through the Capstone Assignment on Canvas before the posted deadline.",
+        verify: "Open the Canvas assignment and confirm the submission shows both links and a submitted timestamp." }
+    ]}
+  ];
+
+  var container = document.getElementById("checklist");
+  var total = 0;
+  sections.forEach(function (sec) {
+    var h = document.createElement("h2");
+    h.textContent = sec.title;
+    container.appendChild(h);
+    sec.items.forEach(function (it) {
+      total++;
+      var wrap = document.createElement("div");
+      wrap.className = "item";
+      wrap.id = "row-" + it.id;
+      var cbId = "chk-" + it.id;
+      wrap.innerHTML =
+        '<input type="checkbox" id="' + cbId + '">' +
+        '<div class="body"><label class="title" for="' + cbId + '">' + it.title + '</label>' +
+        '<div class="verify"><strong>How to verify:</strong> ' + it.verify + '</div></div>';
+      container.appendChild(wrap);
+    });
+  });
+
+  var counterText = document.getElementById("counterText");
+  var counterBar = document.getElementById("counterBar");
+  var counterPct = document.getElementById("counterPct");
+
+  function updateCounter() {
+    var boxes = container.querySelectorAll('input[type="checkbox"]');
+    var done = 0;
+    boxes.forEach(function (b) {
+      if (b.checked) { done++; b.closest(".item").classList.add("done"); }
+      else b.closest(".item").classList.remove("done");
+    });
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    counterText.textContent = done + " of " + total + " complete";
+    counterBar.style.width = pct + "%";
+    counterPct.textContent = pct + "%";
+  }
+
+  // restore
+  container.querySelectorAll('input[type="checkbox"]').forEach(function (b) {
+    var v = localStorage.getItem(NS + b.id);
+    if (v !== null) b.checked = v === "1";
+  });
+  updateCounter();
+
+  container.addEventListener("change", function (e) {
+    if (e.target.type === "checkbox") {
+      localStorage.setItem(NS + e.target.id, e.target.checked ? "1" : "0");
+      updateCounter();
+    }
+  });
+
+  document.getElementById("btnPrint").addEventListener("click", function () { window.print(); });
+  document.getElementById("btnClear").addEventListener("click", function () {
+    if (!confirm("Clear this checklist and erase its saved data on this device? This cannot be undone.")) return;
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(NS) === 0) keys.push(k);
+    }
+    keys.forEach(function (k) { localStorage.removeItem(k); });
+    location.reload();
+  });
+
+  var THEME_KEY = NS + "meta:theme";
+  var savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  document.getElementById("btnTheme").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var isDark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    var typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+    if (!typing && (e.key === "p" || e.key === "P")) { e.preventDefault(); window.print(); }
+  });
+})();
+</script>
+</body>
+</html>
