@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Grading Rubric - CSEC 2300</title>
+<style>
+  :root {
+    --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --border: #cccccc;
+    --panel: #f7f7f8; --panel-2: #eef0f2; --input-bg: #ffffff; --input-border: #b7bcc2; --shadow: rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  }
+  :root[data-theme="light"] { --bg:#fff; --fg:#1a1a1a; --muted:#555; --border:#ccc; --panel:#f7f7f8; --panel-2:#eef0f2; --input-bg:#fff; --input-border:#b7bcc2; --shadow:rgba(0,0,0,0.08); }
+  :root[data-theme="dark"] { --bg:#16181c; --fg:#e8eaed; --muted:#a3a8b0; --border:#3a3f47; --panel:#1e2127; --panel-2:#252932; --input-bg:#1b1e24; --input-border:#454b54; --shadow:rgba(0,0,0,0.4); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.55; font-size: 16px; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 5rem; }
+  header.doc { border-top: 6px solid var(--cardinal); padding-top: 1rem; margin-bottom: 1.25rem; }
+  h1 { color: var(--cardinal); font-size: 1.9rem; margin: 0.2rem 0 0.3rem; }
+  h2 { color: var(--cardinal); font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; margin-top: 2rem; }
+  .sub { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+  .callout { background: var(--panel); border-left: 4px solid var(--cardinal); padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; font-size: 0.95rem; }
+  p.note { color: var(--muted); font-size: 0.92rem; }
+  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.55rem; text-align: left; vertical-align: top; font-size: 0.92rem; }
+  th { background: var(--panel-2); font-weight: 700; }
+  .field { margin: 0.75rem 0; }
+  .field > label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem; }
+  input[type="text"], textarea { width: 100%; background: var(--input-bg); color: var(--fg); border: 1px solid var(--input-border); border-radius: 4px; padding: 0.4rem 0.5rem; font: inherit; font-size: 0.92rem; }
+  select { background: var(--input-bg); color: var(--fg); border: 1px solid var(--input-border); border-radius: 4px; padding: 0.35rem 0.4rem; font: inherit; font-size: 0.9rem; width: 100%; }
+  select.unscored { border-color: var(--cardinal); }
+  textarea { resize: vertical; min-height: 3rem; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--cardinal); outline-offset: 1px; border-color: var(--cardinal); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .sec { border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; margin: 1.2rem 0; background: var(--panel); }
+  .sec .head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+  .sec .head h2 { margin: 0; border: none; padding: 0; flex: 1 1 auto; font-size: 1.2rem; }
+  .sec .weight { background: var(--cardinal); color: #fff; border-radius: 999px; padding: 0.15rem 0.65rem; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+  .sec .secscore { font-weight: 800; font-size: 1rem; }
+  .sec .secscore .pts { color: var(--cardinal); }
+  td.critname { width: 46%; }
+  td.critname .cn { font-weight: 700; }
+  td.critname .cd { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
+  td.w { width: 3.6rem; text-align: center; font-weight: 700; }
+  td.lvl { width: 17rem; }
+  td.earn { width: 5rem; text-align: right; font-weight: 700; }
+  .totalbar { position: sticky; top: 3.1rem; z-index: 40; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; margin: 1rem 0; font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; }
+  .totalbar .val { color: var(--cardinal); font-size: 1.45rem; }
+  .totalbar .mini { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
+  .btn { background: var(--cardinal); color: #fff; border: none; border-radius: 5px; padding: 0.5rem 0.9rem; font: inherit; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+  .btn:hover { background: var(--cardinal-dark); }
+  .btn.secondary { background: transparent; color: var(--fg); border: 1px solid var(--input-border); }
+  .btn.secondary:hover { background: var(--panel-2); }
+  .toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0.6rem 1.25rem; box-shadow: 0 2px 6px var(--shadow); }
+  .toolbar .title { font-weight: 700; color: var(--cardinal); margin-right: auto; font-size: 0.95rem; }
+  .deduct { background: var(--panel); border: 1px solid var(--cardinal); border-radius: 6px; padding: 0.7rem 0.9rem; margin: 1rem 0; font-size: 0.92rem; }
+  label.inline { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+  input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--cardinal); }
+  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } .wrap { padding: 1rem 0.8rem 4rem; }
+    td.lvl { width: auto; } td.critname { width: auto; } }
+  @media print {
+    .toolbar, .no-print, button { display: none !important; }
+    body { font-size: 10.5pt; background: #fff; color: #000; }
+    .wrap { max-width: 100%; padding: 0; }
+    :root { --bg:#fff; --fg:#000; --panel:#fff; --panel-2:#f0f0f0; --border:#999; --input-border:#999; }
+    .totalbar { position: static; }
+    .sec { page-break-inside: avoid; }
+    input, textarea, select { border: 1px solid #999 !important; }
+    @page { size: letter; margin: 0.6in; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar no-print">
+  <span class="title">Capstone Grading Rubric</span>
+  <button class="btn" id="btnPrint">Download PDF</button>
+  <button class="btn secondary" id="btnTheme">Toggle Theme</button>
+  <button class="btn secondary" id="btnClear">Clear Form</button>
+</div>
+<div class="wrap">
+  <header class="doc">
+    <h1>Capstone Grading Rubric</h1>
+    <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
+  </header>
+
+  <div class="callout">
+    One rubric for the whole capstone (20% of the course grade), one section per graded component:
+    Proposal 3%, Project Implementation 5%, Final Presentation 5%, GitHub Repository and Project
+    Documentation 4%, GitHub Wiki Final Report 3%. Within each section, criteria weights add to 100%.
+    Pick a level for every criterion; the form converts each section score to its course points and
+    totals everything automatically. Levels award 0%, 10%, 30%, 60%, 80%, or 100% of a criterion's
+    weight (so a 10% criterion offers 0 / 1 / 3 / 6 / 8 / 10).
+  </div>
+
+  <div class="grid-2">
+    <div class="field"><label for="team">Team name</label><input type="text" id="team" placeholder="team-name"></div>
+    <div class="field"><label for="project">Project title</label><input type="text" id="project" placeholder="project title"></div>
+    <div class="field"><label for="members">Team members</label><input type="text" id="members" placeholder="names"></div>
+    <div class="field"><label for="gdate">Date</label><input type="text" id="gdate" placeholder="grading date"></div>
+  </div>
+
+  <div class="totalbar"><span>Total capstone grade</span>
+    <span class="mini" id="secmini"></span>
+    <span><span class="val" id="grandTotal">0.00</span> / 20%</span></div>
+
+  <div id="sections"></div>
+
+  <div class="deduct">
+    <label class="inline"><input type="checkbox" id="deduct-slot"> Missed scheduled presentation slot
+      (automatic 15% deduction from the team's total capstone grade)</label>
+  </div>
+
+  <div class="field"><label for="overall-notes">Overall notes</label>
+    <textarea id="overall-notes" placeholder="summary feedback for the team"></textarea></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "csec2300-capstone-grading:";
+
+  var LEVELS = [
+    ["Missing", 0], ["Unsatisfactory", 0.10], ["Needs Improvement", 0.30],
+    ["Developing", 0.60], ["Satisfactory", 0.80], ["Exceeds Expectations", 1.00]
+  ];
+
+  var SECTIONS = [
+    { id: "prop", title: "1. Capstone Proposal", pts: 3, criteria: [
+      ["Team and logistics", "Roster complete with personality types, agreed weekly meeting times, and a recorded unanimous commit-approach vote.", 20],
+      ["Stack configuration, pinned and justified", "Ollama model and tag, Open WebUI version, ADK agent role and tool scopes, TLS edge choice, CI stages, and host fit for each demo machine. No :latest anywhere.", 30],
+      ["Target security controls", "6 to 10 controls, correctly typed (preventive, detective, corrective, governance), each mapped to a course outcome and an SY0-701 domain, spanning at least three domains.", 30],
+      ["Milestones and risks", "Checkpoint-aligned milestone plan with measurable done states, plus an honest starter risk register.", 20]
+    ]},
+    { id: "impl", title: "2. Project Implementation", pts: 5, criteria: [
+      ["Working stack", "docker compose up brings Ollama, Open WebUI, and the ADK agent up on pinned tags; chat and agent flows work end to end on the team's own hardware.", 30],
+      ["Hardening controls in place", "The approved target controls demonstrably work: TLS at the edge, non-root or read-only containers, network segmentation between services, secrets kept out of the repo.", 30],
+      ["Security-gated CI", "Pipeline with lint, secret scan, and dependency audit gates that actually fail bad pushes; green on HEAD at grading time.", 20],
+      ["Agent guardrails", "Agent tools scoped to least privilege, a human gate on risky actions, and agent actions logged or traced.", 20]
+    ]},
+    { id: "pres", title: "3. Final Presentation", pts: 5, criteria: [
+      ["Architecture and working demo", "The stack runs live; segmentation, TLS, and containers are evident.", 25],
+      ["Security controls and mapping", "Controls named, classified, and mapped to a CO and an SY0-701 domain.", 30],
+      ["Attack and defense narrative", "A real attack shown and mitigated, with honest residual risk.", 20],
+      ["Governance artifacts", "Risk register, AI-use policy, IR note, and clean Git and board history.", 15],
+      ["Delivery and teamwork", "Every member speaks; clear, on time, and answers questions.", 10]
+    ]},
+    { id: "repo", title: "4. GitHub Repository and Project Documentation", pts: 4, criteria: [
+      ["Repository structure and README", "Organized folders (compose, ci, docs); README is a polished front door: mission, tech stack, setup guide that works.", 30],
+      ["Individual Contribution Summary Table", "Present at the bottom of the README, accurate, and matching the board. A missing table cannot score above Missing on this criterion.", 25],
+      ["Project board management", "User stories written as \"As a ...\", every issue carries a milestone and an iteration, sizes or story points used, and the board tells the semester's real history.", 30],
+      ["Evidence organized in the repo", "Screenshots, scan outputs, and config exports stored where the wiki and README reference them.", 15]
+    ]},
+    { id: "wiki", title: "5. GitHub Wiki Final Report", pts: 3, criteria: [
+      ["Architecture and diagrams", "Topology plus data-flow diagrams that match the running stack, including trust boundaries.", 40],
+      ["Technical runbook documentation", "Someone else could rebuild the stack from the wiki alone; explains why each control and setting was chosen, with screenshots and configs.", 40],
+      ["Wiki structure and navigation", "Sidebar, logical sections (Home, Architecture, Setup, Sprint Notes, Final Report), clean headings and working links.", 20]
+    ]}
+  ];
+
+  function fmt(x) { var r = Math.round(x * 10) / 10; return (r % 1 === 0) ? String(r) : r.toFixed(1); }
+
+  var host = document.getElementById("sections");
+  SECTIONS.forEach(function (s) {
+    var div = document.createElement("div");
+    div.className = "sec";
+    var rows = s.criteria.map(function (c, i) {
+      var opts = ['<option value="">Select level</option>'].concat(LEVELS.map(function (L) {
+        return '<option value="' + L[1] + '">' + L[0] + " (" + fmt(L[1] * c[2]) + "%)</option>";
+      })).join("");
+      return '<tr><td class="critname"><div class="cn">' + c[0] + '</div><div class="cd">' + c[1] + '</div></td>' +
+        '<td class="w">' + c[2] + '%</td>' +
+        '<td class="lvl"><select id="' + s.id + "-" + i + '" data-sec="' + s.id + '" data-w="' + c[2] + '">' + opts + "</select></td>" +
+        '<td class="earn" id="earn-' + s.id + "-" + i + '">-</td></tr>';
+    }).join("");
+    div.innerHTML = '<div class="head"><h2>' + s.title + '</h2>' +
+      '<span class="weight">' + s.pts + '% of course grade</span>' +
+      '<span class="secscore">section: <span id="pct-' + s.id + '">0</span>% &rarr; <span class="pts" id="pts-' + s.id + '">0.00</span> / ' + s.pts + '%</span></div>' +
+      '<table><thead><tr><th>Criterion</th><th>Weight</th><th>Level</th><th>Earned</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+      '<div class="field"><label for="notes-' + s.id + '">Section notes</label><textarea id="notes-' + s.id + '" placeholder="evidence and justification"></textarea></div>';
+    host.appendChild(div);
+  });
+
+  function recalc() {
+    var grand = 0, minis = [];
+    SECTIONS.forEach(function (s) {
+      var secPct = 0;
+      s.criteria.forEach(function (c, i) {
+        var sel = document.getElementById(s.id + "-" + i);
+        var frac = sel.value === "" ? 0 : parseFloat(sel.value);
+        sel.classList.toggle("unscored", sel.value === "");
+        var earned = frac * c[2];
+        document.getElementById("earn-" + s.id + "-" + i).textContent = sel.value === "" ? "-" : fmt(earned) + "%";
+        secPct += earned;
+      });
+      var pts = secPct / 100 * s.pts;
+      document.getElementById("pct-" + s.id).textContent = fmt(secPct);
+      document.getElementById("pts-" + s.id).textContent = pts.toFixed(2);
+      minis.push(s.id + " " + pts.toFixed(2));
+      grand += pts;
+    });
+    if (document.getElementById("deduct-slot").checked) grand *= 0.85;
+    document.getElementById("grandTotal").textContent = grand.toFixed(2);
+    document.getElementById("secmini").textContent = minis.join(" | ") +
+      (document.getElementById("deduct-slot").checked ? " | missed slot: x0.85" : "");
+  }
+
+  // persistence
+  function saveEl(el) {
+    if (!el.id) return;
+    if (el.type === "checkbox") localStorage.setItem(NS + el.id, el.checked ? "1" : "0");
+    else localStorage.setItem(NS + el.id, el.value);
+  }
+  function restore() {
+    document.querySelectorAll("input, textarea, select").forEach(function (el) {
+      if (!el.id) return;
+      var v = localStorage.getItem(NS + el.id);
+      if (v === null) return;
+      if (el.type === "checkbox") el.checked = v === "1"; else el.value = v;
+    });
+  }
+  document.addEventListener("input", function (e) { saveEl(e.target); recalc(); });
+  document.addEventListener("change", function (e) { saveEl(e.target); recalc(); });
+
+  document.getElementById("btnPrint").addEventListener("click", function () { window.print(); });
+  document.getElementById("btnClear").addEventListener("click", function () {
+    if (!confirm("Clear the whole rubric?")) return;
+    Object.keys(localStorage).forEach(function (k) { if (k.indexOf(NS) === 0) localStorage.removeItem(k); });
+    document.querySelectorAll("input[type=text], textarea").forEach(function (el) { el.value = ""; });
+    document.querySelectorAll("select").forEach(function (el) { el.value = ""; });
+    document.getElementById("deduct-slot").checked = false;
+    recalc();
+  });
+  document.getElementById("btnTheme").addEventListener("click", function () {
+    var r = document.documentElement;
+    var cur = r.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    r.setAttribute("data-theme", next);
+    try { localStorage.setItem(NS + "theme", next); } catch (e) {}
+  });
+  try { var t = localStorage.getItem(NS + "theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+
+  document.addEventListener("keydown", function (e) {
+    var a = document.activeElement;
+    if (e.key === "p" && !e.ctrlKey && !e.metaKey && !e.altKey &&
+        !(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) { e.preventDefault(); window.print(); }
+  });
+
+  restore();
+  recalc();
+})();
+</script>
+</body>
+</html>
