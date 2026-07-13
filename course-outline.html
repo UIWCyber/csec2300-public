@@ -27,9 +27,23 @@
     --blue:#0053A8;            /* uiwblue RGB(0,83,168) */
     --rule:#222222;
     --paper:#ffffff;
+    --desk:#e9e6e1;
+  }
+  :root[data-theme=dark]{
+    --cardinal:#e0555d;        /* brightened for contrast on dark paper */
+    --black:#e8e9ec;
+    --darkgray:#dcdee2;
+    --cyan:#6db3e8;
+    --blue:#7aa9e0;
+    --rule:#9aa1ab;
+    --paper:#1c1f24;
+    --desk:#101215;
   }
   *{box-sizing:border-box}
-  html{background:#e9e6e1}
+  html{background:var(--desk)}
+  .theme-fab{position:fixed;right:16px;bottom:16px;z-index:200;background:var(--paper);color:var(--darkgray);
+    border:1px solid var(--rule);border-radius:999px;padding:8px 14px;font-family:inherit;font-size:10pt;
+    font-weight:bold;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25)}
   body{
     margin:0;
     font-family:"Palatino Linotype","Book Antiqua",Palatino,"URW Palladio L",Georgia,serif;
@@ -109,6 +123,12 @@
   /* ---------- print ---------- */
   @page{size:letter;margin:0.79in 0.59in 0.95in} /* ≈ 2cm / 1.5cm geometry */
   @media print{
+    /* printing is always light, whatever the on-screen theme */
+    :root, :root[data-theme=dark]{
+      --cardinal:#CB333B; --black:#000; --darkgray:#222; --cyan:#2E8FD6;
+      --blue:#0053A8; --rule:#222; --paper:#fff; --desk:#fff;
+    }
+    .theme-fab{display:none}
     html{background:#fff}
     body{font-size:10.5pt}
     .page{
@@ -153,7 +173,7 @@
       <tr><td class="lbl">Course Code &amp; Section</td><td>CSEC 2300-01</td></tr>
       <tr><td class="lbl">Credit Hours</td><td>3.0</td></tr>
       <tr><td class="lbl">Classroom</td><td>Founders Hall G008</td></tr>
-      <tr><td class="lbl">Class Schedule</td><td>M &amp; W: 3:00 PM – 4:15 PM</td></tr>
+      <tr><td class="lbl">Class Schedule</td><td>M &amp; W: 4:30 PM – 5:45 PM</td></tr>
       <tr><td class="lbl">Prerequisites</td><td>None</td></tr>
       <tr class="midrule"><td class="lbl">Instructor</td><td>Dr. Gonzalo D Parra</td></tr>
       <tr><td class="lbl">Contact Email</td><td><a href="mailto:gdparra@uiwtx.edu">gdparra@uiwtx.edu</a></td></tr>
@@ -220,7 +240,7 @@
 
   <h1 class="section">4&ensp;Course Schedule</h1>
   <p><em class="note">The schedule below is tentative and subject to change; changes will be announced through
-  Canvas. Classes meet Mondays and Wednesdays, 3:00–4:15 PM.</em></p>
+  Canvas. Classes meet Mondays and Wednesdays, 4:30–5:45 PM.</em></p>
 
   <!-- EDIT: schedule (dates verified against the UIW Fall 2026 academic calendar) -->
   <table class="sched">
@@ -320,6 +340,9 @@
     <em>GitHub Project</em> board to manage all project activities.</li>
     <li><b>Submission:</b> The links to your GitHub Repository and GitHub Project must be submitted through the
     corresponding Capstone Assignment on the Canvas portal.</li>
+    <li><b>Group Project Days:</b> each month, selected class sessions are dedicated entirely to capstone
+    team coordination: sprint planning, board work, and building together with the instructor available.
+    These days have no fixed calendar slots; they are announced on Canvas.</li>
     <li><b>Contribution tracking:</b> your repository is the record of your effort. Each team votes
     (unanimously) for one of two commit approaches declared in the proposal: <em>Individual Commits</em>
     (every member pushes their own work; points follow the committer) or <em>Delegated Commits</em>
@@ -446,5 +469,18 @@
 </div>
 
 <script>document.addEventListener("keydown",function(e){if(e.key==="p"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){var a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;e.preventDefault();window.print();}});</script>
+<button class="theme-fab" id="themeFab" type="button">Theme</button>
+<script>
+(function(){
+  try{var t=localStorage.getItem("csec-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}
+  document.getElementById("themeFab").addEventListener("click",function(){
+    var r=document.documentElement;
+    var cur=r.getAttribute("data-theme")||"light";
+    var next=cur==="dark"?"light":"dark";
+    r.setAttribute("data-theme",next);
+    try{localStorage.setItem("csec-theme",next);}catch(e){}
+  });
+})();
+</script>
 </body>
 </html>

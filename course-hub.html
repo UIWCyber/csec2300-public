@@ -32,6 +32,32 @@
     --shadow:0 1px 3px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.30);
   }
 }
+:root[data-theme=dark]{
+  --bg:#131518;
+  --surface:#1c1f24;
+  --surface-2:#24282e;
+  --text:#e8e9ec;
+  --muted:#9aa1ab;
+  --line:#33383f;
+  --red-soft:rgba(203,51,59,.20);
+  --ok:#4cc38a;
+  --shadow:0 1px 3px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.30);
+}
+:root[data-theme=light]{
+  --bg:#f7f7f9;
+  --surface:#ffffff;
+  --surface-2:#f1f1f4;
+  --text:#1c1e22;
+  --muted:#5b616b;
+  --line:#e2e3e8;
+  --red-soft:rgba(203,51,59,.10);
+  --ok:#1a7f4e;
+  --shadow:0 1px 3px rgba(20,22,26,.07),0 8px 24px rgba(20,22,26,.06);
+}
+.theme-fab{position:fixed;right:16px;bottom:16px;z-index:200;background:var(--surface);color:var(--text);
+  border:1px solid var(--line);border-radius:999px;padding:.5rem .9rem;font:inherit;font-size:.85rem;
+  font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
+@media print{.theme-fab{display:none}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:70px}
 body{
@@ -267,7 +293,7 @@ footer .links a{font-weight:600}
     <div class="hero-grid">
       <div class="hero-card">
         <div class="lbl">Class Meetings</div>
-        <div class="val">Mon &amp; Wed · 3:00–4:15 PM<small>Founders Hall G008 · Aug 24 – Dec 11</small></div>
+        <div class="val">Mon &amp; Wed · 4:30–5:45 PM<small>Founders Hall G008 · Aug 24 – Dec 11</small></div>
       </div>
       <div class="hero-card">
         <div class="lbl">Instructor</div>
@@ -424,6 +450,7 @@ footer .links a{font-weight:600}
           <li>Manage all project activity on the repo's integrated <strong>GitHub Project board</strong>.</li>
           <li>Write the final report as a <strong>GitHub Wiki page</strong>; keep presentation materials in the repo.</li>
           <li>Vote (unanimously) on your <strong>commit approach</strong> and declare it in the proposal: <em>Individual Commits</em> (everyone pushes their own work; points follow the committer) or <em>Delegated Commits</em> (designated members push for the team; points follow the board assignee). Not unanimous? You default to Individual Commits.</li>
+          <li><strong>Group Project Days:</strong> each month some class sessions are fully dedicated to capstone coordination: sprint planning, board work, and building together with the instructor in the room. No fixed dates; they are announced on Canvas.</li>
           <li>Submit the repo + Project links through the Capstone assignment on <strong>Canvas</strong>.</li>
         </ul>
       </div>
@@ -713,7 +740,7 @@ function renderThisWeek(state){
     var n = state.daysUntil;
     html = '<div class="countdown">'
       + '<div><div class="num">'+n+'</div><div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">day'+(n===1?"":"s")+' to go</div></div>'
-      + '<div class="cap"><strong>First class: Monday, August 24, 2026</strong> - 3:00 PM, Founders Hall G008.<br>'
+      + '<div class="cap"><strong>First class: Monday, August 24, 2026</strong> - 4:30 PM, Founders Hall G008.<br>'
       + 'Get ahead: make sure you can log in to Canvas and GitHub. Lab 0 (environment setup) is assigned on day one.</div>'
       + '</div>';
   } else if (state.phase === "post"){
@@ -743,7 +770,7 @@ function renderThisWeek(state){
     if (isFinals){
       html += '<div class="tw-note">Exact exam slot follows the registrar\'s MW finals grid - confirm on Canvas. The final is comprehensive and blueprinted to the SY0-701 domains.</div>';
     } else {
-      html += '<div class="tw-note">Class meets Mon &amp; Wed 3:00–4:15 PM in Founders Hall G008 · Office hours Mon–Thu 1:30–3:00 PM in Founders Hall G009, scheduled meeting required: book through the Microsoft Teams link on Canvas.</div>';
+      html += '<div class="tw-note">Class meets Mon &amp; Wed 4:30–5:45 PM in Founders Hall G008 · Office hours Mon–Thu 1:30–3:00 PM in Founders Hall G009, scheduled meeting required: book through the Microsoft Teams link on Canvas.</div>';
     }
   }
   card.innerHTML = html;
@@ -781,5 +808,18 @@ function initFilters(){
 })();
 </script>
 <script>document.addEventListener("keydown",function(e){if(e.key==="p"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){var a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;e.preventDefault();window.print();}});</script>
+<button class="theme-fab" id="themeFab" type="button">Theme</button>
+<script>
+(function(){
+  try{var t=localStorage.getItem("csec-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}
+  document.getElementById("themeFab").addEventListener("click",function(){
+    var r=document.documentElement;
+    var cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    var next=cur==="dark"?"light":"dark";
+    r.setAttribute("data-theme",next);
+    try{localStorage.setItem("csec-theme",next);}catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
