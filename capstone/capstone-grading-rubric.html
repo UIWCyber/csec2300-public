@@ -133,6 +133,7 @@
       </tbody>
     </table>
     <p class="note" id="contribWarn" style="display:none; color: var(--cardinal); font-weight: 600;">Contribution percentages of named students do not add up to 100.</p>
+    <p class="note" id="soloWarn" style="display:none; color: var(--cardinal); font-weight: 600;">Exception: only one student is named. Solo capstones are not allowed (teams are 2 to 3); a team reduced to one member must contact the instructor before this grade stands.</p>
   </div>
 
   <div class="field"><label for="overall-notes">Overall notes</label>
@@ -236,13 +237,13 @@
       return { n: n, name: (document.getElementById("student" + n).value || "").trim(),
                contrib: parseFloat(document.getElementById("contrib" + n).value) };
     });
-    var named = students.filter(function (st) { return st.name && !/^n\/?a/i.test(st.name); });
+    var named = students.filter(function (st) { return st.name && !/^n\/?a\b/i.test(st.name); });
     var N = named.length;
     var contribSum = 0;
     students.forEach(function (st) {
       document.getElementById("iname" + st.n).textContent = st.name || ("Student " + st.n);
       var out = document.getElementById("iscore" + st.n);
-      if (!st.name || /^n\/?a/i.test(st.name) || isNaN(st.contrib) || N === 0) { out.textContent = "-"; return; }
+      if (!st.name || /^n\/?a\b/i.test(st.name) || isNaN(st.contrib) || N === 0) { out.textContent = "-"; return; }
       contribSum += st.contrib;
       var ind = 0;
       SECTIONS.forEach(function (s) {
@@ -253,6 +254,7 @@
     var warn = document.getElementById("contribWarn");
     var anyScored = named.some(function (st) { return !isNaN(st.contrib); });
     warn.style.display = (anyScored && Math.abs(contribSum - 100) > 2) ? "" : "none";
+    document.getElementById("soloWarn").style.display = (N === 1) ? "" : "none";
   }
 
   // persistence
