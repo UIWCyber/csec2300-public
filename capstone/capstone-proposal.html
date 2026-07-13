@@ -68,7 +68,7 @@
   textarea { resize: vertical; min-height: 3.4rem; }
   input:focus, textarea:focus, select:focus { outline: 2px solid var(--cardinal); outline-offset: 1px; border-color: var(--cardinal); }
   label.inline { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.9rem; }
-  input[type="checkbox"] { width: 1.05rem; height: 1.05rem; accent-color: var(--cardinal); }
+  input[type="checkbox"], input[type="radio"] { width: 1.05rem; height: 1.05rem; accent-color: var(--cardinal); }
   .field { margin: 0.75rem 0; }
   .field > label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -118,38 +118,44 @@
   </div>
 
   <h2>1. Team Roster</h2>
-  <p class="note">Teams are <strong>2 to 3 students</strong>. No solo capstones.</p>
+  <p class="note">Teams are <strong>2 to 3 students</strong>. No solo capstones. For the Personality column, every member takes the free test at <a href="https://www.16personalities.com/" target="_blank" rel="noopener">16personalities.com</a> and enters their 4-letter type; read your teammates' portraits at <a href="https://personalitypage.com/html/portraits.html" target="_blank" rel="noopener">personalitypage.com/html/portraits.html</a> to understand how each of you works best.</p>
   <table>
-    <thead><tr><th style="width:2.5rem">#</th><th>Name</th><th>UIW Email</th><th>GitHub Username</th></tr></thead>
+    <thead><tr><th style="width:2.5rem">#</th><th>Name</th><th>UIW Email</th><th>GitHub Username</th><th style="width:7.5rem">Personality (4-letter)</th></tr></thead>
     <tbody>
       <tr><td>1</td>
         <td><input type="text" id="member1-name" placeholder="Full name"></td>
         <td><input type="email" id="member1-email" placeholder="name@student.uiwtx.edu"></td>
-        <td><input type="text" id="member1-github" placeholder="github username"></td></tr>
+        <td><input type="text" id="member1-github" placeholder="github username"></td>
+        <td><input type="text" id="member1-personality" placeholder="e.g., INTJ" maxlength="6"></td></tr>
       <tr><td>2</td>
         <td><input type="text" id="member2-name" placeholder="Full name"></td>
         <td><input type="email" id="member2-email" placeholder="name@student.uiwtx.edu"></td>
-        <td><input type="text" id="member2-github" placeholder="github username"></td></tr>
+        <td><input type="text" id="member2-github" placeholder="github username"></td>
+        <td><input type="text" id="member2-personality" placeholder="e.g., ENFP" maxlength="6"></td></tr>
       <tr><td>3</td>
         <td><input type="text" id="member3-name" placeholder='Name or "N/A (team of 2)"'></td>
         <td><input type="email" id="member3-email" placeholder="optional"></td>
-        <td><input type="text" id="member3-github" placeholder="optional"></td></tr>
+        <td><input type="text" id="member3-github" placeholder="optional"></td>
+        <td><input type="text" id="member3-personality" placeholder="optional" maxlength="6"></td></tr>
     </tbody>
   </table>
   <div class="field">
     <label for="team-name">Team name (used for the repo)</label>
     <input type="text" id="team-name" placeholder="team-name">
   </div>
-
-  <h3>Shared Availability Grid</h3>
-  <p class="note">Before committing to this team, compare schedules: you will collaborate and learn together all semester, so make sure you share workable meeting times. Check each block every member can meet.</p>
-  <table class="avail">
-    <thead><tr><th>Time Block</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-    <tbody id="availBody"></tbody>
-  </table>
   <div class="field">
     <label for="agreed-meeting">Agreed weekly meeting time(s)</label>
-    <input type="text" id="agreed-meeting" placeholder="at least one recurring block every member marked">
+    <input type="text" id="agreed-meeting" placeholder="recurring block(s) every member can attend, from the Team Formation availability grid">
+  </div>
+  <p class="note">Work out shared availability on the <strong>Capstone Team Formation</strong> form (it has the full availability grid) before filling this in.</p>
+
+  <h3>Commit Approach (team vote, unanimous)</h3>
+  <p class="note">Your repository is the record of your effort. Vote as a team on how commits are managed; the choice is binding for the semester. If the vote is not unanimous, the team defaults to Individual Commits.</p>
+  <label class="inline"><input type="radio" name="commit-approach" id="commit-individual" value="individual"> <strong>Individual Commits</strong>: every member pushes their own work; points follow the committer.</label><br>
+  <label class="inline"><input type="radio" name="commit-approach" id="commit-delegated" value="delegated"> <strong>Delegated Commits</strong>: designated member(s) push on behalf of the team; points follow the board assignee.</label>
+  <div class="field" style="margin-top:.5rem">
+    <label for="commit-vote">Vote result</label>
+    <input type="text" id="commit-vote" placeholder='e.g., "3-0 unanimous for Individual Commits"'>
   </div>
 
   <h2>2. GitHub Setup</h2>
@@ -265,7 +271,7 @@
   <button class="btn secondary addrow" id="addRisk">+ Add risk row</button>
 
   <h2>8. Approval</h2>
-  <p class="note">By submitting, every team member affirms they reviewed this proposal and the shared availability grid, and commit to the milestone plan above.</p>
+  <p class="note">By submitting, every team member affirms they reviewed this proposal, agreed on the weekly meeting time(s) and commit approach above, and commit to the milestone plan.</p>
   <table>
     <thead><tr><th>Team member (typed name)</th><th style="width:30%">Date signed</th></tr></thead>
     <tbody>
@@ -289,29 +295,6 @@
 (function () {
   "use strict";
   var NS = "csec2300-capstone-proposal:";
-
-  // Build availability grid
-  var blocks = ["Morning (before noon)", "Early afternoon", "Late afternoon", "Evening"];
-  var days = ["mon","tue","wed","thu","fri","sat","sun"];
-  var availBody = document.getElementById("availBody");
-  blocks.forEach(function (label, bi) {
-    var tr = document.createElement("tr");
-    var th = document.createElement("td");
-    th.textContent = label;
-    th.style.textAlign = "left";
-    tr.appendChild(th);
-    days.forEach(function (d) {
-      var td = document.createElement("td");
-      var lab = document.createElement("label");
-      var cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.id = "avail-" + bi + "-" + d;
-      lab.appendChild(cb);
-      td.appendChild(lab);
-      tr.appendChild(td);
-    });
-    availBody.appendChild(tr);
-  });
 
   // Controls rows
   var controlsBody = document.getElementById("controlsBody");

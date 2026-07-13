@@ -384,34 +384,36 @@ footer .links a{font-weight:600}
     <h2>Grading Breakdown</h2>
     <p class="sub">Autograded labs carry the most weight - this course rewards doing.</p>
 
-    <div class="gbar" role="img" aria-label="Grade weights: Labs 30%, Quizzes 15%, Midterm 15%, Final 20%, Capstone 15%, Attendance 5%">
+    <div class="gbar" role="img" aria-label="Grade weights: Labs 30%, Quizzes 15%, Midterm 15%, Final 15%, Capstone 20%, Attendance 5%">
       <div class="seg g-labs" style="flex:30"><span>Labs 30%</span></div>
       <div class="seg g-quiz" style="flex:15"><span>Quizzes 15%</span></div>
       <div class="seg g-mid" style="flex:15"><span>Midterm 15%</span></div>
-      <div class="seg g-final" style="flex:20"><span>Final 20%</span></div>
-      <div class="seg g-cap" style="flex:15"><span>Capstone 15%</span></div>
+      <div class="seg g-final" style="flex:15"><span>Final 15%</span></div>
+      <div class="seg g-cap" style="flex:20"><span>Capstone 20%</span></div>
       <div class="seg g-att" style="flex:5"><span>5%</span></div>
     </div>
     <div class="glegend">
       <span><span class="dot g-labs"></span>Hands-on Labs (autograded) - 30%</span>
       <span><span class="dot g-quiz"></span>Quizzes (8, on Canvas) - 15%</span>
       <span><span class="dot g-mid"></span>Midterm Exam - 15%</span>
-      <span><span class="dot g-final"></span>Final Exam - 20%</span>
-      <span><span class="dot g-cap"></span>Capstone Project - 15%</span>
+      <span><span class="dot g-final"></span>Final Exam - 15%</span>
+      <span><span class="dot g-cap"></span>Capstone Project - 20%</span>
       <span><span class="dot g-att"></span>Attendance &amp; Participation - 5%</span>
     </div>
 
     <div class="two-col">
       <div class="panel">
-        <h3>Capstone: the 15%, broken down</h3>
+        <h3>Capstone: the 20%, broken down</h3>
         <p style="font-size:.9rem;margin:.2rem 0 0">A semester-long <strong>team</strong> project: build, harden, and document a secure local-AI stack (Dockerized Ollama + Open WebUI + an ADK agent) delivered through a security-gated CI pipeline.</p>
         <table class="cap-break">
           <tr><td>Capstone proposal (approved by instructor)</td><td>3%</td></tr>
+          <tr><td>Project implementation (working stack, repo quality, project board)</td><td>5%</td></tr>
           <tr><td>Final presentation (Week 15)</td><td>5%</td></tr>
           <tr><td>GitHub repository &amp; project documentation</td><td>4%</td></tr>
           <tr><td>GitHub Wiki page - the final report</td><td>3%</td></tr>
         </table>
         <div class="callout">Missing your scheduled presentation slot costs an automatic <strong>15% off your team's total capstone grade</strong>.</div>
+        <div class="callout" style="margin-top:.5rem"><strong>Your repository is the record of your effort.</strong> Individual grades scale with verified contribution: only real artifacts count (configs, scripts, screenshots, wiki pages, closed board issues with matching commits). A one-line commit claiming "done on my own device" earns nothing, and end-of-semester bulk commits are investigated. Keep the Individual Contribution Summary Table in your README current.</div>
       </div>
       <div class="panel">
         <h3>Team GitHub requirements</h3>
@@ -421,6 +423,7 @@ footer .links a{font-weight:600}
           <li>Add <code>gdparra-edu</code> and <code>cyberknowledge</code> as <strong>collaborators</strong>.</li>
           <li>Manage all project activity on the repo's integrated <strong>GitHub Project board</strong>.</li>
           <li>Write the final report as a <strong>GitHub Wiki page</strong>; keep presentation materials in the repo.</li>
+          <li>Vote (unanimously) on your <strong>commit approach</strong> and declare it in the proposal: <em>Individual Commits</em> (everyone pushes their own work; points follow the committer) or <em>Delegated Commits</em> (designated members push for the team; points follow the board assignee). Not unanimous? You default to Individual Commits.</li>
           <li>Submit the repo + Project links through the Capstone assignment on <strong>Canvas</strong>.</li>
         </ul>
       </div>

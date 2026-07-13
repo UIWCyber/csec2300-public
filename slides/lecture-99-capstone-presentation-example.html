@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 99: SecureLocal AI: a hardened local AI stack for a small clinic</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">SecureLocal AI: a hardened local AI stack for a small clinic</h1><div class="title-meta">Session 99 &nbsp;·&nbsp; Capstone Final Presentation (worked example)</div><div class="title-sub">Outcomes: CO1, CO4, CO5, CO6 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-content" data-index="2"><h1 class="s-title">Team and Project</h1><div class="s-body"><ul>
+<li><strong>Project:</strong> SecureLocal AI, a hardened local AI stack for a small clinic</li>
+<li><strong>Team Member 1:</strong> (your name and the role you owned, for example operations and deployment)</li>
+<li><strong>Team Member 2:</strong> (your name and the role you owned, for example agent and application)</li>
+<li><strong>Team Member 3:</strong> (your name and the role you owned, for example security and CI)</li>
+<li><strong>Professor:</strong> Dr. Gonzalo D Parra</li>
+<li>CSEC 2300 Foundations of Cyber Security, University of the Incarnate Word</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Capstone teams are 2 to 3 students. If your team is two, use two placeholders. This slide is where the audience learns who owns what before you start.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">2</div></section>
+<section class="slide s-content" data-index="3"><h1 class="s-title">Outline</h1><div class="s-body"><ul>
+<li>Motivation</li>
+<li>Objective</li>
+<li>Milestones and User Stories</li>
+<li>Prototype and Demo</li>
+<li>Challenges and Limitations</li>
+<li>Future Work</li>
+<li>Conclusion</li>
+<li>References</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Show the outline for about fifteen seconds, then move. The audience uses it as a map, not as a reading assignment.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">Motivation</h1><div class="s-body"><ul>
+<li><strong>Why it matters:</strong> a small clinic wants the convenience of an AI assistant for staff questions, but sending patient-adjacent text to a cloud model raises privacy and compliance risk.</li>
+<li><strong>Who benefits:</strong> front-desk staff who need fast, plain-language answers, and the clinic owner who must keep data on premises.</li>
+<li><strong>Current landscape:</strong> most AI assistants are cloud-hosted, so prompts and context leave the building.</li>
+<li><strong>The gap:</strong> there is no turnkey, self-hosted, security-reviewed stack a non-expert can run and trust. That gap is what our project closes.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">4</div></section>
+<section class="slide s-content" data-index="5"><h1 class="s-title">Objective</h1><div class="s-body"><ul>
+<li>Deliver a fully local AI assistant that runs on the clinic's own hardware, encrypts traffic at the edge, and never sends prompts to a third party.</li>
+<li>Wrap the stack in a security-gated CI pipeline so that every change is scanned for secrets and misconfiguration before it merges.</li>
+<li>Prove the design by mapping each control to a course outcome and defending one attack we mitigated.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">5</div></section>
+<section class="slide s-content" data-index="6"><h1 class="s-title">Milestones Overview</h1><div class="s-body"><ul>
+<li><strong>Proposal approved:</strong> scope, threat model, and target controls signed off by the instructor.</li>
+<li><strong>Checkpoint 1:</strong> reproducible stack running in Docker plus a CI skeleton.</li>
+<li><strong>Checkpoint 2:</strong> TLS at the edge, the agent wired in, and the model API off the host network.</li>
+<li><strong>Presentation and final submission:</strong> hardened stack, wiki report, recorded demo, and a clean board.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Milestones and user stories on these slides MUST match the GitHub repository exactly. Each member presents only the user stories they personally contributed to.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">Checkpoint 1 - User Stories</h1><div class="s-body"><ul>
+<li>Present each story as row data: <strong>User Story #, Title, Assigned To, Committed By, Status</strong>. One bullet per story, metadata on the sub-line.</li>
+<li><strong>US-1 Reproducible stack:</strong> "As an operator, I want Ollama and Open WebUI in Docker Compose with pinned image tags so that the stack is reproducible."</li>
+<li class="sub">Assigned To: Member 1 · Committed By: Member 1 · Status: Done</li>
+<li><strong>US-2 CI skeleton:</strong> "As a developer, I want branch protection and a CI workflow so that nothing merges without a passing check."</li>
+<li class="sub">Assigned To: Member 2 · Committed By: Member 2 · Status: Done</li>
+<li><strong>US-3 Secret scanning:</strong> "As a security reviewer, I want gitleaks in CI so that credentials never land in the history."</li>
+<li class="sub">Assigned To: Member 3 · Committed By: Member 3 · Status: In progress</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Assigned To is who was assigned on the board; Committed By is who pushed the work. Under Individual Commits these must match for you to earn the points.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">7</div></section>
+<section class="slide s-content" data-index="8"><h1 class="s-title">Checkpoint 1 - Evidence</h1><div class="s-body"><ul>
+<li>Evidence lives here: screenshots, terminal output, and commit hashes or links that prove each story is real.</li>
+<li><strong>Mocked example 1:</strong> terminal output of <code>docker compose up</code> showing both containers healthy, captured next to the compose file with its pinned tags.</li>
+<li><strong>Mocked example 2:</strong> a screenshot of the passing CI run with the gitleaks step green, linked to commit <code>a1b2c3d</code> on the <code>main</code> branch.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Every claim you make out loud should have a matching artifact on the slide or one click away in the repo. No artifact, no credit.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">Checkpoint 2 - User Stories</h1><div class="s-body"><ul>
+<li><strong>US-4 TLS at the edge:</strong> "As an operator, I want a reverse proxy terminating TLS so that clinic traffic to the web UI is encrypted."</li>
+<li class="sub">Assigned To: Member 1 · Committed By: Member 1 · Status: Done</li>
+<li><strong>US-5 Scoped agent:</strong> "As a developer, I want the ADK agent wired to the local model with tool scoping so that it answers only clinic FAQs."</li>
+<li class="sub">Assigned To: Member 2 · Committed By: Member 2 · Status: Done</li>
+<li><strong>US-6 Model API off the host:</strong> "As a security reviewer, I want the Ollama port unpublished and moved to an internal network so that the model API is not exposed."</li>
+<li class="sub">Assigned To: Member 3 · Committed By: Member 3 · Status: Done</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">The member who owns each row is the member who speaks to it. Do not narrate a teammate's story.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">Checkpoint 2 - Evidence</h1><div class="s-body"><ul>
+<li><strong>Mocked example 1:</strong> a browser screenshot of the web UI on <code>https</code> with a valid local certificate, plus the proxy config snippet.</li>
+<li><strong>Mocked example 2:</strong> <code>docker network inspect</code> output showing the model on the internal network with no host port published, linked to commit <code>d4e5f6a</code>.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Show a before and after when you can. "Port was published; here is the commit that closed it" is a strong evidence pattern.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">10</div></section>
+<section class="slide s-content" data-index="11"><h1 class="s-title">Final - User Stories</h1><div class="s-body"><ul>
+<li><strong>US-7 One-command bootstrap:</strong> "As an operator, I want a bootstrap script and a recorded demo so that anyone can run the stack."</li>
+<li class="sub">Assigned To: Member 1 · Committed By: Member 1 · Status: Done</li>
+<li><strong>US-8 Agent guardrails:</strong> "As a developer, I want input and output validation plus a human gate on the one sensitive tool so that unsafe actions are blocked."</li>
+<li class="sub">Assigned To: Member 2 · Committed By: Member 2 · Status: Done</li>
+<li><strong>US-9 Governance artifacts:</strong> "As a security reviewer, I want the risk register, IR note, and AI-use policy in the wiki so that governance is documented."</li>
+<li class="sub">Assigned To: Member 3 · Committed By: Member 3 · Status: Done</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">Final - Evidence</h1><div class="s-body"><ul>
+<li><strong>Mocked example 1:</strong> the recorded demo video committed to the repo, plus a screenshot of the human-in-the-loop prompt blocking the agent's sensitive tool.</li>
+<li><strong>Mocked example 2:</strong> a screenshot of the wiki risk register and the IR note, with links to the pull requests that added them.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">The final wiki, repo, and board are due at the posted deadline on Canvas. No late work is accepted.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">12</div></section>
+<section class="slide s-diagram" data-index="13"><h1 class="s-title">System Architecture</h1><div class="s-body"><ul>
+<li>One picture of the running stack, top to bottom. Your diagram must match what you actually deployed.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 403 542" width="403" height="542" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">SecureLocal AI, layer by layer</text><rect x="30" y="40" width="343" height="68" rx="8" fill="#2a1c1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="70.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">ADK Agent</text><text x="44.0" y="90.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">scoped tools, human gate</text><rect x="30" y="116" width="343" height="68" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="146.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Open WebUI</text><text x="44.0" y="166.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">staff chat interface</text><rect x="30" y="192" width="343" height="68" rx="8" fill="#221d1e" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="222.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Local LLM</text><text x="44.0" y="242.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">Ollama, on-prem</text><rect x="30" y="268" width="343" height="68" rx="8" fill="#2c2f34" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="298.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">TLS Proxy</text><text x="44.0" y="318.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">encryption at the edge</text><rect x="30" y="344" width="343" height="68" rx="8" fill="#2e1d1f" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="374.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">Docker</text><text x="44.0" y="394.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">isolation, internal net</text><rect x="30" y="420" width="343" height="68" rx="8" fill="#231a1c" stroke="#5a3034" stroke-width="1" opacity="0.95"/><text x="44.0" y="450.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="start">GitHub CI</text><text x="44.0" y="470.0" fill="#a8acb3" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="10.5" font-weight="400" text-anchor="start">secret and config scans</text><rect x="210" y="56" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="78.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">agent.py</text><rect x="210" y="132" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="154.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">web ui</text><rect x="210" y="208" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="230.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">ollama</text><rect x="210" y="284" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="306.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">proxy</text><rect x="210" y="360" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="382.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">compose</text><rect x="210" y="436" width="138" height="35" rx="7" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="279.0" y="458.5" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="12" font-weight="600" text-anchor="middle">scans</text></svg><figcaption>Traffic enters through TLS, the model stays on an internal network, and every change passes CI before it ships.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">13</div></section>
+<section class="slide s-content" data-index="14"><h1 class="s-title">Prototype and Demo</h1><div class="s-body"><ul>
+<li>The prototype is the running stack: Dockerized Ollama and Open WebUI behind a TLS proxy, with the ADK agent answering clinic FAQs. The model never leaves the host. CI gates every change. The board shows steady, distributed work.</li>
+<li><strong>Live demo:</strong> we bring the stack up, log in over <code>https</code>, ask the agent a question, then trigger the human gate on its sensitive tool.</li>
+<li><strong>Fallback:</strong> if the live demo fails, we switch to the recorded video in the repo and keep going.</li>
+<li><strong>Repository:</strong> https://github.com/UIWCyber/PLACEHOLDER-your-team-repo</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Rehearse the demo on the exact machine you will present from. A failed cable should never cost you the demo; that is what the recording is for.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">Challenges and Limitations</h1><div class="s-body"><ul>
+<li><strong>Challenges (what was hard to build):</strong></li>
+<li class="sub">The model ran too slowly on a laptop, so we tuned the context size and picked a smaller quantized model.</li>
+<li class="sub">Agent tool scoping took several iterations before the assistant stopped trying to call tools outside the clinic FAQ.</li>
+<li class="sub">CI secret-scan false positives blocked merges until we tuned the allowlist for example config values.</li>
+<li><strong>Limitations (what we did not solve):</strong></li>
+<li class="sub">The stack is single-host; there is no high availability or failover.</li>
+<li class="sub">Performance is acceptable for one or two staff users, not a busy clinic.</li>
+<li class="sub">We reviewed the container images we pinned, but we did not audit every upstream dependency.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">Future Work</h1><div class="s-body"><p>1. <strong>Scale out:</strong> move from single-host Docker Compose to an orchestrated deployment with health checks and failover.</p>
+<p>2. <strong>Deeper monitoring:</strong> add centralized logging and alerts so an exposed service or a failed gate is caught automatically.</p>
+<p>3. <strong>Broader assurance:</strong> add software bill-of-materials generation and dependency scanning to extend the supply-chain review beyond pinned tags.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">16</div></section>
+<section class="slide s-content" data-index="17"><h1 class="s-title">Conclusion</h1><div class="s-body"><ul>
+<li><strong>Outcome:</strong> a working, self-hosted AI assistant that keeps clinic data on premises and passes a security-gated pipeline on every change.</li>
+<li><strong>What we learned:</strong> hardening an existing stack is real security work; the hardest points were network exposure and agent guardrails, not the model itself.</li>
+<li><strong>Course objectives demonstrated:</strong> containers and isolation, CI security scanning, encryption at the edge, LLM and agent guardrails, and governance artifacts, all in one defensible artifact.</li>
+<li><strong>Repository:</strong> https://github.com/UIWCyber/PLACEHOLDER-your-team-repo</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Close by naming the one control you are proudest of and the one risk you knowingly accepted. Honest security reasoning lands better than a claim of perfect security.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">17</div></section>
+<section class="slide s-content" data-index="18"><h1 class="s-title">References</h1><div class="s-body"><ul>
+<li>Format every citation in APA. If you are unsure of the format, build it at https://www.citationmachine.net/apa and paste the result here.</li>
+<li>OWASP. (n.d.). <em>OWASP Top 10 for Large Language Model Applications</em>. OWASP GenAI Security Project. https://genai.owasp.org/llm-top-10/</li>
+<li>Docker, Inc. (n.d.). <em>Docker Compose documentation</em>. Docker Docs. https://docs.docker.com/compose/</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Cite real sources you actually used. Do not invent authors or dates for real papers; if a source has no date, write "n.d." as shown above.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>Capstone presentation example</span></div><div class="s-num">18</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

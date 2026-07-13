@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capstone Presentation Rubric - CSEC 2300</title>
+<title>Capstone Final Report and Wiki Rubric - CSEC 2300</title>
 <style>
   :root {
     --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
@@ -74,132 +74,109 @@
 </head>
 <body>
 <div class="toolbar no-print">
-  <span class="title">Capstone Presentation Rubric</span>
+  <span class="title">Capstone Final Report and Wiki Rubric</span>
   <button class="btn" id="btnPrint">Download PDF</button>
   <button class="btn secondary" id="btnTheme">Toggle Theme</button>
   <button class="btn secondary" id="btnClear">Clear Form</button>
 </div>
 <div class="wrap">
   <header class="doc">
-    <h1>Capstone Presentation Rubric</h1>
+    <h1>Capstone Final Report and Wiki Rubric</h1>
     <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
   </header>
 
   <div class="callout">
-    The final presentation is worth 5% of your course grade (part of the 20% capstone). Teams present in posted time slots during the scheduled Capstone Presentations sessions (order posted on Canvas). Each team gets roughly ten to twelve minutes: about eight to present plus two or three for Q&amp;A.
+    This rubric scores the GitHub Wiki final report, worth 3% of the course grade. The wiki is the project's official documentation.
   </div>
 
-  <h2>Hard Rules</h2>
-  <ul style="font-size:0.93rem;">
-    <li><strong>Every member speaks.</strong> Delivery credit requires a speaking part from each team member.</li>
-    <li><strong>Missing your slot costs 15%.</strong> Failure to present during the scheduled Capstone Presentations results in an automatic 15% deduction from the team's total capstone grade.</li>
-    <li><strong>No late work.</strong> The final repo, wiki, and board are due at the posted deadline on Canvas or they score zero.</li>
-    <li><strong>Demo fallback required.</strong> A recorded demo video must be in the repo. If the live demo fails, you switch to the recording and keep going; a working artifact is not penalized heavily for a failed cable.</li>
-  </ul>
-
-  <h2>Required Structure (five beats, in order)</h2>
-  <ol class="beats">
-    <li>Architecture diagram plus a live demo of the running stack.</li>
-    <li>Controls mapped to course outcomes (CO) and SY0-701 domains.</li>
-    <li>One attack you defended (injection, an exposed service, and so on).</li>
-    <li>Risks accepted plus the incident-response note.</li>
-    <li>Lessons learned.</li>
-  </ol>
-
-  <h2>Team Under Review</h2>
+  <h2>Team and Project</h2>
   <div class="grid-2">
-    <div class="field"><label for="team-name">Team name</label><input type="text" id="team-name" placeholder="Team name"></div>
-    <div class="field"><label for="presenters">Presenters (every member speaking)</label><input type="text" id="presenters" placeholder="Member names"></div>
+    <div class="field"><label for="team-members">Team members</label><input type="text" id="team-members" placeholder="Member names (2 to 3 students)"></div>
+    <div class="field"><label for="project-title">Project title</label><input type="text" id="project-title" placeholder="Project title"></div>
   </div>
+  <div class="field"><label for="date">Date</label><input type="text" id="date" placeholder="Date reviewed"></div>
 
-  <h2>Scoring Criteria and Weights</h2>
-  <p class="note">Enter a SCORE (0 to that criterion's max points) for each criterion. The weighted total out of 100 computes automatically. Descriptors are shown as reference.</p>
+  <h2>Scoring Criteria</h2>
+  <p class="note">Enter a SCORE within each criterion's range. The total out of 10 computes automatically. Descriptors are shown as reference; the score maps to the 3% wiki component of the course grade.</p>
 
   <div class="totalbar">
-    <span>Presentation total</span>
-    <span><span class="val" id="totalVal">0</span> / 100</span>
+    <span>Report and wiki total</span>
+    <span><span class="val" id="totalVal">0</span> / 10</span>
   </div>
 
-  <div class="crit" data-crit="demo" data-max="25">
+  <div class="crit" data-crit="arch" data-max="4">
     <div class="head">
-      <h3>Architecture and working demo</h3>
-      <span class="weight">25%</span>
-      <span class="scorebox">Score <input type="number" id="score-demo" min="0" max="25" step="0.5" placeholder="0"> <span class="max">/ 25</span></span>
+      <h3>Architecture and Diagrams</h3>
+      <span class="weight">0 to 4</span>
+      <span class="scorebox">Score <input type="number" id="score-arch" min="0" max="4" step="0.5" placeholder="0"> <span class="max">/ 4</span></span>
     </div>
-    <div class="descriptors">
-      <div class="desc-row"><span class="lvl exc">Excellent</span><span>The stack runs live. Segmentation, TLS at the edge, and containerization are visibly demonstrated, not just claimed. The architecture diagram matches what is actually running.</span></div>
-      <div class="desc-row"><span class="lvl adq">Adequate</span><span>The stack runs (live or via the required recording) and the diagram is accurate, but one or two hardening features are described rather than shown.</span></div>
-      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>No working stack shown live or recorded, the diagram contradicts the deployment, or the stack is a stock install with no evident hardening.</span></div>
-    </div>
+    <table>
+      <thead><tr>
+        <th><span class="lvl miss">Needs Improvement</span></th>
+        <th><span class="lvl adq">Satisfactory</span></th>
+        <th><span class="lvl exc">Excellent</span></th>
+      </tr></thead>
+      <tbody><tr>
+        <td>Diagrams are missing, messy, or inaccurate.</td>
+        <td>Standard diagrams show containers, networks, and trust boundaries, and they match the implementation.</td>
+        <td>Professional topology plus data-flow diagrams that explain how the system actually works.</td>
+      </tr></tbody>
+    </table>
   </div>
 
-  <div class="crit" data-crit="controls" data-max="30">
+  <div class="crit" data-crit="docs" data-max="4">
     <div class="head">
-      <h3>Security controls and mapping</h3>
-      <span class="weight">30%</span>
-      <span class="scorebox">Score <input type="number" id="score-controls" min="0" max="30" step="0.5" placeholder="0"> <span class="max">/ 30</span></span>
+      <h3>Technical Documentation</h3>
+      <span class="weight">0 to 4</span>
+      <span class="scorebox">Score <input type="number" id="score-docs" min="0" max="4" step="0.5" placeholder="0"> <span class="max">/ 4</span></span>
     </div>
-    <div class="descriptors">
-      <div class="desc-row"><span class="lvl exc">Excellent</span><span>Each implemented control is named, classified (preventive, detective, or corrective), and mapped to a specific CO and SY0-701 domain. The mapping is correct and the team can defend it under questioning.</span></div>
-      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Controls are listed and mostly mapped, but some classifications or domain mappings are vague, wrong, or unexplained.</span></div>
-      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>Controls are named without mapping, the mapping is copied boilerplate the team cannot explain, or few real controls exist.</span></div>
-    </div>
+    <table>
+      <thead><tr>
+        <th><span class="lvl miss">Needs Improvement</span></th>
+        <th><span class="lvl adq">Satisfactory</span></th>
+        <th><span class="lvl exc">Excellent</span></th>
+      </tr></thead>
+      <tbody><tr>
+        <td>Vague documentation ("we installed the firewall"), with no screenshots or configurations.</td>
+        <td>Explains the build steps covering the target controls, and includes screenshots and configurations.</td>
+        <td>Runbook-style detail: someone else could rebuild the stack from the wiki alone, and it explains why each setting was chosen.</td>
+      </tr></tbody>
+    </table>
   </div>
 
-  <div class="crit" data-crit="attack" data-max="20">
+  <div class="crit" data-crit="structure" data-max="2">
     <div class="head">
-      <h3>Attack and defense narrative</h3>
-      <span class="weight">20%</span>
-      <span class="scorebox">Score <input type="number" id="score-attack" min="0" max="20" step="0.5" placeholder="0"> <span class="max">/ 20</span></span>
+      <h3>Wiki Structure and Navigation</h3>
+      <span class="weight">0 to 2</span>
+      <span class="scorebox">Score <input type="number" id="score-structure" min="0" max="2" step="0.5" placeholder="0"> <span class="max">/ 2</span></span>
     </div>
-    <div class="descriptors">
-      <div class="desc-row"><span class="lvl exc">Excellent</span><span>A real attack is shown against the stack and its mitigation is demonstrated, with honest residual risk stated. "This injection still partially works; here is our compensating control" earns full credit. Honest security reasoning outranks a polished demo.</span></div>
-      <div class="desc-row"><span class="lvl adq">Adequate</span><span>An attack and defense are described credibly but demonstrated only partially, or the residual risk discussion is thin.</span></div>
-      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>No concrete attack, a purely hypothetical scenario with no evidence, or claims of perfect security with no residual risk acknowledged.</span></div>
-    </div>
+    <table>
+      <thead><tr>
+        <th><span class="lvl miss">Needs Improvement</span></th>
+        <th><span class="lvl adq">Satisfactory</span></th>
+        <th><span class="lvl exc">Excellent</span></th>
+      </tr></thead>
+      <tbody><tr>
+        <td>One long page, or broken links.</td>
+        <td>A sidebar and logical sections (Home, Architecture, Setup, Sprint Notes).</td>
+        <td>Mirrors a professional open-source project: easy navigation and clean headings.</td>
+      </tr></tbody>
+    </table>
   </div>
 
-  <div class="crit" data-crit="governance" data-max="15">
-    <div class="head">
-      <h3>Governance artifacts</h3>
-      <span class="weight">15%</span>
-      <span class="scorebox">Score <input type="number" id="score-governance" min="0" max="15" step="0.5" placeholder="0"> <span class="max">/ 15</span></span>
-    </div>
-    <div class="descriptors">
-      <div class="desc-row"><span class="lvl exc">Excellent</span><span>The risk register, AI-use policy, and incident-response note are complete in the wiki, and the Git history and Project board show steady, distributed work all semester.</span></div>
-      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Artifacts exist but one is thin or stale, or the board and commit history show bursts rather than steady collaboration.</span></div>
-      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>One or more artifacts absent, an empty or stale Project board, or commit history concentrated in a single member.</span></div>
-    </div>
-  </div>
+  <p class="note">The total out of 10 maps to the 3% wiki component of the course grade.</p>
 
-  <div class="crit" data-crit="delivery" data-max="10">
-    <div class="head">
-      <h3>Delivery and teamwork</h3>
-      <span class="weight">10%</span>
-      <span class="scorebox">Score <input type="number" id="score-delivery" min="0" max="10" step="0.5" placeholder="0"> <span class="max">/ 10</span></span>
-    </div>
-    <div class="descriptors">
-      <div class="desc-row"><span class="lvl exc">Excellent</span><span>Every member speaks with a substantive part. The talk is clear, hits the five beats in order, lands on time, and the team answers questions directly.</span></div>
-      <div class="desc-row"><span class="lvl adq">Adequate</span><span>Every member speaks but parts are uneven, timing slips, or answers wander.</span></div>
-      <div class="desc-row"><span class="lvl miss">Missing or weak</span><span>A member does not speak, the talk runs well over or under time, or questions go unanswered.</span></div>
-    </div>
-  </div>
-
-  <div class="deduct">
-    <label class="inline"><input type="checkbox" id="deduct-slot"> Missed scheduled slot (automatic 15% off the team's total capstone grade)</label>
-  </div>
-
-  <div class="field"><label for="strength">One strength</label><textarea id="strength" placeholder="What this team did well"></textarea></div>
-  <div class="field"><label for="gap">One gap</label><textarea id="gap" placeholder="What to harden or improve"></textarea></div>
+  <div class="field"><label for="strength">One strength</label><textarea id="strength" placeholder="What this wiki did well"></textarea></div>
+  <div class="field"><label for="gap">One gap</label><textarea id="gap" placeholder="What to document or improve"></textarea></div>
   <div class="field"><label for="comments">Additional comments</label><textarea id="comments" placeholder="Notes for the team"></textarea></div>
 </div>
 
 <script>
 (function () {
   "use strict";
-  var NS = "csec2300-capstone-rubric:";
-  var scoreIds = ["score-demo", "score-controls", "score-attack", "score-governance", "score-delivery"];
-  var maxes = { "score-demo": 25, "score-controls": 30, "score-attack": 20, "score-governance": 15, "score-delivery": 10 };
+  var NS = "csec2300-capstone-wiki-rubric:";
+  var scoreIds = ["score-arch", "score-docs", "score-structure"];
+  var maxes = { "score-arch": 4, "score-docs": 4, "score-structure": 2 };
 
   function clampScore(el) {
     var max = maxes[el.id];
