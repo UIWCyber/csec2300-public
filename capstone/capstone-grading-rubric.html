@@ -99,7 +99,9 @@
   <div class="grid-2">
     <div class="field"><label for="team">Team name</label><input type="text" id="team" placeholder="team-name"></div>
     <div class="field"><label for="project">Project title</label><input type="text" id="project" placeholder="project title"></div>
-    <div class="field"><label for="members">Team members</label><input type="text" id="members" placeholder="names"></div>
+    <div class="field"><label for="student1">Student 1</label><input type="text" id="student1" placeholder="full name"></div>
+    <div class="field"><label for="student2">Student 2</label><input type="text" id="student2" placeholder="full name"></div>
+    <div class="field"><label for="student3">Student 3</label><input type="text" id="student3" placeholder='full name or "N/A (team of 2)"'></div>
     <div class="field"><label for="gdate">Date</label><input type="text" id="gdate" placeholder="grading date"></div>
   </div>
 
@@ -112,6 +114,25 @@
   <div class="deduct">
     <label class="inline"><input type="checkbox" id="deduct-slot"> Missed scheduled presentation slot
       (automatic 15% deduction from the team's total capstone grade)</label>
+  </div>
+
+  <div class="sec">
+    <div class="head"><h2>Individual grades (contribution-scaled)</h2>
+      <span class="weight">Individual = Team x N x Contribution %, capped per component</span></div>
+    <p class="note">Enter each student's contribution percent from the GitHub record (story points earned
+      divided by the team's total, per the Individual Contribution Summary Table in the README, verified
+      against the board and commit history). Each student's score is the team's component scores scaled by
+      N members times their contribution, capped at each component's maximum: contributing your fair share
+      earns the full team score, doing more cannot exceed the maximums, and contributing nothing earns zero.</p>
+    <table>
+      <thead><tr><th>Student</th><th style="width:11rem">Contribution % (GitHub)</th><th style="width:9rem">Individual score</th></tr></thead>
+      <tbody>
+        <tr><td id="iname1">Student 1</td><td><input type="number" id="contrib1" min="0" max="100" step="1" placeholder="%"></td><td class="earn" id="iscore1">-</td></tr>
+        <tr><td id="iname2">Student 2</td><td><input type="number" id="contrib2" min="0" max="100" step="1" placeholder="%"></td><td class="earn" id="iscore2">-</td></tr>
+        <tr><td id="iname3">Student 3</td><td><input type="number" id="contrib3" min="0" max="100" step="1" placeholder="%"></td><td class="earn" id="iscore3">-</td></tr>
+      </tbody>
+    </table>
+    <p class="note" id="contribWarn" style="display:none; color: var(--cardinal); font-weight: 600;">Contribution percentages of named students do not add up to 100.</p>
   </div>
 
   <div class="field"><label for="overall-notes">Overall notes</label>
@@ -185,7 +206,7 @@
   });
 
   function recalc() {
-    var grand = 0, minis = [];
+    var grand = 0, minis = [], secPts = {};
     SECTIONS.forEach(function (s) {
       var secPct = 0;
       s.criteria.forEach(function (c, i) {
@@ -197,15 +218,41 @@
         secPct += earned;
       });
       var pts = secPct / 100 * s.pts;
+      secPts[s.id] = pts;
       document.getElementById("pct-" + s.id).textContent = fmt(secPct);
       document.getElementById("pts-" + s.id).textContent = pts.toFixed(2);
       minis.push(s.id + " " + pts.toFixed(2));
       grand += pts;
     });
-    if (document.getElementById("deduct-slot").checked) grand *= 0.85;
+    var deducted = document.getElementById("deduct-slot").checked;
+    var dfac = deducted ? 0.85 : 1;
+    grand *= dfac;
     document.getElementById("grandTotal").textContent = grand.toFixed(2);
     document.getElementById("secmini").textContent = minis.join(" | ") +
-      (document.getElementById("deduct-slot").checked ? " | missed slot: x0.85" : "");
+      (deducted ? " | missed slot: x0.85" : "");
+
+    // individual grades: Team component x N x contribution, capped per component
+    var students = [1, 2, 3].map(function (n) {
+      return { n: n, name: (document.getElementById("student" + n).value || "").trim(),
+               contrib: parseFloat(document.getElementById("contrib" + n).value) };
+    });
+    var named = students.filter(function (st) { return st.name && !/^n\/?a/i.test(st.name); });
+    var N = named.length;
+    var contribSum = 0;
+    students.forEach(function (st) {
+      document.getElementById("iname" + st.n).textContent = st.name || ("Student " + st.n);
+      var out = document.getElementById("iscore" + st.n);
+      if (!st.name || /^n\/?a/i.test(st.name) || isNaN(st.contrib) || N === 0) { out.textContent = "-"; return; }
+      contribSum += st.contrib;
+      var ind = 0;
+      SECTIONS.forEach(function (s) {
+        ind += Math.min(secPts[s.id] * dfac * N * (st.contrib / 100), s.pts);
+      });
+      out.textContent = ind.toFixed(2) + " / 20%";
+    });
+    var warn = document.getElementById("contribWarn");
+    var anyScored = named.some(function (st) { return !isNaN(st.contrib); });
+    warn.style.display = (anyScored && Math.abs(contribSum - 100) > 2) ? "" : "none";
   }
 
   // persistence
@@ -229,7 +276,7 @@
   document.getElementById("btnClear").addEventListener("click", function () {
     if (!confirm("Clear the whole rubric?")) return;
     Object.keys(localStorage).forEach(function (k) { if (k.indexOf(NS) === 0) localStorage.removeItem(k); });
-    document.querySelectorAll("input[type=text], textarea").forEach(function (el) { el.value = ""; });
+    document.querySelectorAll("input[type=text], input[type=number], textarea").forEach(function (el) { el.value = ""; });
     document.querySelectorAll("select").forEach(function (el) { el.value = ""; });
     document.getElementById("deduct-slot").checked = false;
     recalc();
@@ -239,9 +286,9 @@
     var cur = r.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     var next = cur === "dark" ? "light" : "dark";
     r.setAttribute("data-theme", next);
-    try { localStorage.setItem(NS + "theme", next); } catch (e) {}
+    try { localStorage.setItem("csec-theme", next); } catch (e) {}
   });
-  try { var t = localStorage.getItem(NS + "theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  try { var t = localStorage.getItem("csec-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
 
   document.addEventListener("keydown", function (e) {
     var a = document.activeElement;

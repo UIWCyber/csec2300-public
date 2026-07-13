@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSEC 2300 Foundations of Cyber Security - Session 98: Capstone Kick-off: Agile on GitHub and how you are graded</title>
+<style>
+:root{
+  --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
+  --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  --red:#cb333b; --red-dk:#89191c; --red-lt:#e8565f;
+  --grn:#7be39a; --amb:#e2a04a;
+  --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
+#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
+.slide.active{display:flex}
+.slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
+/* accent rails */
+#deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
+.s-title{background:linear-gradient(135deg,#232326,#1a1a1c)}
+.title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
+.title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
+.title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
+.title-meta{font-size:22px;color:var(--ink);font-weight:600}
+.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.s-title .s-num{display:none}
+/* section divider slides */
+.s-section .s-title{color:#fff}
+.s-section{background:linear-gradient(135deg,#2a1a1b,#1a1a1c)}
+.s-section .s-body{font-size:40px;font-weight:800;border-left:8px solid var(--red);padding-left:28px}
+/* headers */
+.s-title.s-title{}
+h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
+.s-body{flex:1;font-size:23px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+ul,ol{margin:4px 0;padding-left:30px}
+li{margin:8px 0}
+li.sub{list-style:circle;color:var(--muted);font-size:20px}
+strong{color:#fff}
+em{color:var(--red-lt);font-style:normal;font-weight:600}
+code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
+p{margin:6px 0}
+/* objectives */
+ol.objectives li,ol.steps li{margin:12px 0}
+/* step cards */
+ol.steps{list-style:none;padding:0;counter-reset:none}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+.step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step-t{padding-top:4px}
+/* callouts */
+.callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:20px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding-top:3px}
+.c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
+.c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
+.c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
+.c-tip{border-left-color:var(--grn)} .c-tip .c-label{color:var(--grn)}
+.c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
+.c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
+/* terminal */
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term-body{padding:12px 16px;line-height:1.5}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-in{color:#eaeaea}
+.t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
+.t-cmd{color:#7fd1ff;font-weight:700}
+.t-args{color:#ffd9b0}
+.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-out{color:#9fa6b0}
+/* code block */
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+/* diagrams */
+.diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap figure{margin:0;text-align:center}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
+/* footer + slide number */
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
+/* HUD */
+#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+/* speaker notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
+  color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
+#notes.show{display:block}
+#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+/* grid overview */
+#grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
+#grid.show{display:grid}
+#grid .g{border:1px solid var(--line);border-radius:8px;background:var(--slate);padding:10px;cursor:pointer;height:150px;overflow:hidden;position:relative}
+#grid .g:hover{border-color:var(--red)}
+#grid .g .gt{font-size:12px;color:var(--muted)}
+#grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+/* print: one slide per page */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto}
+  #stage{position:static;display:block;overflow:visible}
+  #deck{transform:none!important;width:1280px;height:auto}
+  #prog,#hud,#notes,#grid{display:none!important}
+  .slide{position:relative;display:flex!important;inset:auto;width:1280px;height:720px;page-break-after:always;break-after:page}
+  #deck::before{position:absolute}
+}
+</style></head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide s-title" data-index="1"><div class="title-band"><div class="title-kicker">CSEC 2300 Foundations of Cyber Security</div><h1 class="title-main">Capstone Kick-off: Agile on GitHub and how you are graded</h1><div class="title-meta">Session 98 &nbsp;·&nbsp; Capstone Kick-off Guide</div><div class="title-sub">Outcomes: CO1, CO2, CO4, CO5, CO6 &nbsp;·&nbsp; Dr. Gonzalo D Parra</div></div><div class="s-num">1</div></section>
+<section class="slide s-objectives" data-index="2"><h1 class="s-title">Learning Objectives</h1><div class="s-body"><p class="lead">By the end of this session you will be able to:</p><ol class="objectives"><li>Form a compliant capstone team and assign coordination roles without dividing the technical work.</li><li>Explain the fixed capstone mission and choose the security controls your team will own.</li><li>Run Agile on GitHub using milestones, iterations, user stories, and tasks with correct story points.</li><li>Compute your own individual capstone grade from the team score, member count, and your verified contribution percentage.</li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">2</div></section>
+<section class="slide s-section" data-index="3"><div class="s-body"><ul>
+<li>Your repository is the record of your effort. Not what you say you did: what the commit history, the Project board, and the wiki can prove you did.</li>
+<li>This guide exists to prevent grade disputes. Grading is one hundred percent based on the verifiable GitHub record.</li>
+<li>We will cover team formation, the mission, Agile on GitHub, and the exact grade formula, with worked examples.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Deadlines are not on these slides. Every due date lives on Canvas, so the schedule stays correct even when a semester shifts.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">3</div></section>
+<section class="slide s-content" data-index="4"><h1 class="s-title">The Repository Is the Record</h1><div class="s-body"><ul>
+<li>Everything you are graded on is an artifact someone can open: a config file, a script, a screenshot, a wiki page, an issue with a matching commit.</li>
+<li>Talk is not an artifact. "I helped a lot" is not gradeable; a pull request with your name on the commit is.</li>
+<li>Treat the repo like a lab notebook. Commit as you go, in small honest pieces, and the grade takes care of itself.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">If you would be uncomfortable showing the instructor your commit history at the end of the term, fix that now, not in the final week.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">4</div></section>
+<section class="slide s-section" data-index="5"><div class="s-body"><ul>
+<li>Teams are 2 to 3 students. No solo projects, and no teams of four.</li>
+<li>You will collaborate and learn together all semester, so choose deliberately.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">5</div></section>
+<section class="slide s-content" data-index="6"><h1 class="s-title">Build a Team That Can Actually Meet</h1><div class="s-body"><ul>
+<li><strong>Compare schedules first.</strong> The Team Formation form has an availability grid. Fill it in before you commit; a team that cannot find a weekly meeting time will struggle all term.</li>
+<li><strong>Know how you each work.</strong> Take the free 16personalities test at https://www.16personalities.com and share your four-letter type with the team.</li>
+<li>Read each teammate's portrait at https://www.personalitypage.com so you understand how to communicate and divide coordination.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">A shared two-hour weekly block beats any clever role plan. Meeting time is the constraint that sinks teams.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">6</div></section>
+<section class="slide s-content" data-index="7"><h1 class="s-title">Roles Are Coordination, Not Division of Labor</h1><div class="s-body"><ul>
+<li><strong>Project Lead:</strong> keeps the board honest, runs the meeting, owns deadlines.</li>
+<li><strong>System Architect:</strong> owns the stack design and how the pieces fit together.</li>
+<li><strong>Security-Documentation Lead:</strong> owns the wiki report and that controls are evidenced.</li>
+<li><strong>Everyone does technical work.</strong> There is no documentation-only member. A role says what you coordinate, not that you skip the hands-on build.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">A "documentation only" member earns almost no story points and will score very low as an individual. Roles are hats, not excuses.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">7</div></section>
+<section class="slide s-section" data-index="8"><div class="s-body"><ul>
+<li>Unlike an open-topic project, the CSEC 2300 capstone deliverable is fixed: build, harden, and document a secure local-AI stack.</li>
+<li>Dockerized Ollama plus Open WebUI plus an ADK agent, behind a security-gated CI pipeline.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">8</div></section>
+<section class="slide s-content" data-index="9"><h1 class="s-title">What Is Fixed and What You Choose</h1><div class="s-body"><ul>
+<li><strong>Fixed for every team:</strong> the stack components (Ollama, Open WebUI, an ADK agent, all in Docker), the security-gated CI pipeline, the wiki final report, and the Project board.</li>
+<li><strong>Your team chooses:</strong> your 6 to 10 target security controls spanning at least three SY0-701 domains, your model choice, your edge and TLS design, and your agent's tools.</li>
+<li>Your freedom lives in the controls you pick and map to course outcomes, not in the shape of the deliverable.</li>
+<li><strong>Brainstorm each control with this sentence:</strong> "Our stack protects [use case]; we will demonstrate [threat] and defend with [control 1, control 2, control 3], verified by [test]." Fill it in a few times, then pick what you can build and prove.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Controls map to course outcomes and SY0-701 domains, and that mapping is what you defend. If you cannot name the test that verifies a control, you do not have a control yet, you have a wish.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">9</div></section>
+<section class="slide s-content" data-index="10"><h1 class="s-title">Agile on GitHub, the Big Picture</h1><div class="s-body"><ul>
+<li><strong>Milestone:</strong> a major goal with a due date, lives in the Issues tab.</li>
+<li><strong>Sprint (aka Iteration):</strong> a two-week timebox, lives on the Project board.</li>
+<li><strong>User Story:</strong> a parent issue labeled <code>user-story</code>, the <em>why</em>.</li>
+<li><strong>Task:</strong> a sub-issue, the <em>how</em>.</li>
+<li><strong>Story Points:</strong> the Estimate field, set on the parent story only.</li>
+<li><strong>Project Board:</strong> your team's whiteboard for the work.</li>
+</ul>
+<div class="callout c-analogy"><span class="c-label">Analogy</span><span class="c-body">Building a house: the milestone is "kitchen finished," a sprint is one two-week work window, a user story is "as a cook I want counters," and tasks are cut, fit, and install.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">10</div></section>
+<section class="slide s-diagram" data-index="11"><h1 class="s-title">The Work Breakdown, One Picture</h1><div class="s-body"><ul>
+<li>A milestone holds user stories; each story holds tasks. Points sit on the story; sizes sit on the tasks.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 818 364" width="818" height="364" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">How work nests on GitHub</text><line x1="409.0" y1="96.0" x2="214.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="214.0" y1="192.0" x2="116.5" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="214.0" y1="192.0" x2="311.5" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="409.0" y1="96.0" x2="604.0" y2="142.0" stroke="#5a3034" stroke-width="2.6"/><line x1="604.0" y1="192.0" x2="506.5" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><line x1="604.0" y1="192.0" x2="701.5" y2="238.0" stroke="#5a3034" stroke-width="2.6"/><rect x="30.0" y="238.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="116.5" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Task (Size)</text><rect x="225.0" y="238.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="311.5" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Task (Size)</text><rect x="127.5" y="142.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="214.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">User Story (points)</text><rect x="420.0" y="238.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="506.5" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Task (Size)</text><rect x="615.0" y="238.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="701.5" y="268.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Task (Size)</text><rect x="517.5" y="142.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#f4f4f4" stroke-width="2"/><text x="604.0" y="172.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">User Story (points)</text><rect x="322.5" y="46.0" width="173" height="50" rx="9" fill="#2c2f34" stroke="#cb333b" stroke-width="2.4"/><text x="409.0" y="76.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="600" text-anchor="middle">Milestone</text></svg><figcaption>Milestones group stories; stories group tasks. Story points live only on the story; task sizes live only on the task.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">11</div></section>
+<section class="slide s-content" data-index="12"><h1 class="s-title">Milestones Are NOT Sprints</h1><div class="s-body"><ul>
+<li><strong>Milestone:</strong> a deliverable phase with a due date. It answers "what must be done by when."</li>
+<li><strong>Sprint (Iteration):</strong> a fixed two-week window. It answers "what are we working on right now."</li>
+<li>A single milestone can span several sprints. They are two different axes, not two names for the same thing.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Every issue carries BOTH a Milestone and an Iteration. An issue with only one of the two is invisible to half of your planning.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">12</div></section>
+<section class="slide s-content" data-index="13"><h1 class="s-title">The Four CSEC 2300 Milestones</h1><div class="s-body"><ul>
+<li><strong>Milestone 1, Proposal approved:</strong> repo, board, and wiki are live and the proposal is signed off.</li>
+<li><strong>Milestone 2, Baseline stack running:</strong> <code>docker compose up</code> works, image tags are pinned.</li>
+<li><strong>Milestone 3, Hardening and attack demonstration:</strong> your controls are in and the gated CI is green.</li>
+<li><strong>Milestone 4, Documentation and presentation:</strong> wiki report complete, demo dry-run done.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Create these four milestones in the repo before you write your first issue. Milestones are the frame you hang stories on.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">13</div></section>
+<section class="slide s-content" data-index="14"><h1 class="s-title">Why GitHub Calls Everything an Issue</h1><div class="s-body"><ul>
+<li>On GitHub, both user stories and tasks are "issues." The label and the parent-child link are what give them meaning.</li>
+<li><strong>User story format:</strong> "As a [role], I want [action] so that [benefit]." It captures value, not steps.</li>
+<li>Examples for this stack:</li>
+<li class="sub">"As an operator, I want the Ollama port unpublished so that the model API is not reachable from the host network."</li>
+<li class="sub">"As a security reviewer, I want gitleaks in CI so that a secret can never merge into history."</li>
+<li class="sub">"As a staff user, I want TLS at the edge so that my chat traffic is encrypted in transit."</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">14</div></section>
+<section class="slide s-content" data-index="15"><h1 class="s-title">Tasks, Sizes, and the Story-Points Rule</h1><div class="s-body"><ul>
+<li><strong>Tasks</strong> are sub-issues of a story. Each task gets a <strong>Size</strong> of XS, S, M, L, or XL: a rough effort tag.</li>
+<li><strong>Story points</strong> (1, 2, 3, 5, 8) go <strong>only on user stories</strong>, never on tasks. Sizes go only on tasks, never on stories.</li>
+<li><strong>The 8-point warning:</strong> an 8-point story is too big to trust. Split it into smaller stories you can finish inside one sprint.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Common mistake: a task disguised as a user story. "Install Docker" is a task. "As an operator, I want a reproducible stack so any teammate can rebuild it" is a story.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">15</div></section>
+<section class="slide s-content" data-index="16"><h1 class="s-title">A Worked Sprint Plan</h1><div class="s-body"><ul>
+<li><strong>Context:</strong> Milestone 2 (Baseline stack), Sprint 1.</li>
+<li><strong>Story A, 5 points:</strong> "As an operator, I want Ollama and Open WebUI running from one compose file with pinned tags so that any teammate can rebuild the stack."</li>
+<li class="sub">Task: write <code>compose.yaml</code> (Size M, Member 1)</li>
+<li class="sub">Task: pin both image tags to digests (Size S, Member 2)</li>
+<li class="sub">Task: add a <code>.env.example</code> and secrets note (Size S, Member 3)</li>
+<li class="sub">Task: verify <code>docker compose up</code> on a second machine (Size M, Member 2)</li>
+<li class="sub">Task: capture healthy-container output (Size XS, Member 1)</li>
+<li><strong>Story B, 2 points:</strong> "As a reader, I want a README quickstart so that setup is reproducible." (docs tasks split across Members 1 and 3)</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Notice the docs tasks are spread across members. Documentation is shared technical work, not one person's job.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">16</div></section>
+<section class="slide s-content" data-index="17"><h1 class="s-title">Repository Setup, Step by Step</h1><div class="s-body"><ol class="steps"><li><span class="step-n">1</span><span class="step-t">Create a PRIVATE repo named csec2300_team-name.</span></li><li><span class="step-n">2</span><span class="step-t">Add collaborators gdparra-edu and cyberknowledge.</span></li><li><span class="step-n">3</span><span class="step-t">Enable the Wiki. Your final report lives there.</span></li><li><span class="step-n">4</span><span class="step-t">Create the Project board from the Iterative development template (Backlog, Ready, In Progress, In Review, Done) with two-week iterations.</span></li><li><span class="step-n">5</span><span class="step-t">Create your four milestones BEFORE any issues.</span></li><li><span class="step-n">6</span><span class="step-t">Populate Sprint 1 with stories and tasks, each tagged with a Milestone and an Iteration.</span></li></ol>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Before you propose a new user story, review the current state of the repo so your story does not duplicate work already completed.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">17</div></section>
+<section class="slide s-diagram" data-index="18"><h1 class="s-title">Contribution Tracking, Two Approaches</h1><div class="s-body"><ul>
+<li>Your team votes for ONE commit approach and declares it on the proposal.</li>
+</ul>
+<div class="diagram-wrap"><figure class="diagram"><svg viewBox="0 0 692 336" width="692" height="336" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace"><defs><marker id="ah" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#c9ccd1"/></marker><marker id="ahs" markerWidth="11" markerHeight="9" refX="9" refY="4.5" orient="auto-start-reverse"><path d="M0,0 L11,4.5 L0,9 z" fill="#cb333b"/></marker></defs><text x="22" y="24" fill="#e8565f" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700">Individual vs Delegated commits</text><rect x="22" y="40" width="648" height="50" rx="8" fill="#26191b" stroke="#5a3034" stroke-width="1"/><text x="325.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Individual Commits</text><text x="555.0" y="69.0" fill="#cb333b" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="14" font-weight="700" text-anchor="middle">Delegated Commits</text><text x="34.0" y="122.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Who pushes</text><text x="325.0" y="114.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Each member pushes their</text><text x="325.0" y="130.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">own work</text><text x="555.0" y="114.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Designated committer(s)</text><text x="555.0" y="130.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">push for the team</text><rect x="22" y="146" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="170.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Rule for a story or</text><text x="34.0" y="186.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">task</text><text x="325.0" y="170.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Must have a commit by its</text><text x="325.0" y="186.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">assignee</text><text x="555.0" y="170.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Committer pushes on the</text><text x="555.0" y="186.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">assignee&#x27;s behalf</text><text x="34.0" y="234.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Where points go</text><text x="325.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">To whoever MADE the commit</text><text x="555.0" y="234.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">To the board assignee</text><rect x="22" y="258" width="648" height="56" fill="#1c1517" opacity="0.5"/><text x="34.0" y="290.0" fill="#f4a0a6" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="700" text-anchor="start">Mismatch handling</text><text x="325.0" y="282.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Points follow the</text><text x="325.0" y="298.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">committer, not the board</text><text x="555.0" y="282.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">Points follow the board</text><text x="555.0" y="298.0" fill="#f4f4f4" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,Menlo,monospace" font-size="13" font-weight="400" text-anchor="middle">assignee</text><line x1="210" y1="40" x2="210" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="440" y1="40" x2="440" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="670" y1="40" x2="670" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><line x1="22" y1="40" x2="22" y2="314" stroke="#5a3034" stroke-width="1" opacity="0.5"/><rect x="22" y="40" width="648" height="274" rx="8" fill="none" stroke="#5a3034" stroke-width="1"/></svg><figcaption>Pick one before you build. The two approaches award points differently, so the choice matters.</figcaption></figure></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">18</div></section>
+<section class="slide s-content" data-index="19"><h1 class="s-title">The Vote, and It Is Final</h1><div class="s-body"><ul>
+<li>The choice of commit approach is decided by a <strong>unanimous</strong> team vote, declared on the proposal, and <strong>unchangeable all semester</strong>.</li>
+<li><strong>Not unanimous?</strong> You default to Individual Commits automatically.</li>
+<li>Under Individual Commits, the mismatch rule bites: if the board says Alice but Bob made the commit, the points go to Bob.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Choose Delegated Commits only if you trust one person to push everyone's real work correctly. When in doubt, Individual Commits protects each contributor.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">19</div></section>
+<section class="slide s-content" data-index="20"><h1 class="s-title">What Counts as a Valid Contribution</h1><div class="s-body"><ul>
+<li><strong>Counts:</strong> configuration files; scripts and code; screenshots, logs, and test results; wiki pages with technical depth; issues created, assigned, and completed with matching commits; architecture diagrams you made; substantive pull-request reviews.</li>
+<li><strong>Does not count:</strong> text-only commits claiming work ("Deployed X on my own device" with no artifact); reproducing a teammate's finished work; end-of-semester bulk submissions that duplicate earlier work; editing someone's file just to add your name.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Reproducing a teammate's completed work is a baseline expectation, not a graded accomplishment. Do it to learn, not to claim points.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">20</div></section>
+<section class="slide s-content" data-index="21"><h1 class="s-title">A One-Line Text Claim Is Just One Line of Text</h1><div class="s-body"><ul>
+<li>The single most common way students lose points: a commit that only adds a sentence claiming work happened, with nothing to back it.</li>
+<li>A one-line text claim is exactly what it looks like: one line of text. It is not proof of work.</li>
+<li>Every claim needs a matching artifact: the file, the log, the screenshot, the config that makes the claim real.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">"Configured TLS" with no proxy config, no cert, and no screenshot earns nothing. The artifact is the contribution; the sentence is not.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">21</div></section>
+<section class="slide s-content" data-index="22"><h1 class="s-title">Sustained Contribution Is Visible</h1><div class="s-body"><ul>
+<li>A capstone runs for months. All of your activity landing in one weekend is a red flag, and it gets investigated.</li>
+<li>At semester end the instructor reviews the commit history, the board, and the wiki together: what you did, when you did it, and whether your claims match the actual file changes.</li>
+<li>The team-tracker dashboard publishes weekly progress and per-member flags publicly, so drift shows up long before finals.</li>
+</ul>
+<div class="callout c-tip"><span class="c-label">Tip</span><span class="c-body">Steady small commits every week beat a heroic all-nighter. The record rewards the tortoise, not the hare.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">22</div></section>
+<section class="slide s-content" data-index="23"><h1 class="s-title">How Your Individual Grade Is Computed</h1><div class="s-body"><ul>
+<li>The capstone is <strong>20 percent</strong> of the course grade, in five components: <strong>Proposal 3, Implementation 5, Presentation 5, Repo and Documentation 4, Wiki 3</strong> (25 points, scaled to 20).</li>
+<li>The team earns a score per component on the Capstone Grading Rubric. Then:</li>
+<li><strong>Individual = Team component score x N members x your Contribution %</strong>, CAPPED at each component's maximum.</li>
+<li><strong>Contribution % = your story points / team's total story points</strong>, taken from the required Individual Contribution Summary Table at the bottom of the README.</li>
+<li><strong>N members</strong> scales each share so equal work yields the full team score; <strong>the cap</strong> stops any member from exceeding a component maximum. The multiplier for each member is simply N times their contribution percent, so on a 3-person team 50 percent gives a 1.5 multiplier.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Your README contribution table must match the board. Discrepancies are investigated, and the board wins. Worked scenarios follow for a 3-person team scoring 17.4 out of 20: Proposal 2.7, Implementation 4.2, Presentation 4.5, Repo 3.4, Wiki 2.6.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">23</div></section>
+<section class="slide s-content" data-index="24"><h1 class="s-title">Scenario A, Equal Thirds</h1><div class="s-body"><ul>
+<li>Contribution split: <strong>Alice 33.3%, Bob 33.3%, Carol 33.3%.</strong> Each multiplier is 3 x 0.333 = 1.0.</li>
+<li>At a 1.0 multiplier every member receives the exact team component score, and no cap is triggered.</li>
+</ul>
+<p>| Component (team) | Alice | Bob | Carol |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| Proposal (2.7) | 2.7 | 2.7 | 2.7 |</p>
+<p>| Implementation (4.2) | 4.2 | 4.2 | 4.2 |</p>
+<p>| Presentation (4.5) | 4.5 | 4.5 | 4.5 |</p>
+<p>| Repo (3.4) | 3.4 | 3.4 | 3.4 |</p>
+<p>| Wiki (2.6) | 2.6 | 2.6 | 2.6 |</p>
+<p>| <strong>Total / 20</strong> | <strong>17.4</strong> | <strong>17.4</strong> | <strong>17.4</strong> |</p>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Equal work, equal grade. This is the baseline the formula is built around.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">24</div></section>
+<section class="slide s-content" data-index="25"><h1 class="s-title">Scenario B, Moderate Imbalance</h1><div class="s-body"><ul>
+<li>Split: <strong>Alice 50%, Bob 30%, Carol 20%.</strong> Multipliers: Alice 1.5, Bob 0.9, Carol 0.6.</li>
+<li>Alice's 1.5 multiplier caps her in every component; Bob and Carol scale proportionally.</li>
+</ul>
+<p>| Component (team) | Alice (x1.5) | Bob (x0.9) | Carol (x0.6) |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| Proposal (2.7) | 3.0 cap | 2.43 | 1.62 |</p>
+<p>| Implementation (4.2) | 5.0 cap | 3.78 | 2.52 |</p>
+<p>| Presentation (4.5) | 5.0 cap | 4.05 | 2.70 |</p>
+<p>| Repo (3.4) | 4.0 cap | 3.06 | 2.04 |</p>
+<p>| Wiki (2.6) | 3.0 cap | 2.34 | 1.56 |</p>
+<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>15.66</strong> | <strong>10.44</strong> |</p>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Alice is rewarded up to each ceiling; Carol still earns a real 10.44 for a real 20 percent.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">25</div></section>
+<section class="slide s-content" data-index="26"><h1 class="s-title">Scenario C, A Zero Contributor</h1><div class="s-body"><ul>
+<li>Split: <strong>Alice 60%, Bob 40%, Carol 0%.</strong> Multipliers: Alice 1.8, Bob 1.2, Carol 0.</li>
+<li>Both contributors clear the cap threshold (about 1.19 for this team), so both land at the maximum. Carol earns nothing.</li>
+</ul>
+<p>| Component (team) | Alice (x1.8) | Bob (x1.2) | Carol (x0) |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| Proposal (2.7) | 3.0 cap | 3.0 cap | 0 |</p>
+<p>| Implementation (4.2) | 5.0 cap | 5.0 cap | 0 |</p>
+<p>| Presentation (4.5) | 5.0 cap | 5.0 cap | 0 |</p>
+<p>| Repo (3.4) | 4.0 cap | 4.0 cap | 0 |</p>
+<p>| Wiki (2.6) | 3.0 cap | 3.0 cap | 0 |</p>
+<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>20.0</strong> | <strong>0</strong> |</p>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">The formula protects the members who did the work. Non-participation is isolated to the non-participant; it does not drag the team down.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">26</div></section>
+<section class="slide s-content" data-index="27"><h1 class="s-title">Scenario D, A Late Start With Real Work</h1><div class="s-body"><ul>
+<li>Split: <strong>Alice 45%, Bob 40%, Carol 15%.</strong> Multipliers: Alice 1.35, Bob 1.2, Carol 0.45.</li>
+<li>Carol joined late but did real, integrated work, so she earns a real 7.83.</li>
+</ul>
+<p>| Component (team) | Alice (x1.35) | Bob (x1.2) | Carol (x0.45) |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| Proposal (2.7) | 3.0 cap | 3.0 cap | 1.215 |</p>
+<p>| Implementation (4.2) | 5.0 cap | 5.0 cap | 1.89 |</p>
+<p>| Presentation (4.5) | 5.0 cap | 5.0 cap | 2.025 |</p>
+<p>| Repo (3.4) | 4.0 cap | 4.0 cap | 1.53 |</p>
+<p>| Wiki (2.6) | 3.0 cap | 3.0 cap | 1.17 |</p>
+<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>20.0</strong> | <strong>7.83</strong> |</p>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Starting late is not the same as not contributing. But the work must be real, verifiable, and integrated, not bolted on at the end.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">27</div></section>
+<section class="slide s-content" data-index="28"><h1 class="s-title">If You Feel Behind, or the Team Hits a Conflict</h1><div class="s-body"><ul>
+<li><strong>Behind?</strong> Assign yourself open board items and finish them. Extend the system with NEW <strong>integrated</strong> features (integrate: it plugs into the running stack, not a side script).</li>
+<li>Presentation and documentation user stories are valid and can be worth up to 5 points each when committed and assigned properly. Match your commit scope to the points you claim.</li>
+<li><strong>Conflict?</strong> Talk inside the team first, and make assignments visible on the board so it is about work, not personalities.</li>
+<li>Involve the instructor EARLY. A message the week of presentations is too late. Never carry a vanished teammate silently.</li>
+</ul>
+<div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">Behind is recoverable; silence is not. Silence protects the person who disappeared and punishes the people who showed up. Speak early, on the record.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">28</div></section>
+<section class="slide s-content" data-index="29"><h1 class="s-title">Proposal Checklist</h1><div class="s-body"><ul>
+<li>The proposal maps to the sections of the Capstone Proposal form:</li>
+<li class="sub">Team and declared commit approach (with the unanimous-vote result)</li>
+<li class="sub">Use case and threat model</li>
+<li class="sub">Your 6 to 10 target controls, mapped to outcomes and at least three SY0-701 domains</li>
+<li class="sub">Stack and edge or TLS design choices</li>
+<li class="sub">Milestones and Sprint 1 plan</li>
+<li>Every proposal is approved by the instructor before your team starts building.</li>
+</ul>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">A vague proposal produces a vague grade. Name the controls and the tests now, while it is cheap to change them.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">29</div></section>
+<section class="slide s-exit" data-index="30"><h1 class="s-title">The Bottom Line</h1><div class="s-body"><ul>
+<li>Do the work. Commit the artifacts. Keep the board honest. There are no shortcuts, because the repository tells the complete story.</li>
+<li>Where everything lives (in the course resource browser): the Capstone Proposal form, the Team Formation form, the Capstone Grading Rubric, and the example presentation deck (Lecture 99).</li>
+<li>Deadlines live on Canvas. Start your repo this week.</li>
+</ul></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">30</div></section>
+<section class="slide s-activity" data-index="31"><h1 class="s-title">In-Class Activity</h1><div class="s-body"><p><strong>Form a team and stand up the skeleton (supervised work block).</strong></p>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t">Confirm a 2 to 3 person team and fill the availability grid on the Team Formation form; find a weekly meeting time before you leave.</span></li><li><span class="step-n">2</span><span class="step-t">Draft your control sentence: "Our stack protects [use case]; we will demonstrate [threat] and defend with [control 1..3], verified by [test]."</span></li><li><span class="step-n">3</span><span class="step-t">Create the private repo csec2300_team-name, add gdparra-edu and cyberknowledge, enable the Wiki, and create the Iterative development board.</span></li><li><span class="step-n">4</span><span class="step-t">Create the four milestones, then write one 5-point user story with sized sub-tasks assigned across all members.</span></li><li><span class="step-n">5</span><span class="step-t">Vote on your commit approach (Individual or Delegated) and record the result to declare on the proposal.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">31</div></section>
+<section class="slide s-exit" data-index="32"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. State your team's commit approach and why you voted for it.</p>
+<p>2. Write one user story for your stack in the "As a [role], I want [action] so that [benefit]" form, and its point value.</p>
+<p>3. In one sentence, what does the contribution cap protect, and who does it isolate?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">32</div></section>
+</div></div>
+<div id="hud"></div>
+<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="grid"></div>
+<script>window.__NOTES__="";</script>
+<script>
+(function(){
+  var deck=document.getElementById('deck'), stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var prog=document.getElementById('prog'), hud=document.getElementById('hud');
+  var notes=document.getElementById('notes'), grid=document.getElementById('grid');
+  var i=0, N=slides.length;
+  function fit(){
+    var pad=0, sw=(window.innerWidth-pad)/1280, sh=(window.innerHeight-pad)/720;
+    var s=Math.min(sw,sh); deck.style.transform='scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(N-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    prog.style.width=((i+1)/N*100)+'%';
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    location.hash=(i+1);
+  }
+  function next(){show(i+1);} function prev(){show(i-1);}
+  window.addEventListener('resize',fit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(N-1);}
+    else if(e.key==='n'||e.key==='N'){notes.classList.toggle('show');}
+    else if(e.key==='g'||e.key==='G'){grid.classList.toggle('show');}
+    else if(e.key==='p'||e.key==='P'){window.print();}
+    else if(e.key==='Escape'){grid.classList.remove('show');}
+    else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
+  });
+  // click nav
+  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // number jump
+  var buf=''; var bt;
+  function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
+  // grid
+  slides.forEach(function(s,k){
+    var g=document.createElement('div'); g.className='g';
+    var h=s.querySelector('.s-title,.title-main'); var t=s.querySelector('.tag');
+    g.innerHTML='<div class="gt">'+(t?t.textContent:'')+'</div><div class="gh">'+
+      (h?h.textContent:('Slide '+(k+1)))+'</div><div class="gn">'+(k+1)+'</div>';
+    g.addEventListener('click',function(ev){ev.stopPropagation();grid.classList.remove('show');show(k);});
+    grid.appendChild(g);
+  });
+  // init from hash
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  fit(); show(isNaN(h)?0:h-1);
+})();
+</script>
+<script>
+(function(){
+  var nb=document.getElementById('notes-body');
+  if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+})();
+</script>
+</body></html>

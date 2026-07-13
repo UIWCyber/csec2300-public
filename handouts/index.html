@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSEC 2300 Handouts (Student)</title>
+<title>CSEC 2300 Student Handouts</title>
 <style>
 :root{--red:#CB333B;--red-dk:#A32830;--bg:#f6f7f9;--surface:#fff;--surface2:#eef0f3;
   --text:#1c1e22;--muted:#5b616b;--line:#e2e3e8;--code:#eef1f5;}
@@ -34,7 +34,7 @@ main blockquote{border-left:4px solid var(--red);margin:.6rem 0;padding:.2rem .9
 @media(max-width:720px){.wrap{flex-direction:column}nav{width:auto;border-right:none;border-bottom:1px solid var(--line)}}
 @media print{header,nav{display:none}main{max-width:none;padding:0}.wrap{display:block}}
 </style></head><body>
-<header><div><h1>CSEC 2300 Handouts (Student)</h1><div class="sub">University of the Incarnate Word - Dr. Gonzalo D Parra</div></div>
+<header><div><h1>CSEC 2300 Student Handouts</h1><div class="sub">In-class activity handouts - CSEC 2300 Foundations of Cyber Security - Dr. Gonzalo D Parra</div></div>
 <div style="display:flex;gap:.5rem"><button onclick="window.print()">Download (p)</button><button onclick="tt()">Theme</button></div></header>
 
 <div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
@@ -86,7 +86,8 @@ function build(){
   const h=decodeURIComponent(location.hash.slice(1));
   show(ITEMS.find(x=>x.key===h)?h:(ITEMS[0]&&ITEMS[0].key));
 }
-function tt(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');r.setAttribute('data-theme',cur==='dark'?'light':'dark');}
+function tt(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const n=cur==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('csec-theme',n);}catch(e){}}
+(function(){try{const t=localStorage.getItem('csec-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 function typing(){const a=document.activeElement;return a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);}
 document.addEventListener('keydown',e=>{if(e.key==='p'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!typing()){e.preventDefault();window.print();}});
 build();
