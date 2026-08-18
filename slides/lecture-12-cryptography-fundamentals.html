@@ -34,9 +34,15 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 /* section divider slides */
 .s-section .s-title{color:#fff}
 .s-section{background:var(--slate)}
-.s-section .s-body{font-size:44px;font-weight:800;line-height:1.28;letter-spacing:-.01em;background:var(--panel);border:1px solid var(--line);border-left:14px solid var(--red);border-radius:14px;padding:34px 40px 34px 38px;box-shadow:0 2px 10px rgba(0,0,0,.28);flex:0 0 auto;align-self:stretch;overflow:visible}
+.s-section .s-body{font-size:35px;font-weight:800;line-height:1.28;letter-spacing:-.01em;background:var(--panel);border:1px solid var(--line);border-left:14px solid var(--red);border-radius:14px;padding:34px 40px 34px 38px;box-shadow:0 2px 10px rgba(0,0,0,.28);flex:0 0 auto;align-self:stretch;overflow:visible}
 .s-section .s-body ul{margin:0;padding-left:1.1em}
 .s-section .s-body li+li{margin-top:18px}
+/* Opt-in warning divider: {type=section kind=warn}. Amber matches the warn
+   callout, so it is used only where the content really is a rule or hazard. */
+.s-section.s-kind-warn .s-body{border-left-color:var(--amb)}
+.s-section.s-kind-warn .s-body ul{list-style:none;padding-left:0}
+.s-section.s-kind-warn .s-body li{position:relative;padding-left:1.7em}
+.s-section.s-kind-warn .s-body li::before{content:"\26A0";position:absolute;left:0;top:.02em;color:var(--amb);font-size:.9em;line-height:1.28}
 /* headers */
 .s-title.s-title{}
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
