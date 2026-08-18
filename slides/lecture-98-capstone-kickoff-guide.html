@@ -21,6 +21,10 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 /* accent rails */
 #deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
 .s-title{background:#1f1f22}
+.s-table{border-collapse:collapse;width:100%;margin:14px 0;font-size:19px}
+.s-table th{background:#26262a;color:#fff;text-align:left;font-weight:700;padding:8px 12px;border-bottom:2px solid var(--red)}
+.s-table td{padding:8px 12px;border-bottom:1px solid #34343a;color:#e8e8ea;vertical-align:top}
+.s-table tr:last-child td{border-bottom:none}
 .title-band{border-left:8px solid var(--red);padding:8px 0 8px 28px}
 .title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
 .title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
@@ -248,53 +252,25 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
 <li>Contribution split: <strong>Alice 33.3%, Bob 33.3%, Carol 33.3%.</strong> Each multiplier is 3 x 0.333 = 1.0.</li>
 <li>At a 1.0 multiplier every member receives the exact team component score, and no cap is triggered.</li>
 </ul>
-<p>| Component (team) | Alice | Bob | Carol |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| Proposal (2.7) | 2.7 | 2.7 | 2.7 |</p>
-<p>| Implementation (4.2) | 4.2 | 4.2 | 4.2 |</p>
-<p>| Presentation (4.5) | 4.5 | 4.5 | 4.5 |</p>
-<p>| Repo (3.4) | 3.4 | 3.4 | 3.4 |</p>
-<p>| Wiki (2.6) | 2.6 | 2.6 | 2.6 |</p>
-<p>| <strong>Total / 20</strong> | <strong>17.4</strong> | <strong>17.4</strong> | <strong>17.4</strong> |</p>
+<table class="s-table"><thead><tr><th>Component (team)</th><th>Alice</th><th>Bob</th><th>Carol</th></tr></thead><tbody><tr><td>Proposal (2.7)</td><td>2.7</td><td>2.7</td><td>2.7</td></tr><tr><td>Implementation (4.2)</td><td>4.2</td><td>4.2</td><td>4.2</td></tr><tr><td>Presentation (4.5)</td><td>4.5</td><td>4.5</td><td>4.5</td></tr><tr><td>Repo (3.4)</td><td>3.4</td><td>3.4</td><td>3.4</td></tr><tr><td>Wiki (2.6)</td><td>2.6</td><td>2.6</td><td>2.6</td></tr><tr><td><strong>Total / 20</strong></td><td><strong>17.4</strong></td><td><strong>17.4</strong></td><td><strong>17.4</strong></td></tr></tbody></table>
 <div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Equal work, equal grade. This is the baseline the formula is built around.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">24</div></section>
 <section class="slide s-content" data-index="25"><h1 class="s-title">Scenario B, Moderate Imbalance</h1><div class="s-body"><ul>
 <li>Split: <strong>Alice 50%, Bob 30%, Carol 20%.</strong> Multipliers: Alice 1.5, Bob 0.9, Carol 0.6.</li>
 <li>Alice's 1.5 multiplier caps her in every component; Bob and Carol scale proportionally.</li>
 </ul>
-<p>| Component (team) | Alice (x1.5) | Bob (x0.9) | Carol (x0.6) |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| Proposal (2.7) | 3.0 cap | 2.43 | 1.62 |</p>
-<p>| Implementation (4.2) | 5.0 cap | 3.78 | 2.52 |</p>
-<p>| Presentation (4.5) | 5.0 cap | 4.05 | 2.70 |</p>
-<p>| Repo (3.4) | 4.0 cap | 3.06 | 2.04 |</p>
-<p>| Wiki (2.6) | 3.0 cap | 2.34 | 1.56 |</p>
-<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>15.66</strong> | <strong>10.44</strong> |</p>
+<table class="s-table"><thead><tr><th>Component (team)</th><th>Alice (x1.5)</th><th>Bob (x0.9)</th><th>Carol (x0.6)</th></tr></thead><tbody><tr><td>Proposal (2.7)</td><td>3.0 cap</td><td>2.43</td><td>1.62</td></tr><tr><td>Implementation (4.2)</td><td>5.0 cap</td><td>3.78</td><td>2.52</td></tr><tr><td>Presentation (4.5)</td><td>5.0 cap</td><td>4.05</td><td>2.70</td></tr><tr><td>Repo (3.4)</td><td>4.0 cap</td><td>3.06</td><td>2.04</td></tr><tr><td>Wiki (2.6)</td><td>3.0 cap</td><td>2.34</td><td>1.56</td></tr><tr><td><strong>Total / 20</strong></td><td><strong>20.0</strong></td><td><strong>15.66</strong></td><td><strong>10.44</strong></td></tr></tbody></table>
 <div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Alice is rewarded up to each ceiling; Carol still earns a real 10.44 for a real 20 percent.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">25</div></section>
 <section class="slide s-content" data-index="26"><h1 class="s-title">Scenario C, A Zero Contributor</h1><div class="s-body"><ul>
 <li>Split: <strong>Alice 60%, Bob 40%, Carol 0%.</strong> Multipliers: Alice 1.8, Bob 1.2, Carol 0.</li>
 <li>Both contributors clear the cap threshold (about 1.19 for this team), so both land at the maximum. Carol earns nothing.</li>
 </ul>
-<p>| Component (team) | Alice (x1.8) | Bob (x1.2) | Carol (x0) |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| Proposal (2.7) | 3.0 cap | 3.0 cap | 0 |</p>
-<p>| Implementation (4.2) | 5.0 cap | 5.0 cap | 0 |</p>
-<p>| Presentation (4.5) | 5.0 cap | 5.0 cap | 0 |</p>
-<p>| Repo (3.4) | 4.0 cap | 4.0 cap | 0 |</p>
-<p>| Wiki (2.6) | 3.0 cap | 3.0 cap | 0 |</p>
-<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>20.0</strong> | <strong>0</strong> |</p>
+<table class="s-table"><thead><tr><th>Component (team)</th><th>Alice (x1.8)</th><th>Bob (x1.2)</th><th>Carol (x0)</th></tr></thead><tbody><tr><td>Proposal (2.7)</td><td>3.0 cap</td><td>3.0 cap</td><td>0</td></tr><tr><td>Implementation (4.2)</td><td>5.0 cap</td><td>5.0 cap</td><td>0</td></tr><tr><td>Presentation (4.5)</td><td>5.0 cap</td><td>5.0 cap</td><td>0</td></tr><tr><td>Repo (3.4)</td><td>4.0 cap</td><td>4.0 cap</td><td>0</td></tr><tr><td>Wiki (2.6)</td><td>3.0 cap</td><td>3.0 cap</td><td>0</td></tr><tr><td><strong>Total / 20</strong></td><td><strong>20.0</strong></td><td><strong>20.0</strong></td><td><strong>0</strong></td></tr></tbody></table>
 <div class="callout c-warn"><span class="c-label">Watch out</span><span class="c-body">The formula protects the members who did the work. Non-participation is isolated to the non-participant; it does not drag the team down.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">26</div></section>
 <section class="slide s-content" data-index="27"><h1 class="s-title">Scenario D, A Late Start With Real Work</h1><div class="s-body"><ul>
 <li>Split: <strong>Alice 45%, Bob 40%, Carol 15%.</strong> Multipliers: Alice 1.35, Bob 1.2, Carol 0.45.</li>
 <li>Carol joined late but did real, integrated work, so she earns a real 7.83.</li>
 </ul>
-<p>| Component (team) | Alice (x1.35) | Bob (x1.2) | Carol (x0.45) |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| Proposal (2.7) | 3.0 cap | 3.0 cap | 1.215 |</p>
-<p>| Implementation (4.2) | 5.0 cap | 5.0 cap | 1.89 |</p>
-<p>| Presentation (4.5) | 5.0 cap | 5.0 cap | 2.025 |</p>
-<p>| Repo (3.4) | 4.0 cap | 4.0 cap | 1.53 |</p>
-<p>| Wiki (2.6) | 3.0 cap | 3.0 cap | 1.17 |</p>
-<p>| <strong>Total / 20</strong> | <strong>20.0</strong> | <strong>20.0</strong> | <strong>7.83</strong> |</p>
+<table class="s-table"><thead><tr><th>Component (team)</th><th>Alice (x1.35)</th><th>Bob (x1.2)</th><th>Carol (x0.45)</th></tr></thead><tbody><tr><td>Proposal (2.7)</td><td>3.0 cap</td><td>3.0 cap</td><td>1.215</td></tr><tr><td>Implementation (4.2)</td><td>5.0 cap</td><td>5.0 cap</td><td>1.89</td></tr><tr><td>Presentation (4.5)</td><td>5.0 cap</td><td>5.0 cap</td><td>2.025</td></tr><tr><td>Repo (3.4)</td><td>4.0 cap</td><td>4.0 cap</td><td>1.53</td></tr><tr><td>Wiki (2.6)</td><td>3.0 cap</td><td>3.0 cap</td><td>1.17</td></tr><tr><td><strong>Total / 20</strong></td><td><strong>20.0</strong></td><td><strong>20.0</strong></td><td><strong>7.83</strong></td></tr></tbody></table>
 <div class="callout c-note"><span class="c-label">Note</span><span class="c-body">Starting late is not the same as not contributing. But the work must be real, verifiable, and integrated, not bolted on at the end.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>4.0 Security Operations · 5.0 Security Program Management &amp; Oversight</span></div><div class="s-num">27</div></section>
 <section class="slide s-content" data-index="28"><h1 class="s-title">If You Feel Behind, or the Team Hits a Conflict</h1><div class="s-body"><ul>
 <li><strong>Behind?</strong> Assign yourself open board items and finish them. Extend the system with NEW <strong>integrated</strong> features (integrate: it plugs into the running stack, not a side script).</li>
