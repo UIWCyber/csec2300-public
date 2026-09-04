@@ -208,7 +208,9 @@ window.__DECK_CONTEXT__="I am a student in CSEC 2300 Foundations of Cyber Securi
     i=Math.max(0,Math.min(N-1,n));
     slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
     prog.style.width=((i+1)/N*100)+'%';
-    hud.textContent=(i+1)+' / '+N+'   [←→] nav  [N]otes  [G]rid  [P]rint';
+    // Notes are stripped from the published deck, where N is guarded to do nothing, so the
+    // hint drops the key rather than inviting a press that answers with silence.
+    hud.textContent=(i+1)+' / '+N+'   [←→] nav  '+(window.__NOTES__?'[N]otes  ':'')+'[G]rid  [P]rint';
     location.hash=(i+1);
   }
   function next(){show(i+1);} function prev(){show(i-1);}
