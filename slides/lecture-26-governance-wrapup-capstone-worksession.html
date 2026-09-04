@@ -55,6 +55,12 @@ li{margin:8px 0}
 li.sub{list-style:circle;color:var(--muted);font-size:20px}
 strong{color:#fff}
 em{color:var(--red-lt);font-style:normal;font-weight:600}
+/* A link on a dark slide left at the browser default is #0000EE, which is 1.85:1
+   against this background and fails AA outright. The house pink is 7.25:1, and the
+   underline stays so the link is not signalled by colour alone. */
+a{color:var(--red-lt);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+a:visited{color:var(--red-lt)}
+a:hover,a:focus-visible{color:#fff;text-decoration-thickness:2px}
 code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
 p{margin:6px 0}
 /* objectives */
@@ -88,9 +94,15 @@ ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel)
 pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
 /* diagrams */
 .diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
-.diagram-wrap svg{max-width:100%;max-height:400px;height:auto}
-.diagram-wrap figure{margin:0;text-align:center}
-.diagram-wrap figcaption{color:var(--muted);font-size:16px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans)}
+/* The figure is a column that may not outgrow the space the slide gives it, and the
+   caption is the part that must never be the bit that gets pushed out: the drawing
+   can shrink, the sentence explaining it cannot. Without this the svg claimed its
+   full max-height and the caption spilled under whatever came next on the slide,
+   silently, looking correct in the source. */
+.diagram-wrap svg{max-width:100%;max-height:400px;height:auto;min-height:0;flex:0 1 auto}
+.diagram-wrap figure{margin:0;text-align:center;display:flex;flex-direction:column;
+  min-height:0;max-height:100%}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans);flex:0 0 auto}
 .diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
 /* footer + slide number */
 .s-ai{position:absolute;right:64px;top:14px;display:flex;gap:8px;z-index:5}
