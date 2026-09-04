@@ -88,11 +88,18 @@ ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel)
 pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
 /* diagrams */
 .diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
-.diagram-wrap svg{max-width:100%;max-height:440px;height:auto}
+.diagram-wrap svg{max-width:100%;max-height:400px;height:auto}
 .diagram-wrap figure{margin:0;text-align:center}
-.diagram-wrap figcaption{color:var(--muted);font-size:16px;margin-top:6px;font-family:var(--sans)}
+.diagram-wrap figcaption{color:var(--muted);font-size:16px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans)}
 .diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
 /* footer + slide number */
+.s-ai{position:absolute;right:64px;top:14px;display:flex;gap:8px;z-index:5}
+
+.ai-btn{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer}
+.ai-btn:hover{border-color:var(--red-lt);color:var(--red-lt)}
+.ai-btn:focus-visible{outline:3px solid var(--red-lt);outline-offset:2px}
+@media print{.s-ai{display:none}}
 .s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
 .s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
 .tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
@@ -312,7 +319,9 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
 <div id="hud"></div>
 <div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
 <div id="grid"></div>
-<script>window.__NOTES__="";</script>
+<script>window.__NOTES__="";
+window.__PROMPTS__={};
+window.__DECK_CONTEXT__="I am a student in CSEC 2300 Foundations of Cyber Security. We are working through session 98, \"Capstone Kick-off: Agile on GitHub and how you are graded\". I am a beginner: explain each step briefly, show the code, and tell me what output to expect before I run it.";</script>
 <script>
 (function(){
   var deck=document.getElementById('deck'), stage=document.getElementById('stage');
@@ -344,7 +353,10 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
     else if(/^[0-9]$/.test(e.key)){/* number jump buffer */ jump(e.key);}
   });
   // click nav
-  stage.addEventListener('click',function(e){ if(e.target.closest('#grid'))return; next(); });
+  // Clicking the stage advances. Controls inside a slide must opt out, or pressing
+  // one both fires the control and skips the slide it belongs to.
+  stage.addEventListener('click',function(e){
+    if(e.target.closest('#grid')||e.target.closest('.ai-btn'))return; next(); });
   // number jump
   var buf=''; var bt;
   function jump(d){buf+=d; clearTimeout(bt); bt=setTimeout(function(){var n=parseInt(buf,10); if(n)show(n-1); buf='';},600);}
@@ -366,6 +378,52 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
 (function(){
   var nb=document.getElementById('notes-body');
   if(window.__NOTES__){ nb.textContent=window.__NOTES__; }
+
+  // Copy a step, or every step up to here, for pasting into Claude. No network call:
+  // students are on the free desktop app, so the deck's job is to hand over text.
+  var P = window.__PROMPTS__ || {}, CTX = window.__DECK_CONTEXT__ || '';
+  var NL = String.fromCharCode(10);   // HTML_SHELL is a non-raw Python string, so a
+                                      // backslash-n here is eaten at import time and
+                                      // leaves an unterminated JS string literal.
+  function build(upto, all){
+    var keys = Object.keys(P).map(Number).sort(function(a,b){return a-b;});
+    var take = all ? keys.filter(function(k){return k <= upto;}) : [upto];
+    // The single-step copy assumes a chat that already has context; only the
+    // cumulative copy, meant for a fresh or reset chat, carries the preamble.
+    var out = (all && CTX) ? [CTX, ''] : [];
+    take.forEach(function(k, i){
+      if(!P[k]) return;
+      out.push((all ? 'Step ' + (i+1) + ' - ' : '') + P[k].title);
+      out.push(P[k].text, '');
+    });
+    return out.join(NL).trim();
+  }
+  function flash(btn, msg){
+    var old = btn.textContent; btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = old; }, 1400);
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.ai-btn');
+    if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var txt = build(parseInt(b.dataset.i, 10), b.classList.contains('ai-all'));
+    // The modern API needs a secure context and a permission that a projector browser
+    // or a sandboxed frame may refuse, so a rejection falls through to the old method
+    // rather than telling the student to press a key that would copy nothing.
+    function legacy(){
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(err) { ok = false; }
+      document.body.removeChild(ta);
+      flash(b, ok ? 'Prompt copied' : 'Copy blocked');
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ flash(b, 'Prompt copied'); }, legacy);
+    } else { legacy(); }
+  });
 })();
 </script>
 </body></html>
