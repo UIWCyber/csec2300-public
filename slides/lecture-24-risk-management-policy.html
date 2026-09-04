@@ -100,8 +100,12 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
    full max-height and the caption spilled under whatever came next on the slide,
    silently, looking correct in the source. */
 .diagram-wrap svg{max-width:100%;max-height:400px;height:auto;min-height:0;flex:0 1 auto}
+/* width:100% because a flex item is otherwise sized by its widest child, which here is
+   the caption: without it a figure came out as wide as its sentence happened to be, and
+   a short caption shrank the drawing until its labels could not be read from the room.
+   align-items keeps an engine figure, which carries its own width, centred inside it. */
 .diagram-wrap figure{margin:0;text-align:center;display:flex;flex-direction:column;
-  min-height:0;max-height:100%}
+  align-items:center;min-height:0;max-height:100%;width:100%}
 .diagram-wrap figcaption{color:var(--muted);font-size:16px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans);flex:0 0 auto}
 .diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
 /* footer + slide number */
@@ -234,7 +238,7 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
 <div id="grid"></div>
 <script>window.__NOTES__="";
 window.__PROMPTS__={};
-window.__DECK_CONTEXT__="I am a student in CSEC 2300 Foundations of Cyber Security. We are working through session 24, \"Risk Assessment & Management; Policy Management\". I am a beginner: explain each step briefly, show the code, and tell me what output to expect before I run it.";</script>
+window.__DECK_CONTEXT__="I am a student in CSEC 2300 Foundations of Cyber Security. We are working through session 24, \"Risk Assessment & Management; Policy Management\". You are running the code, not describing it: do each step, show me the commands you ran and the real output they produced, and keep any explanation to a line or two. I am a beginner, so use plain words.";</script>
 <script>
 (function(){
   var deck=document.getElementById('deck'), stage=document.getElementById('stage');
