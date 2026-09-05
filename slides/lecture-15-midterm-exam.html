@@ -113,7 +113,35 @@ pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:
    min-height:0, so the drawing takes the room the slide actually has and shrinks
    only when the slide is full. A fixed cap shrank figures that had space to spare,
    which costs label size on a projector for nothing. */
-.diagram-wrap svg{max-width:100%;max-height:100%;height:auto;min-height:0;flex:0 1 auto}
+/* No max-width or max-height, on purpose. A figure is placed at the size the engine
+   drew it, or the build fails (FIGURE-TOO-WIDE / FIGURE-TOO-TALL in --verify).
+   Shrinking to fit is what took 13px labels to 8px on a projector: whatever the
+   engine chose, the slide multiplied by 0.6 to 0.95 and nobody saw it happen. With
+   the scale fixed at 1:1, the size of every label is arithmetic, and the
+   accessibility check can read it from the SVG without a browser. */
+.diagram-wrap svg{height:auto;min-height:0;flex:0 0 auto}
+/* Committed figures (matplotlib charts, screenshots; the ```svg src= fence) are
+   the exception: the builder strips their width and height and asks for the full
+   measure, their text is paths, and there is no type size to protect. They fit
+   the room the slide has, as they always did. */
+.diagram-wrap figure[data-svg] svg{max-width:100%;max-height:100%;flex:0 1 auto}
+/* Typeset figures (compare as a table, timeline as step cards, tree as a list)
+   are the slide's own primitives inside a figure; they take the figure's width. */
+.diagram-wrap figure[data-typeset]>table,.diagram-wrap figure[data-typeset]>ol,.diagram-wrap figure[data-typeset]>ul{width:100%;align-self:stretch;margin:0;text-align:left}
+/* A timeline beyond three events runs its cards in columns, left to right then
+   down: five single-column cards fill a slide, and eight would run off it. */
+ol.steps.steps-cols-2,ol.steps.steps-cols-3{display:grid;gap:10px 16px}
+ol.steps.steps-cols-2{grid-template-columns:1fr 1fr}
+ol.steps.steps-cols-3{grid-template-columns:1fr 1fr 1fr}
+ol.steps.steps-cols-2 li,ol.steps.steps-cols-3 li{margin:0}
+.step-t .sub{display:block;color:var(--muted);font-size:21px;margin-top:2px}
+ul.tree{list-style:none;padding-left:0}
+ul.tree ul{list-style:none;padding-left:34px;border-left:2px solid var(--line);margin:4px 0 4px 10px}
+ul.tree li{margin:4px 0}
+/* A taxonomy with more than six leaves runs its top-level branches in two
+   columns; each branch stays whole inside its column. */
+ul.tree.tree-cols-2>li>ul{column-count:2;column-gap:40px;border-left:none;padding-left:0;margin-left:0}
+ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2px solid var(--line);margin:0 0 10px}
 /* width:100% because a flex item is otherwise sized by its widest child, which here is
    the caption: without it a figure came out as wide as its sentence happened to be, and
    a short caption shrank the drawing until its labels could not be read from the room.
