@@ -14,14 +14,19 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(--sans)}
 #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c0c0d}
-#deck{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--slate)}
+/* flex:none is load-bearing. #stage is a flex container, so without it the deck
+   inherits flex-shrink:1 and squeezes to the window width whenever that is under
+   1280, while height stays 720: the canvas turns 4:3, and every slide re-wraps in a
+   narrower box and clips. It only shows up in a small or zoomed window, which is
+   exactly the projector. */
+#deck{width:1280px;height:720px;flex:none;position:relative;transform-origin:center center;background:var(--slate)}
 .slide{position:absolute;inset:0;display:none;flex-direction:column;padding:54px 64px 48px;background:var(--slate)}
 .slide.active{display:flex}
 .slide.s-title,.slide.s-section{align-items:flex-start;justify-content:center}
 /* accent rails */
 #deck::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:var(--red);z-index:5}
 .s-title{background:var(--slate)}
-.s-table{border-collapse:collapse;width:100%;margin:14px 0;font-size:19px}
+.s-table{border-collapse:collapse;width:100%;margin:14px 0;font-size:22px}
 .s-table th{background:#26262a;color:#fff;text-align:left;font-weight:700;padding:8px 12px;border-bottom:2px solid var(--red)}
 .s-table td{padding:8px 12px;border-bottom:1px solid #34343a;color:#e8e8ea;vertical-align:top}
 .s-table tr:last-child td{border-bottom:none}
@@ -49,10 +54,10 @@ h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bott
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
 .s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
-.lead{color:var(--muted);font-size:21px;margin:0 0 6px}
+.lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
-li.sub{list-style:circle;color:var(--muted);font-size:20px}
+li.sub{list-style:circle;color:var(--muted);font-size:21px}
 strong{color:#fff}
 em{color:var(--red-lt);font-style:normal;font-weight:600}
 /* A link on a dark slide left at the browser default is #0000EE, which is 1.85:1
@@ -64,15 +69,20 @@ a:hover,a:focus-visible{color:#fff;text-decoration-thickness:2px}
 code{font-family:var(--mono);background:#15161a;color:#ffd9b0;padding:2px 7px;border-radius:5px;font-size:.9em}
 p{margin:6px 0}
 /* objectives */
-ol.objectives li,ol.steps li{margin:12px 0}
+/* A step card holds one line of text in 24px, which is 34px of ink, and used to
+   cost 78px of slide: 24px of padding and 24px of margin around it. Four cards
+   spent 314px of a 546px body on three lines of actual content. Tightened, a card
+   is 66px and four fit in 264px, which is the difference between a demo slide that
+   shows its terminal output and one that silently eats the last lines. */
+ol.objectives li,ol.steps li{margin:8px 0}
 /* step cards */
 ol.steps{list-style:none;padding:0;counter-reset:none}
-ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px}
+ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:10px 16px}
 .step-n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
 .step-t{padding-top:4px}
 /* callouts */
 .callout{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--red);font-size:24px}
-.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:16px;padding-top:3px}
+.callout .c-label{flex:none;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:17px;padding-top:3px}
 .c-def{border-left-color:var(--red)} .c-def .c-label{color:var(--red-lt)}
 .c-note{border-left-color:#5a8fd6} .c-note .c-label{color:#8fb8ea}
 .c-warn{border-left-color:var(--amb)} .c-warn .c-label{color:var(--amb)}
@@ -80,8 +90,8 @@ ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel)
 .c-analogy{border-left-color:#b48ad9} .c-analogy .c-label{color:#c6a6e6}
 .c-why{border-left-color:var(--red-lt)} .c-why .c-label{color:var(--red-lt)}
 /* terminal */
-.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:18px;margin:4px 0}
-.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:14px;border-bottom:1px solid #2a2c33}
+.term{background:#0f1013;border:1px solid #33353c;border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:20px;margin:4px 0}
+.term-title{background:#191b20;color:var(--muted);padding:6px 14px;font-family:var(--sans);font-size:16px;border-bottom:1px solid #2a2c33}
 .term-body{padding:12px 16px;line-height:1.5}
 .t-line{white-space:pre-wrap;word-break:break-word}
 .t-in{color:#eaeaea}
@@ -91,22 +101,26 @@ ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel)
 .t-ann{color:#6f7681;font-style:italic;margin-left:10px}
 .t-out{color:#9fa6b0}
 /* code block */
-pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:17px;color:#d8dee9;overflow:auto;margin:4px 0}
+pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:19px;color:#d8dee9;overflow:auto;margin:4px 0}
 /* diagrams */
 .diagram-wrap{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
 /* The figure is a column that may not outgrow the space the slide gives it, and the
    caption is the part that must never be the bit that gets pushed out: the drawing
    can shrink, the sentence explaining it cannot. Without this the svg claimed its
    full max-height and the caption spilled under whatever came next on the slide,
-   silently, looking correct in the source. */
-.diagram-wrap svg{max-width:100%;max-height:400px;height:auto;min-height:0;flex:0 1 auto}
+   silently, looking correct in the source.
+   max-height is 100%, not a fixed pixel cap: the wrap is already flex:1 with
+   min-height:0, so the drawing takes the room the slide actually has and shrinks
+   only when the slide is full. A fixed cap shrank figures that had space to spare,
+   which costs label size on a projector for nothing. */
+.diagram-wrap svg{max-width:100%;max-height:100%;height:auto;min-height:0;flex:0 1 auto}
 /* width:100% because a flex item is otherwise sized by its widest child, which here is
    the caption: without it a figure came out as wide as its sentence happened to be, and
    a short caption shrank the drawing until its labels could not be read from the room.
    align-items keeps an engine figure, which carries its own width, centred inside it. */
 .diagram-wrap figure{margin:0;text-align:center;display:flex;flex-direction:column;
   align-items:center;min-height:0;max-height:100%;width:100%}
-.diagram-wrap figcaption{color:var(--muted);font-size:16px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans);flex:0 0 auto}
+.diagram-wrap figcaption{color:var(--muted);font-size:18px;line-height:1.35;margin:8px auto 0;max-width:1080px;font-family:var(--sans);flex:0 0 auto}
 .diag-err{color:var(--amb);border:1px dashed var(--amb);padding:10px;border-radius:8px;font-family:var(--mono);font-size:15px}
 /* footer + slide number */
 .s-ai{position:absolute;right:64px;top:14px;display:flex;gap:8px;z-index:5}
