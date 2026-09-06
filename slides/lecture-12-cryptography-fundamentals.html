@@ -6,6 +6,10 @@
 :root{
   --slate:#222222; --slate2:#2b2b2e; --panel:#2c2f34; --panel2:#333;
   --ink:#f4f4f4; --muted:#b9bcc2; --line:#41444b;
+  /* --dim is the floor grey: 4.95:1 on the slide and 5.87:1 on the page
+     backdrop. It replaced #6f7681 and #666, which were 3.47:1 and 3.3:1 and
+     carried terminal annotations, footers and the presenter hint. */
+  --dim:#8a9099;
   --red:#cb333b; --red-dk:#89191c; --red-lt:#f08a91;
   --grn:#7be39a; --amb:#e2a04a;
   --mono:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -34,12 +38,12 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 .title-kicker{color:var(--red-lt);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:20px}
 .title-main{font-size:52px;line-height:1.08;margin:14px 0 18px;font-weight:800}
 .title-meta{font-size:22px;color:var(--ink);font-weight:600}
-.title-sub{font-size:17px;color:var(--muted);margin-top:8px}
+.title-sub{font-size:18px;color:var(--muted);margin-top:8px}
 .s-title .s-num{display:none}
 /* section divider slides */
 .s-section .s-title{color:#fff}
 .s-section{background:var(--slate)}
-.s-section .s-body{font-size:35px;font-weight:800;line-height:1.28;letter-spacing:-.01em;background:var(--panel);border:1px solid var(--line);border-left:14px solid var(--red);border-radius:14px;padding:34px 40px 34px 38px;box-shadow:0 2px 10px rgba(0,0,0,.28);flex:0 0 auto;align-self:stretch;overflow:visible}
+.s-section .s-body{font-size:35px;font-weight:800;line-height:1.32;letter-spacing:-.01em;background:var(--panel);border:1px solid var(--line);border-left:14px solid var(--red);border-radius:14px;padding:34px 40px 34px 38px;box-shadow:0 2px 10px rgba(0,0,0,.28);flex:0 0 auto;align-self:stretch;overflow:visible}
 .s-section .s-body ul{margin:0;padding-left:1.1em}
 .s-section .s-body li+li{margin-top:18px}
 /* Opt-in warning divider: {type=section kind=warn}. Amber matches the warn
@@ -47,7 +51,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 .s-section.s-kind-warn .s-body{border-left-color:var(--amb)}
 .s-section.s-kind-warn .s-body ul{list-style:none;padding-left:0}
 .s-section.s-kind-warn .s-body li{position:relative;padding-left:1.7em}
-.s-section.s-kind-warn .s-body li::before{content:"\26A0";position:absolute;left:0;top:.02em;color:var(--amb);font-size:.9em;line-height:1.28}
+.s-section.s-kind-warn .s-body li::before{content:"\26A0";position:absolute;left:0;top:.02em;color:var(--amb);font-size:.9em;line-height:1.32}
 /* headers */
 .s-title.s-title{}
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
@@ -98,7 +102,7 @@ ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--panel)
 .t-prompt{color:var(--red-lt);font-weight:700;user-select:none}
 .t-cmd{color:#7fd1ff;font-weight:700}
 .t-args{color:#ffd9b0}
-.t-ann{color:#6f7681;font-style:italic;margin-left:10px}
+.t-ann{color:var(--dim);font-style:italic;margin-left:10px}
 .t-out{color:#9fa6b0}
 /* code block */
 pre.code{background:#0f1013;border:1px solid #33353c;border-radius:10px;padding:12px 16px;font-family:var(--mono);font-size:19px;color:#d8dee9;overflow:auto;margin:4px 0}
@@ -158,18 +162,18 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 .ai-btn:hover{border-color:var(--red-lt);color:var(--red-lt)}
 .ai-btn:focus-visible{outline:3px solid var(--red-lt);outline-offset:2px}
 @media print{.s-ai{display:none}}
-.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:#6f7681;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
-.s-num{position:absolute;right:22px;bottom:14px;color:#6f7681;font-size:13px;font-weight:700}
+.s-foot{position:absolute;left:64px;right:64px;bottom:16px;display:flex;justify-content:space-between;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.s-num{position:absolute;right:22px;bottom:14px;color:var(--dim);font-size:13px;font-weight:700}
 .tag{position:absolute;right:64px;top:20px;color:var(--muted);font-size:13px}
 /* progress bar */
 #prog{position:fixed;top:0;left:0;height:5px;background:var(--red);z-index:50;transition:width .2s}
 /* HUD */
-#hud{position:fixed;bottom:10px;left:12px;color:#666;font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
+#hud{position:fixed;bottom:10px;left:12px;color:var(--dim);font-size:12px;font-family:var(--mono);z-index:40;user-select:none}
 /* speaker notes */
 #notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#0b0b0cee;border-top:3px solid var(--red);
   color:#e6e6e6;padding:16px 22px;font-size:16px;line-height:1.5;display:none;z-index:45;white-space:pre-wrap}
 #notes.show{display:block}
-#notes h3{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+#notes h2{margin:0 0 8px;color:var(--red-lt);font-size:14px;text-transform:uppercase;letter-spacing:.05em}
 /* grid overview */
 #grid{position:fixed;inset:0;background:#0c0c0dfa;z-index:60;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px;overflow:auto}
 #grid.show{display:grid}
@@ -177,7 +181,7 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 #grid .g:hover{border-color:var(--red)}
 #grid .g .gt{font-size:12px;color:var(--muted)}
 #grid .g .gh{font-size:15px;font-weight:700;margin-top:6px}
-#grid .g .gn{position:absolute;right:8px;bottom:6px;color:#666;font-size:11px}
+#grid .g .gn{position:absolute;right:8px;bottom:6px;color:var(--dim);font-size:11px}
 /* print: one slide per page */
 @media print{
   @page{size:1280px 720px;margin:0}
@@ -300,7 +304,7 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <p>2. Why is SHA-256 alone the wrong choice for storing passwords?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts</span></div><div class="s-num">28</div></section>
 </div></div>
 <div id="hud"></div>
-<div id="notes"><h3>Speaker Notes (press N to hide)</h3><div id="notes-body"></div></div>
+<div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>
 <div id="grid"></div>
 <script>window.__NOTES__="";
 window.__PROMPTS__={};
