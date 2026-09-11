@@ -35,10 +35,14 @@ main blockquote{border-left:4px solid var(--red);margin:.6rem 0;padding:.2rem .9
 .hint{color:var(--muted);font-size:.85rem;margin-top:.3rem}
 @media(max-width:760px){.wrap{flex-direction:column}nav{width:auto;max-height:none;border-right:none;border-bottom:1px solid var(--line)}}
 @media print{header.top,nav{display:none}main{max-width:none;padding:0}.wrap{display:block}}
+
+.progress{padding:.6rem 1.3rem;background:var(--surface);border-bottom:1px solid var(--line);font-size:.95rem}
+.progress strong{color:var(--red)}
 </style></head><body>
 <header class="top"><div><h1>CSEC 2300 - Foundations of Cyber Security</h1>
 <div class="sub">University of the Incarnate Word - Dr. Gonzalo D Parra - resource browser</div></div>
 <div class="tools"><button onclick="window.print()">Download (p)</button><button onclick="tt()">Theme</button></div></header>
+<div class="progress" role="status"><strong>Where we are, as of September 11:</strong> We just finished Lecture 2; Lecture 3 is next. Labs and quizzes follow the schedule on the course hub.</div>
 <div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
 <script>
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
