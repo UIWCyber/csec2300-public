@@ -128,6 +128,7 @@ nav.hubnav a:hover{color:var(--red);background:var(--red-soft);text-decoration:n
 .tw-session .t{margin:.15rem 0 .3rem;font-weight:600}
 .tw-session.noclass .t{color:var(--muted);font-style:italic;font-weight:500}
 .tw-note{margin-top:.75rem;font-size:.88rem;color:var(--muted)}
+.labs{margin-top:.25rem;font-size:.82rem;color:var(--muted)}
 .countdown{display:flex;align-items:center;flex-wrap:wrap;gap:1.2rem}
 .countdown .num{font-size:3rem;font-weight:800;color:var(--red);line-height:1}
 .countdown .cap{font-size:1rem;color:var(--muted);max-width:28rem}
@@ -727,7 +728,7 @@ function renderSchedule(state){
       + '<td class="wk">'+s.wk+'</td>'
       + '<td class="date">'+esc(dateLabel)+(isToday?'<span class="now-tag">Today</span>':"")+'</td>'
       + '<td><span class="topic">'+esc(s.topic)+'</span></td>'
-      + '<td>'+(s.note?esc(s.note)+" ":"")+badges(s.tags)+'</td>'
+      + '<td>'+(s.note?esc(s.note)+" ":"")+badges(s.tags)+(s.labs?'<div class="labs">Labs you can now do: '+esc(s.labs)+'</div>':"")+'</td>'
       + '</tr>';
   });
   body.innerHTML = html;
@@ -763,6 +764,7 @@ function renderThisWeek(state){
         + '<div class="d">'+esc(s.day)+' · '+fmtHuman(s.date)+(s.endDate?"–"+parseISO(s.endDate).getDate():"")+(isToday?" - today":"")+'</div>'
         + '<div class="t">'+esc(s.topic)+'</div>'
         + (s.note?'<div style="font-size:.85rem;color:var(--muted)">'+esc(s.note)+'</div>':"")
+        + (s.labs?'<div class="labs">Labs you can now do: '+esc(s.labs)+'</div>':"")
         + badges(s.tags)
         + '</div>';
     });
