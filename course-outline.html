@@ -6,8 +6,8 @@
 <title>CSEC 2300-01 · Foundations of Cyber Security · Fall 2026 - Course Outline</title>
 <!--
   UIW Course Outline - HTML edition
-  Ported from the Overleaf/LaTeX template "UIW CSEC Course Outline"
-  (uiw-style.sty by Gonzalo De La Torre Parra, PhD - Aug 13, 2025).
+  Ported from the Overleaf/LaTeX template "UIW Course Outline"
+  (uiw-style.sty by Gonzalo De La Torre Parra, PhD).
   Design elements preserved: UIW Cardinal Red #CB333B, black-bordered header
   box with UIW logo, booktabs-style tables, red section headings, red footer
   rule, university grading scale.
@@ -15,8 +15,10 @@
   TO PRINT: File > Print (or Cmd/Ctrl+P). Page breaks mirror the LaTeX \newpage
   layout. Choose "Letter", default margins are set via @page.
 
-  COURSE DATA: all course-specific values are in the marked blocks below - 
-  search for "EDIT:" comments.
+  KIT TEMPLATE (course-creator templates/outline.template.html, synced to course/outline.template.html).
+  Built by course/build_outline.py from course/outline.data.json, the fragments in course/outline/,
+  the grading and policies in course/hub.data.json, and the schedule in course/hub-sessions.js, so the
+  hub and the outline cannot disagree. Edit the data, not this file.
 -->
 <style>
   :root{
@@ -188,10 +190,7 @@
   </table>
 
   <h1 class="section">1&ensp;Catalog Description</h1>
-  <!-- EDIT: must match the official catalog text -->
-  <p>Introduction to the concepts of cyber security, including vulnerability assessment, virus attacks,
-  hacking, spyware, network defense, passwords, firewalls, VPNs and intrusion detection. Crucial issues
-  ranging from industrial espionage to cyber bullying are discussed.</p>
+  <p>Introduction to the concepts of cyber security, including vulnerability assessment, virus attacks, hacking, spyware, network defense, passwords, firewalls, VPNs and intrusion detection. Crucial issues ranging from industrial espionage to cyber bullying are discussed.</p>
 
 </div>
 
@@ -211,7 +210,6 @@
   engineering; compliance and regulations; policy management; risk assessment and ethical procedures;
   secure software development (Agile/DevSecOps); cryptography and identity &amp; access management;
   trusted platforms and container isolation; and the security of AI systems.</p>
-
   <h1 class="section">3&ensp;Text and Reference Materials</h1>
   <ol>
     <li><b>Required textbook:</b> None. All required readings are provided through Canvas.</li>
@@ -232,66 +230,64 @@
       </ul>
     </li>
   </ol>
-
 </div>
 
 <!-- ================= PAGE 3 : schedule ================= -->
 <div class="page">
 
   <h1 class="section">4&ensp;Course Schedule</h1>
-  <p><em class="note">The schedule below is tentative and subject to change; changes will be announced through
-  Canvas. Classes meet Mondays and Wednesdays, 4:30–5:45 PM.</em></p>
+  <p><em class="note">The schedule below is tentative and subject to change; changes will be announced through Canvas. Classes meet Mondays and Wednesdays, 4:30–5:45 PM.</em></p>
 
-  <!-- EDIT: schedule (dates verified against the UIW Fall 2026 academic calendar) -->
+  <!-- generated from course/hub-sessions.js -->
   <table class="sched">
     <thead><tr><th style="text-align:center">Wk</th><th>Date</th><th>Topic</th><th>Comments</th></tr></thead>
     <tbody>
-      <tr class="wkstart"><td class="wk" rowspan="2">1</td><td class="date">Aug 24</td><td>Introduction to the Course · security landscape · CIA triad</td><td>Syllabus review · Lab 0</td></tr>
-      <tr><td class="date">Aug 26</td><td>M1: Threat actors, control types, security frameworks</td><td>Quiz 1 opens</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">1</td><td class="date">Aug 24</td><td>Course launch · security landscape · CIA triad · environment setup</td><td>Syllabus review · Lab 0 assigned</td></tr>
+      <tr><td class="date">Aug 26</td><td>M1: Threat actors, control types, security frameworks (NIST/CIS)</td><td>Quiz 1 opens</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">2</td><td class="date">Aug 31</td><td>M1: Security management &amp; GRC fundamentals</td><td>Lab 1</td></tr>
-      <tr><td class="date">Sep 02</td><td>M2: Version control fundamentals; the Git model</td><td>Mass of the Holy Spirit</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">2</td><td class="date">Aug 31</td><td>M1: Security management &amp; GRC fundamentals</td><td>Lab 1 (frameworks)</td></tr>
+      <tr><td class="date">Sep 2</td><td>M2: Version control fundamentals; the Git model</td><td>Mass of the Holy Spirit (may run adjusted schedule)</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">3</td><td class="date">Sep 07</td><td><b class="noclass">No Class</b></td><td>Labor Day Holiday</td></tr>
-      <tr><td class="date">Sep 09</td><td>M2: Branching, pull requests, GitHub Projects; signed commits &amp; secrets hygiene</td><td>Lab 2</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">3</td><td class="date">Sep 7</td><td><b class="noclass">No Class</b></td><td>Labor Day (UIW closed)</td></tr>
+      <tr><td class="date">Sep 9</td><td>M2: Branching, pull requests, GitHub Projects; signed commits &amp; secrets hygiene</td><td>Lab 2 (Git/GitHub)</td></tr>
 
       <tr class="wkstart"><td class="wk" rowspan="2">4</td><td class="date">Sep 14</td><td>M2→M3: Repository audit trails; Agile/Scrum &amp; the secure SDLC</td><td>Census date · Quiz 2</td></tr>
-      <tr><td class="date">Sep 16</td><td>M3: GitHub Actions CI/CD; automated security scanning</td><td>Lab 3</td></tr>
+      <tr><td class="date">Sep 16</td><td>M3: GitHub Actions CI/CD; automated security scanning (SAST, deps, secrets)</td><td>Lab 3 (CI/DevSecOps)</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">5</td><td class="date">Sep 21</td><td>M3: Software supply-chain security; branch protection</td><td><b>Capstone proposal due</b></td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">5</td><td class="date">Sep 21</td><td>M3: Software supply-chain security; branch protection</td><td>Capstone teams + proposal due</td></tr>
       <tr><td class="date">Sep 23</td><td>M4: Containers vs. VMs; Docker images &amp; isolation</td><td>Quiz 3</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">6</td><td class="date">Sep 28</td><td>M4: Dockerfile hardening; image scanning; least privilege</td><td>Lab 4</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">6</td><td class="date">Sep 28</td><td>M4: Dockerfile hardening; image scanning; least privilege</td><td>Lab 4 (Docker hardening)</td></tr>
       <tr><td class="date">Sep 30</td><td>M4: Container networking, segmentation, secrets management</td><td></td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">7</td><td class="date">Oct 05</td><td>M5: Cryptography - symmetric, asymmetric, hashing</td><td>Quiz 4</td></tr>
-      <tr><td class="date">Oct 07</td><td>M5: PKI, TLS &amp; certificates; securing a containerized service</td><td>Lab 5</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">7</td><td class="date">Oct 5</td><td>M5: Cryptography - symmetric, asymmetric, hashing</td><td>Quiz 4</td></tr>
+      <tr><td class="date">Oct 7</td><td>M5: PKI, TLS &amp; certificates; securing a containerized service</td><td>Lab 5 (crypto/TLS)</td></tr>
 
       <tr class="wkstart"><td class="wk" rowspan="2">8</td><td class="date">Oct 12</td><td>M5: Identity &amp; access management · Midterm review</td><td></td></tr>
-      <tr><td class="date">Oct 14</td><td class="exam">Midterm Exam (Modules 1–5)</td><td></td></tr>
+      <tr><td class="date">Oct 14</td><td class="exam">MIDTERM EXAM - Modules 1–5 (SY0-701 domains 1–3)</td><td class="exam">Midterm</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">9</td><td class="date">Oct 19</td><td>M6: Computer architecture - CPU vs. GPU, memory hierarchy</td><td>Lab 6</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">9</td><td class="date">Oct 19</td><td>M6: Computer architecture - CPU vs. GPU, memory hierarchy</td><td>Lab 6 (GPU/arch)</td></tr>
       <tr><td class="date">Oct 21</td><td>M6: Hardware root of trust - TPM, secure boot, confidential computing</td><td>Quiz 5</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">10</td><td class="date">Oct 26</td><td>M7: LLM fundamentals; deploying Ollama + Open WebUI in Docker</td><td>Lab 7</td></tr>
-      <tr><td class="date">Oct 28</td><td>M7: Local vs. cloud AI - data locality, privacy, model supply chain</td><td><b>Capstone checkpoint 1</b></td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">10</td><td class="date">Oct 26</td><td>M7: LLM fundamentals; deploying Ollama + Open WebUI in Docker</td><td>Lab 7 (local LLM stack)</td></tr>
+      <tr><td class="date">Oct 28</td><td>M7: Local vs. cloud AI - data locality, privacy, model supply chain</td><td>Capstone checkpoint 1</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">11</td><td class="date">Nov 02</td><td>M8: Prompt &amp; context engineering; retrieval-augmented generation</td><td>Quiz 6</td></tr>
-      <tr><td class="date">Nov 04</td><td>M8: LLM security - OWASP LLM Top 10, prompt injection, guardrails</td><td>Lab 8</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">11</td><td class="date">Nov 2</td><td>M8: Prompt &amp; context engineering; retrieval-augmented generation</td><td>Quiz 6</td></tr>
+      <tr><td class="date">Nov 4</td><td>M8: LLM security - OWASP LLM Top 10, prompt injection, guardrails</td><td>Lab 8 (LLM attack/defense)</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">12</td><td class="date">Nov 09</td><td>M9: AI agents &amp; tool use; Agent Development Kit (ADK)</td><td>Lab 9</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">12</td><td class="date">Nov 9</td><td>M9: AI agents &amp; tool use; Agent Development Kit (ADK)</td><td>Lab 9 (ADK agent)</td></tr>
       <tr><td class="date">Nov 11</td><td>M9: Agent authorization, autonomous-system risk, human-in-the-loop</td><td>Quiz 7</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">13</td><td class="date">Nov 16</td><td>M10: Risk assessment &amp; management; policy management</td><td>Drop deadline · Policy paper</td></tr>
-      <tr><td class="date">Nov 18</td><td>M10: Privacy &amp; compliance; ethics; incident response</td><td>Quiz 8</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">13</td><td class="date">Nov 16</td><td>M10: Risk assessment &amp; management; policy management</td><td>Drop deadline · Policy paper (Lab 10)</td></tr>
+      <tr><td class="date">Nov 18</td><td>M10: Privacy &amp; compliance (GDPR/HIPAA/FERPA); ethics; incident response</td><td>Quiz 8</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">14</td><td class="date">Nov 23</td><td>M10: Governance wrap-up · capstone work session</td><td><b>Capstone checkpoint 2</b></td></tr>
-      <tr><td class="date">Nov 25</td><td><b class="noclass">No Class</b></td><td>Wednesday classes do not meet</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">14</td><td class="date">Nov 23</td><td>M10: Governance wrap-up · capstone work session</td><td>Capstone checkpoint 2</td></tr>
+      <tr><td class="date">Nov 25</td><td><b class="noclass">No Class</b></td><td>Wednesday classes do not meet (Thanksgiving)</td></tr>
 
-      <tr class="wkstart"><td class="wk" rowspan="2">15</td><td class="date">Nov 30</td><td class="exam">Capstone Project Presentations</td><td>Capstone due</td></tr>
-      <tr><td class="date">Dec 02</td><td class="exam">Capstone Presentations · Security+ domain review</td><td>Final review guide</td></tr>
+      <tr class="wkstart"><td class="wk" rowspan="2">15</td><td class="date">Nov 30</td><td>Capstone Project Presentations - secure local-AI stack demos</td><td>Capstone due</td></tr>
+      <tr><td class="date">Dec 2</td><td>Capstone Presentations (cont.) · Security+ SY0-701 domain review</td><td>Final review guide</td></tr>
 
-      <tr class="wkstart last"><td class="wk">16</td><td class="date">Dec 7–11</td><td class="exam">FINALS WEEK</td><td class="exam">Final Exam</td></tr>
+      <tr class="wkstart last"><td class="wk">16</td><td class="date">Dec 7–11</td><td class="exam">FINALS WEEK - comprehensive final exam (slot per registrar finals grid)</td><td class="exam">Final Exam</td></tr>
     </tbody>
   </table>
 
@@ -303,25 +299,23 @@
   <h1 class="section">5&ensp;Grading Activities, Criteria, and Guidelines</h1>
 
   <h2 class="subsection">5.1&ensp;Grading Distribution</h2>
-  <p>Your final grade is determined by autograded hands-on labs, quizzes, two exams, and a semester-long
-  capstone project, weighted as follows:</p>
+  <p>Your final grade is determined by autograded hands-on labs, quizzes, two exams, and a semester-long capstone project, weighted as follows:</p>
   <ul>
-    <li><b>Hands-on Labs (autograded via your assignment repository):</b> 30%</li>
-    <li><b>Quizzes (Canvas):</b> 15%</li>
+    <li><b>Hands-on Labs (autograded):</b> 30%</li>
+    <li><b>Quizzes (8, on Canvas):</b> 15%</li>
     <li><b>Midterm Exam:</b> 15%</li>
     <li><b>Final Exam:</b> 15%</li>
     <li><b>Capstone Project:</b> 20%, broken down as follows:
       <ul>
-        <li>Capstone Proposal: 3%</li>
-        <li>Project Implementation (working, hardened stack delivered through the security-gated CI pipeline): 5%</li>
-        <li>Final Presentation: 5%</li>
-        <li>GitHub Repository and Project Documentation: 4%</li>
-        <li>GitHub Wiki Page (Final Report): 3%</li>
+        <li>Capstone proposal (approved by instructor): 3%</li>
+        <li>Project implementation (working, hardened stack via the security-gated CI pipeline): 5%</li>
+        <li>Final presentation (Week 15): 5%</li>
+        <li>GitHub repository &amp; project documentation: 4%</li>
+        <li>GitHub Wiki page - the final report: 3%</li>
       </ul>
     </li>
     <li><b>Attendance &amp; Participation:</b> 5%</li>
-    <li><em class="note">Note on presentations: failure to present during the scheduled Capstone Presentations
-    will result in an automatic 15% deduction from the team's total capstone grade.</em></li>
+    <li><em class="note">Note on presentations: failure to present during the scheduled Capstone Presentations will result in an automatic 15% deduction from the team's total capstone grade.</em></li>
   </ul>
 
   <h2 class="subsection">5.2&ensp;Capstone Project Guidelines</h2>
@@ -357,7 +351,7 @@
     components, without penalizing teammates who did the work.</li>
   </ul>
 
-  <h2 class="subsection">5.3&ensp;Labs, Hints, and Automated Grading</h2>
+<h2 class="subsection">5.3&ensp;Labs, Hints, and Automated Grading</h2>
   <ul>
     <li>Labs are distributed and pushed to your assignment repository; an automated grader runs on every push and
     reports your current score and per-criterion feedback, so you can revise before the deadline.</li>
@@ -366,13 +360,11 @@
   </ul>
 
   <h2 class="subsection">5.4&ensp;Late Work and Make-up Policy</h2>
+  <p>Deadlines are firm.</p>
   <ul>
-    <li><b>No late work is accepted in this course.</b> All deliverables (labs, quizzes, papers, and every
-    capstone component) must be submitted by the posted deadline; work not submitted on time receives a
-    grade of zero for that item.</li>
-    <li><b>Extenuating circumstances:</b> if a documented emergency prevents on-time submission, notify the
-    instructor <em>before</em> the deadline whenever possible; accommodations are at the instructor's
-    discretion and handled case by case.</li>
+    <li><b>No late work is accepted.</b> Every deliverable - labs, quizzes, papers, and all capstone components - is due at the posted deadline; missing it means a zero for that item.</li>
+    <li>Documented emergency? Contact Dr. Parra <b>before</b> the deadline - accommodations are case by case at the instructor's discretion.</li>
+    <li>Pushing early and often is free insurance: the autograder shows your score before the deadline.</li>
   </ul>
 
   <h2 class="subsection">5.5&ensp;Academic Integrity</h2>
