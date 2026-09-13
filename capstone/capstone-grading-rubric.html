@@ -89,11 +89,13 @@
 
   <div class="callout">
     One rubric for the whole capstone (20% of the course grade), one section per graded component:
-    Proposal 3%, Project Implementation 5%, Final Presentation 5%, GitHub Repository and Project
-    Documentation 4%, GitHub Wiki Final Report 3%. Within each section, criteria weights add to 100%.
-    Pick a level for every criterion; the form converts each section score to its course points and
-    totals everything automatically. Levels award 0%, 10%, 30%, 60%, 80%, or 100% of a criterion's
-    weight (so a 10% criterion offers 0 / 1 / 3 / 6 / 8 / 10).
+    Capstone Proposal 1%, Project Implementation 5%, GitHub Repository 4%, Project Board 4%,
+    GitHub Wiki Final Report 3%, Final Presentation 3%.
+    Within each section, criteria weights add to 100%. Pick a level for every criterion; the form
+    converts each section score to its course points and totals everything automatically. Levels award
+    0%, 10%, 30%, 60%, 80%, or 100% of a criterion's weight (so a 30% criterion offers 0 / 3 / 9 / 18 / 24 / 30).
+    The Final Presentation section is the one you do not fill in live: score it on the Capstone
+    Presentation Scoring sheet during the presentation, then carry its total here.
   </div>
 
   <div class="grid-2">
@@ -151,7 +153,7 @@
   ];
 
   var SECTIONS = [
-    { id: "prop", title: "1. Capstone Proposal", pts: 3, criteria: [
+    { id: "prop", title: "1. Capstone Proposal", pts: 1, criteria: [
       ["Team and logistics", "Roster complete with personality types, agreed weekly meeting times, and a recorded unanimous commit-approach vote.", 20],
       ["Stack configuration, pinned and justified", "Ollama model and tag, Open WebUI version, ADK agent role and tool scopes, TLS edge choice, CI stages, and host fit for each demo machine. No :latest anywhere.", 30],
       ["Target security controls", "6 to 10 controls, correctly typed (preventive, detective, corrective, governance), each mapped to a course outcome and an SY0-701 domain, spanning at least three domains.", 30],
@@ -163,23 +165,29 @@
       ["Security-gated CI", "Pipeline with lint, secret scan, and dependency audit gates that actually fail bad pushes; green on HEAD at grading time.", 20],
       ["Agent guardrails", "Agent tools scoped to least privilege, a human gate on risky actions, and agent actions logged or traced.", 20]
     ]},
-    { id: "pres", title: "3. Final Presentation", pts: 5, criteria: [
-      ["Architecture and working demo", "The stack runs live; segmentation, TLS, and containers are evident.", 25],
-      ["Security controls and mapping", "Controls named, classified, and mapped to a CO and an SY0-701 domain.", 30],
-      ["Attack and defense narrative", "A real attack shown and mitigated, with honest residual risk.", 20],
-      ["Governance artifacts", "Risk register, AI-use policy, IR note, and clean Git and board history.", 15],
-      ["Delivery and teamwork", "Every member speaks; clear, on time, and answers questions.", 10]
-    ]},
-    { id: "repo", title: "4. GitHub Repository and Project Documentation", pts: 4, criteria: [
-      ["Repository structure and README", "Organized folders (compose, ci, docs); README is a polished front door: mission, tech stack, setup guide that works.", 30],
+    { id: "repo", title: "3. GitHub Repository", pts: 4, criteria: [
+      ["Repository structure and README", "Organized folders (compose, ci, docs); README is a polished front door: mission, tech stack, and a setup guide that works.", 30],
+      ["Commits stand behind the board", "Every completed board item has commits behind it, and the history shows the work happening across the semester rather than in the final fortnight.", 30],
       ["Individual Contribution Summary Table", "Present at the bottom of the README, accurate, and matching the board. A missing table cannot score above Missing on this criterion.", 25],
-      ["Project board management", "User stories written as \"As a ...\", every issue carries a milestone and an iteration, sizes or story points used, and the board tells the semester's real history.", 30],
-      ["Evidence organized in the repo", "Screenshots, scan outputs, and config exports stored where the wiki and README reference them.", 15]
+      ["Evidence stored where it is cited", "Screenshots, scan outputs and configuration exports live in the repository at the paths the wiki and the README point to.", 15]
+    ]},
+    { id: "board", title: "4. Project Board", pts: 4, criteria: [
+      ["User stories with story points", "Work is written as user stories in the \"As a ...\" form and sized with story points before it starts. These are the points the Individual Contribution Summary Table reports, and the points that set each member's individual grade.", 35],
+      ["Planned across the semester", "Milestones and iterations show work moving through the board week by week. A board filled in near the deadline scores Missing however complete it looks on the day.", 35],
+      ["Assigned, current and complete", "Every item carries an assignee, a milestone and an iteration, and its status matches reality at grading time. Nothing substantial happened off the board.", 20],
+      ["Coordination is visible", "Issues carry the conversation: blockers raised, work handed over, decisions recorded where the team can find them again.", 10]
     ]},
     { id: "wiki", title: "5. GitHub Wiki Final Report", pts: 3, criteria: [
       ["Architecture and diagrams", "Topology plus data-flow diagrams that match the running stack, including trust boundaries.", 40],
       ["Technical runbook documentation", "Someone else could rebuild the stack from the wiki alone; explains why each control and setting was chosen, with screenshots and configs.", 40],
       ["Wiki structure and navigation", "Sidebar, logical sections (Home, Architecture, Setup, Sprint Notes, Final Report), clean headings and working links.", 20]
+    ]},
+    { id: "pres", title: "6. Final Presentation", pts: 3, criteria: [
+      ["Architecture and working demo", "The stack runs live; segmentation, TLS, and containers are evident.", 25],
+      ["Security controls and mapping", "Controls named, classified, and mapped to a CO and an SY0-701 domain.", 30],
+      ["Attack and defense narrative", "A real attack shown and mitigated, with honest residual risk.", 20],
+      ["Governance artifacts", "Risk register, AI-use policy, IR note, and clean Git and board history.", 15],
+      ["Delivery and teamwork", "Every member speaks; clear, on time, and answers questions.", 10]
     ]}
   ];
 

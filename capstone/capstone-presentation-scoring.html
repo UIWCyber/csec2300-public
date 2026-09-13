@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capstone Presentation Rubric - CSEC 2300</title>
+<title>Capstone Presentation Scoring - CSEC 2300</title>
 <style>
   :root {
     --cardinal: #CB333B; --cardinal-dark: #9e262d; --link: #2E8FD6;
@@ -39,11 +39,16 @@
   .crit .head { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
   .crit .head h3 { margin: 0; flex: 1 1 auto; }
   .crit .weight { background: var(--cardinal); color: #fff; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.8rem; font-weight: 700; }
+  .crit .scorebox { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; }
+  .crit .scorebox input { width: 5rem; text-align: right; }
+  .crit .scorebox .max { color: var(--muted); font-weight: 600; }
   .descriptors { margin-top: 0.7rem; display: grid; gap: 0.5rem; }
   .desc-row { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.6rem; font-size: 0.9rem; }
   .desc-row .lvl { font-weight: 700; }
   .lvl.exc { color: #1f8a4c; } .lvl.adq { color: #b8860b; } .lvl.miss { color: var(--cardinal); }
   @media (prefers-color-scheme: dark) { .lvl.exc { color: #4ecb7d; } .lvl.adq { color: #e0b64a; } }
+  .totalbar { position: sticky; top: 3.1rem; z-index: 40; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; margin: 1rem 0; font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; justify-content: space-between; }
+  .totalbar .val { color: var(--cardinal); font-size: 1.4rem; }
   .btn { background: var(--cardinal); color: #fff; border: none; border-radius: 5px; padding: 0.5rem 0.9rem; font: inherit; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
   .btn:hover { background: var(--cardinal-dark); }
   .btn.secondary { background: transparent; color: var(--fg); border: 1px solid var(--input-border); }
@@ -51,13 +56,16 @@
   .toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--panel); border-bottom: 1px solid var(--border); padding: 0.6rem 1.25rem; box-shadow: 0 2px 6px var(--shadow); }
   .toolbar .title { font-weight: 700; color: var(--cardinal); margin-right: auto; font-size: 0.95rem; }
   .deduct { background: var(--panel); border: 1px solid var(--cardinal); border-radius: 6px; padding: 0.7rem 0.9rem; margin: 1rem 0; font-size: 0.92rem; }
-  ol.beats, ul.tips { font-size: 0.93rem; }
+  label.inline { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+  input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--cardinal); }
+  ol.beats { font-size: 0.93rem; }
   @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } .wrap { padding: 1rem 0.8rem 4rem; } .desc-row { grid-template-columns: 1fr; gap: 0.15rem; } }
   @media print {
     .toolbar, .no-print, button { display: none !important; }
     body { font-size: 11pt; background: #fff; color: #000; }
     .wrap { max-width: 100%; padding: 0; }
     :root { --bg:#fff; --fg:#000; --panel:#fff; --panel-2:#f0f0f0; --border:#999; --input-border:#999; }
+    .totalbar { position: static; }
     .crit { page-break-inside: avoid; }
     input, textarea { border: 1px solid #999 !important; }
     @page { size: letter; margin: 0.6in; }
@@ -65,46 +73,39 @@
 </style>
 </head>
 <body>
-<div class="toolbar no-print">
-  <span class="title">Capstone Presentation Rubric</span>
-  <button class="btn" id="btnPrint">Download PDF</button>
-  <button class="btn secondary" id="btnTheme">Toggle Theme</button>
-  <button class="btn secondary" id="btnClear">Clear Form</button>
-</div>
 <div class="wrap">
   <header class="doc">
-    <h1>Capstone Presentation Rubric</h1>
+    <h1>Capstone Presentation Scoring</h1>
     <div class="sub">CSEC 2300 Foundations of Cyber Security &nbsp;|&nbsp; Instructor: Dr. Gonzalo D Parra</div>
   </header>
 
   <div class="callout">
-    The final presentation is worth 3% of your course grade (part of the 20% capstone). Teams present in posted time slots; the order is posted on Canvas. Each team gets 10 to 15 minutes plus Q&amp;A. Every member presents the user stories they contributed to.
+    Instructor sheet, filled during the presentation. It scores the presentation only. Scores are kept in this browser, so this page can be reopened later and the total carried to the Capstone Grading Rubric, where the presentation is worth 3 points of the course grade.
   </div>
 
-  <h2>Hard Rules</h2>
-  <ul style="font-size:0.93rem;">
-    <li><strong>Every member presents.</strong> Delivery credit requires each member to present the user stories they contributed to.</li>
-    <li><strong>Missing your slot costs 15%.</strong> A missed scheduled presentation slot is an automatic 15% deduction from the team's total capstone grade.</li>
-    <li><strong>No late final work.</strong> The final wiki, repo, board, and presentation are not accepted late.</li>
-    <li><strong>Demo fallback required.</strong> A recorded demo video must be in the repo. If the live demo fails, you switch to the recording and keep going; a working artifact is not penalized heavily for a failed cable.</li>
-  </ul>
+  <h2>Team Under Review</h2>
+  <div class="grid-2">
+    <div class="field"><label for="team-name">Team name</label><input type="text" id="team-name" placeholder="Team name"></div>
+    <div class="field"><label for="presenters">Presenters</label><input type="text" id="presenters" placeholder="Member names, in speaking order"></div>
+  </div>
+  <div class="grid-2">
+    <div class="field"><label for="slot">Slot</label><input type="text" id="slot" placeholder="Day and time"></div>
+    <div class="field"><label for="runtime">Run time</label><input type="text" id="runtime" placeholder="Minutes, start to finish"></div>
+  </div>
 
-  <h2>Required Structure (five beats, in order)</h2>
-  <ol class="beats">
-    <li>Architecture diagram plus a live demo of the running stack.</li>
-    <li>Controls mapped to course outcomes (CO) and SY0-701 domains.</li>
-    <li>One attack you defended (injection, an exposed service, and so on).</li>
-    <li>Risks accepted plus the incident-response note.</li>
-    <li>Lessons learned.</li>
-  </ol>
+  <h2>Scoring</h2>
+  <p class="note">Enter a score from 0 to each criterion's maximum. The weighted total out of 100 computes as you type. Descriptors are the same ones the students see on their own rubric.</p>
 
-  <h2>Criteria Preview (matches the grading sheet)</h2>
-  <p class="note">These are the same criteria and weights the instructor uses on the grading rubric. The presentation is scored out of 100 and converts to the 3% component.</p>
+  <div class="totalbar">
+    <span>Presentation total</span>
+    <span><span class="val" id="totalVal">0</span> / 100</span>
+  </div>
 
-  <div class="crit" data-crit="demo">
+  <div class="crit" data-crit="demo" data-max="25">
     <div class="head">
       <h3>Architecture and working demo</h3>
       <span class="weight">25%</span>
+      <span class="scorebox">Score <input type="number" id="score-demo" min="0" max="25" step="0.5" placeholder="0"> <span class="max">/ 25</span></span>
     </div>
     <div class="descriptors">
       <div class="desc-row"><span class="lvl exc">Excellent</span><span>The stack runs live. Segmentation, TLS at the edge, and containerization are visibly demonstrated, not just claimed. The architecture diagram matches what is actually running.</span></div>
@@ -113,10 +114,11 @@
     </div>
   </div>
 
-  <div class="crit" data-crit="controls">
+  <div class="crit" data-crit="controls" data-max="30">
     <div class="head">
       <h3>Security controls and mapping</h3>
       <span class="weight">30%</span>
+      <span class="scorebox">Score <input type="number" id="score-controls" min="0" max="30" step="0.5" placeholder="0"> <span class="max">/ 30</span></span>
     </div>
     <div class="descriptors">
       <div class="desc-row"><span class="lvl exc">Excellent</span><span>Each implemented control is named, classified (preventive, detective, or corrective), and mapped to a specific CO and SY0-701 domain. The mapping is correct and the team can defend it under questioning.</span></div>
@@ -125,10 +127,11 @@
     </div>
   </div>
 
-  <div class="crit" data-crit="attack">
+  <div class="crit" data-crit="attack" data-max="20">
     <div class="head">
       <h3>Attack and defense narrative</h3>
       <span class="weight">20%</span>
+      <span class="scorebox">Score <input type="number" id="score-attack" min="0" max="20" step="0.5" placeholder="0"> <span class="max">/ 20</span></span>
     </div>
     <div class="descriptors">
       <div class="desc-row"><span class="lvl exc">Excellent</span><span>A real attack is shown against the stack and its mitigation is demonstrated, with honest residual risk stated. "This injection still partially works; here is our compensating control" earns full credit. Honest security reasoning outranks a polished demo.</span></div>
@@ -137,10 +140,11 @@
     </div>
   </div>
 
-  <div class="crit" data-crit="governance">
+  <div class="crit" data-crit="governance" data-max="15">
     <div class="head">
       <h3>Governance artifacts</h3>
       <span class="weight">15%</span>
+      <span class="scorebox">Score <input type="number" id="score-governance" min="0" max="15" step="0.5" placeholder="0"> <span class="max">/ 15</span></span>
     </div>
     <div class="descriptors">
       <div class="desc-row"><span class="lvl exc">Excellent</span><span>The risk register, AI-use policy, and incident-response note are complete in the wiki, and the Git history and Project board show steady, distributed work all semester.</span></div>
@@ -149,10 +153,11 @@
     </div>
   </div>
 
-  <div class="crit" data-crit="delivery">
+  <div class="crit" data-crit="delivery" data-max="10">
     <div class="head">
       <h3>Delivery and teamwork</h3>
       <span class="weight">10%</span>
+      <span class="scorebox">Score <input type="number" id="score-delivery" min="0" max="10" step="0.5" placeholder="0"> <span class="max">/ 10</span></span>
     </div>
     <div class="descriptors">
       <div class="desc-row"><span class="lvl exc">Excellent</span><span>Every member speaks with a substantive part. The talk is clear, hits the five beats in order, lands on time, and the team answers questions directly.</span></div>
@@ -162,32 +167,46 @@
   </div>
 
   <div class="deduct">
-    <strong>Missed slot deduction:</strong> failing to present in your scheduled slot is an automatic 15% deduction from the team's total capstone grade.
+    <strong>Missed slot deduction:</strong> failing to present in the scheduled slot is an automatic 15% deduction from the team's total capstone grade. Record it here and apply it on the grading rubric, not in the scores above.
   </div>
 
-  <h2>Tips</h2>
-  <ul class="tips">
-    <li><strong>Lead with the live stack.</strong> Bring it up in front of the room and show segmentation and TLS working. Everything after that is explanation.</li>
-    <li><strong>Show one attack and its mitigation.</strong> The threat succeeding against the undefended service, then stopped by your control.</li>
-    <li><strong>Be honest about residual risk.</strong> "This still partially works, and here is our compensating control" reads as maturity, not weakness.</li>
-    <li><strong>Rehearse handoffs and timing.</strong> Practice the full run so every member's part is smooth and you land inside your slot.</li>
-    <li><strong>Have the recording ready.</strong> If the live stack fails, switch to the recorded demo and keep going.</li>
-  </ul>
-
-  <h2>Self-Check Before You Present</h2>
-  <div class="grid-2">
-    <div class="field"><label for="team-name">Team name</label><input type="text" id="team-name" placeholder="Team name"></div>
-    <div class="field"><label for="presenters">Presenters (every member speaking)</label><input type="text" id="presenters" placeholder="Member names"></div>
-  </div>
-  <div class="field"><label for="demo-plan">Live demo plan (what you will show working)</label><textarea id="demo-plan" placeholder="The exact moment you will show a control doing its job"></textarea></div>
-  <div class="field"><label for="fallback-link">Recorded demo location</label><input type="text" id="fallback-link" placeholder="where the recording lives in the repo"></div>
-  <div class="field"><label for="timing">Rehearsed run time (target 10 to 15 minutes)</label><input type="text" id="timing" placeholder="e.g., 12 minutes in the last dry-run"></div>
+  <h2>Notes to Carry Forward</h2>
+  <div class="field"><label for="notes">What to remember when grading the rest of the deliverables</label><textarea id="notes" placeholder="Claims to check against the repository, questions the team could not answer, anything promised in the room"></textarea></div>
+  <div class="field"><label for="carried">Carried to the grading rubric</label><input type="text" id="carried" placeholder="Total out of 100, converted to 3 points"></div>
 </div>
 
 <script>
 (function () {
   "use strict";
-  var NS = "csec2300-presentation-rubric:";
+  var NS = "csec2300-presentation-scoring:";
+
+  // Criteria are read from the page, not listed here, so this script serves any course's
+  // criteria set without being edited: each .crit carries data-max, and the score input
+  // inside it is the one that counts toward the total.
+  var crits = [].slice.call(document.querySelectorAll(".crit[data-max]"));
+  var scores = crits.map(function (c) {
+    var el = c.querySelector("input[type=number]");
+    return el ? { el: el, max: parseFloat(c.getAttribute("data-max")) } : null;
+  }).filter(Boolean);
+  var scoreIds = scores.map(function (s) { return s.el.id; });
+
+  function clampScore(el) {
+    var s = scores.filter(function (x) { return x.el === el; })[0];
+    if (!s) return;
+    var v = parseFloat(el.value);
+    if (isNaN(v)) return;
+    if (v < 0) el.value = 0;
+    else if (v > s.max) el.value = s.max;
+  }
+  function updateTotal() {
+    var total = 0;
+    scores.forEach(function (s) {
+      var v = parseFloat(s.el.value);
+      if (!isNaN(v)) total += v;
+    });
+    total = Math.round(total * 10) / 10;
+    document.getElementById("totalVal").textContent = total;
+  }
 
   function saveEl(el) {
     if (!el.id) return;
@@ -207,13 +226,18 @@
     });
   }
   restoreAll();
+  updateTotal();
 
-  document.addEventListener("input", function (e) { saveEl(e.target); });
-  document.addEventListener("change", function (e) { saveEl(e.target); });
+  function onEdit(e) {
+    if (scoreIds.indexOf(e.target.id) !== -1) { clampScore(e.target); updateTotal(); }
+    saveEl(e.target);
+  }
+  document.addEventListener("input", onEdit);
+  document.addEventListener("change", onEdit);
 
   document.getElementById("btnPrint").addEventListener("click", function () { window.print(); });
   document.getElementById("btnClear").addEventListener("click", function () {
-    if (!confirm("Clear this form and erase its saved data on this device? This cannot be undone.")) return;
+    if (!confirm("Clear this sheet and erase its saved scores on this device? This cannot be undone.")) return;
     var keys = [];
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
