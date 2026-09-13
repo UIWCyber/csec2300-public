@@ -57,7 +57,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body,.s-prep .s-body{justify-content:flex-start}
 .lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
@@ -318,6 +318,10 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <ol class="steps"><li><span class="step-n">1</span><span class="step-t">Fork the demo repo linked on the course hub. It already has a working scan workflow.</span></li><li><span class="step-n">2</span><span class="step-t">Make the pipeline FAIL two different ways: (a) commit a fake secret matching the gitleaks pattern (<code>AKIA...</code>), and (b) pin a known-vulnerable dependency version from the provided list.</span></li><li><span class="step-n">3</span><span class="step-t">Now fix one of the two failures and get a green check. Roughly 7 minutes of work.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief: which failure was preventive and which was detective? What severity threshold would you set to block merges to main?</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">24</div></section>
 <section class="slide s-exit" data-index="25"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Your app uses a library with a critical CVE. Which scanner class catches this: SAST, DAST, or SCA?</p>
 <p>2. Name the workflow trigger that runs checks when someone opens a pull request.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">25</div></section>
+<section class="slide s-prep" data-index="26"><h1 class="s-title">Before Next Class</h1><div class="s-body"><ul>
+<li>Next session is supply chain and branch protection, taught on paper and from the podium.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><strong>Nothing new to install.</strong> The activity is threat mapping on a handout.</span></li><li><span class="step-n">2</span><span class="step-t"><strong>Your Actions run from today green</strong>, or the error in front of you, because next session builds on what the pipeline rejected.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations · 4.0 Security Operations</span></div><div class="s-num">26</div></section>
 </div></div>
 <div id="hud"></div>
 <div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>

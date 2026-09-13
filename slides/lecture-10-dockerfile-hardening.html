@@ -57,7 +57,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body,.s-prep .s-body{justify-content:flex-start}
 .lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
@@ -303,6 +303,10 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <ol class="steps"><li><span class="step-n">1</span><span class="step-t">Instructor projects a 15-line intentionally awful Dockerfile (root, <code>ubuntu:latest</code>, <code>ENV AWS_KEY=...</code>, <code>curl | bash</code>, <code>EXPOSE 22</code>, no pinning).</span></li><li><span class="step-n">2</span><span class="step-t">Pairs, 6 minutes: mark every line with a finding and propose the fix; the worksheet mirrors the Lab 4 rubric.</span></li><li><span class="step-n">3</span><span class="step-t">Reconvene: the class calls out findings; the instructor live-edits into a hardened version.</span></li><li><span class="step-n">4</span><span class="step-t">Count findings found versus the seven planted; pairs with all seven earn participation credit.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 4.0 Security Operations</span></div><div class="s-num">28</div></section>
 <section class="slide s-exit" data-index="29"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Why does putting a secret in an <code>ENV</code> instruction leak it even if you unset it in a later line?</p>
 <p>2. Name two benefits of a multi-stage build, one security and one operational.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 4.0 Security Operations</span></div><div class="s-num">29</div></section>
+<section class="slide s-prep" data-index="30"><h1 class="s-title">Before Next Class</h1><div class="s-body"><ul>
+<li>Next session is container networking and secrets, run from the podium.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><strong>Nothing new.</strong> Docker Desktop running, as before.</span></li><li><span class="step-n">2</span><span class="step-t"><strong>The compose file is distributed, not typed.</strong> You do not need to prepare anything to follow along.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 4.0 Security Operations</span></div><div class="s-num">30</div></section>
 </div></div>
 <div id="hud"></div>
 <div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>

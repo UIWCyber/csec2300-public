@@ -57,7 +57,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body,.s-prep .s-body{justify-content:flex-start}
 .lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
@@ -349,6 +349,10 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <ol class="steps"><li><span class="step-n">1</span><span class="step-t">Take a spec card for one of four machines: gaming desktop (RTX 4070, 12 GB VRAM), MacBook Air (16 GB unified), old office PC (no dedicated GPU, 8 GB RAM), cloud VM (A100, 40 GB).</span></li><li><span class="step-n">2</span><span class="step-t">In groups of 3, use the Slide 21 rule of thumb to name the largest model your machine can run interactively.</span></li><li><span class="step-n">3</span><span class="step-t">Rate its password-cracking threat level high, medium, or low, and defend the rating.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief with the reference answers, then flag which card matches your capstone hardware.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">31</div></section>
 <section class="slide s-exit" data-index="32"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Why does an LLM run dramatically faster on a GPU than on a CPU?</p>
 <p>2. Your model needs 6 GB of memory but the GPU has only 4 GB of VRAM. Name one option that still lets you run it locally.</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">32</div></section>
+<section class="slide s-prep" data-index="33"><h1 class="s-title">Before Next Class</h1><div class="s-body"><ul>
+<li>Next session is the hardware root of trust, and you will run one command on your own machine.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><strong>Nothing to install.</strong> One OS-native command: <code>Get-Tpm</code> in PowerShell on Windows, <code>csrutil status</code> on a Mac, <code>ls /dev/tpm0</code> on Linux.</span></li><li><span class="step-n">2</span><span class="step-t"><strong>Try it tonight.</strong> A managed or work-issued machine may refuse, which is itself the answer and worth knowing before class.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>3.0 Security Architecture · 1.0 General Security Concepts</span></div><div class="s-num">33</div></section>
 </div></div>
 <div id="hud"></div>
 <div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>

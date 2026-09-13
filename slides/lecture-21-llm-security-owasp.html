@@ -57,7 +57,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body,.s-prep .s-body{justify-content:flex-start}
 .lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
@@ -299,6 +299,11 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <ol class="steps"><li><span class="step-n">1</span><span class="step-t">Half the pairs (red) craft a prompt to make the podium or their SecBot reveal a planted secret or output a banned phrase; half (blue) propose a guardrail that would stop it.</span></li><li><span class="step-n">2</span><span class="step-t">Work 6 minutes: red submits attacks to the Canvas thread, blue submits defenses.</span></li><li><span class="step-n">3</span><span class="step-t">The instructor runs 3-4 red attacks live against the target, then applies a blue guardrail and re-runs to see which hold.</span></li><li><span class="step-n">4</span><span class="step-t">Debrief: which attacks survived every defense? Some will, and that is the honest, memorable lesson.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations</span></div><div class="s-num">22</div></section>
 <section class="slide s-exit" data-index="23"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. Direct versus indirect prompt injection: what is the key difference in HOW the payload arrives?</p>
 <p>2. Why must you validate an LLM's output before feeding it into another system?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations</span></div><div class="s-num">23</div></section>
+<section class="slide s-prep" data-index="24"><h1 class="s-title">Before Next Class</h1><div class="s-body"><ul>
+<li>Next session gives the model tools and turns it into an agent. That needs Python and the Agent Development Kit.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><strong>Python installed</strong>, with <code>pip</code> working.</span></li><li><span class="step-n">2</span><span class="step-t"><strong>Install the Agent Development Kit</strong> and point it at your local Ollama endpoint. Start from https://adk.dev</span></li><li><span class="step-n">3</span><span class="step-t"><strong>Your Ollama stack running</strong>, because the agent talks to it.</span></li></ol>
+<div class="callout c-note"><span class="c-label">Note</span><span class="c-body">If the install defeats you, come anyway. Next session's activity is a paper exercise on what an agent should be allowed to do, and you can follow it without a working install.</span></div></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>2.0 Threats · Vulnerabilities &amp; Mitigations</span></div><div class="s-num">24</div></section>
 </div></div>
 <div id="hud"></div>
 <div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>

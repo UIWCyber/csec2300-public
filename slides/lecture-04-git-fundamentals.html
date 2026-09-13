@@ -57,7 +57,7 @@ html,body{margin:0;height:100%;background:#111;color:var(--ink);font-family:var(
 h1.s-title{font-size:34px;margin:0 0 18px;font-weight:800;color:#fff;border-bottom:3px solid var(--red);padding-bottom:12px}
 .vis-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .s-body{flex:1;font-size:24px;line-height:1.4;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body{justify-content:flex-start}
+.s-content .s-body,.s-steps .s-body,.s-demo .s-body,.s-activity .s-body,.s-prep .s-body{justify-content:flex-start}
 .lead{color:var(--muted);font-size:22px;margin:0 0 6px}
 ul,ol{margin:4px 0;padding-left:30px}
 li{margin:8px 0}
@@ -325,6 +325,10 @@ ul.tree.tree-cols-2>li>ul>li{break-inside:avoid;padding-left:22px;border-left:2p
 <ol class="steps"><li><span class="step-n">1</span><span class="step-t"><code>mkdir csec-demo &amp;&amp; cd csec-demo &amp;&amp; git init</code> to make and enter a new repo.</span></li><li><span class="step-n">2</span><span class="step-t">Create <code>notes.md</code> with one line, then run <code>git status</code> and observe it is untracked.</span></li><li><span class="step-n">3</span><span class="step-t"><code>git add notes.md</code>, run <code>git status</code> (now staged), then <code>git commit -m "Add course notes"</code>.</span></li><li><span class="step-n">4</span><span class="step-t">Edit the file, run <code>git diff</code>, stage, and commit again. Then <code>git log --oneline</code> shows two commits. Post a screenshot of your log to the Canvas discussion for participation credit.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">32</div></section>
 <section class="slide s-exit" data-index="33"><h1 class="s-title">Exit Ticket</h1><div class="s-body"><p>1. What are the three areas a change passes through before it is in Git history?</p>
 <p>2. Why does changing one old commit change the hashes of all later commits?</p></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">33</div></section>
+<section class="slide s-prep" data-index="34"><h1 class="s-title">Before Next Class</h1><div class="s-body"><ul>
+<li>Next session is branching, pull requests and keeping secrets out of a repository. It starts from what you practise tonight.</li>
+</ul>
+<ol class="steps"><li><span class="step-n">1</span><span class="step-t"><strong>Levels 1 to 4 of Learn Git Branching</strong>, at https://learngitbranching.js.org . They take about twenty minutes and next session assumes them.</span></li><li><span class="step-n">2</span><span class="step-t"><strong>An SSH signing key registered on your GitHub account</strong>, from Lab 2. The signed-commit exercise needs it already in place.</span></li><li><span class="step-n">3</span><span class="step-t"><strong>A partner in mind.</strong> Next session's activity is done in pairs, one pushing and one reviewing.</span></li></ol></div><div class="s-foot"><span>CSEC 2300 Foundations of Cyber Security</span><span>1.0 General Security Concepts · 4.0 Security Operations</span></div><div class="s-num">34</div></section>
 </div></div>
 <div id="hud"></div>
 <div id="notes"><h2>Speaker Notes (press N to hide)</h2><div id="notes-body"></div></div>
