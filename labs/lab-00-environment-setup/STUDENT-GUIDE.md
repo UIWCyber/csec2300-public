@@ -9,103 +9,71 @@ container. You will prove it worked with two files: `setup-report.md` and
 `env-check.txt`. Every lab for the rest of the semester assumes this
 baseline is in place, so getting it right now saves you time later.
 
+This guide assumes you have never used a terminal. Every step shows the
+command to type and the output you should see. Type the commands yourself
+rather than pasting whole blocks; you learn the shape of each one that way.
+
 ## Before you start
 
-- You need a computer with `git`, `ssh`, and Docker installed. The campus
-  GPU lab workstations already have all three (they run Windows with
-  Docker Desktop and an NVIDIA GPU). On your own laptop, install
-  [Git](https://git-scm.com/downloads) and
-  [Docker Desktop](https://www.docker.com/products/docker-desktop/) first;
-  `ssh` ships with Windows 10/11, macOS, and Linux already.
-- You need a GitHub account. If you do not have one, create it yourself at
-  https://github.com/join. The grader never asks for your password; do not
-  type your GitHub password into any script or terminal.
-- The graded assignment, the repository invitation, and the exact
-  point values live in the **Lab 0** assignment on Canvas and in this
-  repository's `README.md`. This guide walks you through the mechanics of
-  doing the work; it does not replace README.md or HINTS.md, which are the
-  authoritative source for what is being graded. If you get stuck, open
-  `HINTS.md` in this folder for a three-tier hint ladder before asking the
-  instructor.
+- **Tools.** You need a computer with `git`, `ssh`, Docker, and Python 3 installed. The campus GPU lab workstations already have all of them (they run Windows with Docker Desktop and an NVIDIA GPU). On your own laptop, install [Git](https://git-scm.com/downloads) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) first; `ssh` ships with Windows 10/11, macOS, and Linux already.
+- **Python 3.** On Windows, install it from the Microsoft Store (search for "Python 3"); that makes the `python3` command the grader uses available. On a Mac, run `python3 --version`; if macOS offers to install the command line developer tools, accept.
+- **A GitHub account.** If you do not have one, create it yourself at https://github.com/join. Choose a professional username; you will show this account to employers. The grader never asks for your password; do not type your GitHub password into any script or terminal.
+- **Where the rules are.** The graded assignment, the repository invitation, and the exact point values live in the **Lab 0** assignment on Canvas and in your repository's `README.md`. This guide walks you through the mechanics; README.md and HINTS.md are the authoritative source for what is graded. If you get stuck, open `HINTS.md` in your repository for a three-tier hint ladder before asking the instructor.
 
-## Step 1: Accept and open the lab
+## Step 0: Open a terminal and find your way around
 
-1. Click the repository invitation posted on Canvas for Lab 0.
-   Accept it with your own GitHub account. Your instructor has created a private
-   repository for you named something like
-   `lab-00-environment-setup-yourusername`.
-2. Clone your repository to your machine. Replace the URL with the one
-   GitHub shows you after you accept the invitation:
-   ```
-   git clone git@github.com:your-org/lab-00-environment-setup-yourusername.git
-   cd lab-00-environment-setup-yourusername
-   ```
-   If you have not set up an SSH key yet, clone with the HTTPS URL instead
-   (you will still add an SSH key as part of this lab):
-   ```
-   git clone https://github.com/your-org/lab-00-environment-setup-yourusername.git
-   ```
-3. Confirm you are in the right folder. You should see `README.md`,
-   `HINTS.md`, `setup-report.md`, and an `autograde/` folder.
-   ```
-   ls
-   ```
+Every command in this lab is typed into a terminal.
 
-## Step 2: Run the system check first
+- **Windows:** open the Start menu, type `Git Bash`, and open it. Git Bash installs with Git for Windows. Do not use PowerShell or Command Prompt for this lab: the grader is a bash script and only runs in Git Bash.
+- **Mac:** press Command+Space, type `Terminal`, and press Return.
 
-Before doing any work, ask the grader whether your machine is even ready.
-This does not grade your submission; it only checks that the tools you
-need are installed and reachable.
+You now have a window with a blinking cursor waiting for a command. Three
+commands tell you where you are and move you around.
+
+**`pwd`** prints the folder you are standing in ("print working directory"):
 
 ```
-bash autograde/run.sh --syscheck
+pwd
 ```
 
-> what you'll see:
-> ```
-> System check (pre-flight) for lab-00-environment-setup-yourusername
-> ------------------------------------------------------------------------
-> STATUS CHECK                                    FIX HINT
-> PASS   python3 available
-> PASS   git identity configured
-> PASS   git installed
-> PASS   docker installed
-> PASS   starter files intact
-> ------------------------------------------------------------------------
-> All preflight checks passed - you can start the lab.
-> ```
+> what you'll see on Windows: `/c/Users/yourname`. On a Mac: `/Users/yourname`. This is your **home folder**. A new terminal always starts here. If `pwd` prints something else, type `cd` on its own and press Enter; that returns you home from anywhere.
 
-A copy of a clean syscheck run is saved at
-`guide-assets/lab-00-syscheck.png` so you know what "all green" looks
-like.
+**`ls`** lists what is inside the current folder:
 
-If you see a `FAIL` line, fix only that item and re-run the same command:
+```
+ls
+```
 
-- **`git identity configured` FAILS** - you have not set your name/email
-  yet. Do Step 3 below first.
-- **`git installed` / `docker installed` FAILS** - the tool is missing or
-  not on your PATH. Reinstall it, restart your terminal, and try again. On
-  Windows, make sure you are using the terminal that Git Bash or Docker
-  Desktop set up (a fresh terminal window after install usually fixes a
-  stale PATH).
-- **`starter files intact` FAILS** - you (or a stray script) deleted or
-  renamed `setup-report.md` or `scripts/smoke-test.sh`. Restore them by
-  re-cloning the repo into a new folder and copying the missing file back,
-  or `git checkout -- <file>` if you have not committed over it.
+> what you'll see: the folders you know from the desktop, such as `Desktop  Documents  Downloads  Pictures`, one name per column.
 
-Do not move on to Step 3 until this table is all `PASS`.
+**`cd`** changes into a folder ("change directory"). Try it, then come back:
 
-## Step 3: Set your git identity
+```
+cd Desktop
+pwd
+cd ..
+pwd
+```
+
+> what you'll see: `/c/Users/yourname/Desktop` (or `/Users/yourname/Desktop`) after the first `pwd`, and your home folder again after `cd ..`. Two dots mean "the folder above this one".
+
+Three habits that save time: the Tab key completes a folder or file name
+after you type its first letters; the Up arrow brings back the previous
+command; `clear` wipes the screen. Windows users: the Windows path
+`C:\Users\yourname` is written `/c/Users/yourname` inside Git Bash. They
+are the same folder.
+
+## Step 1: Set your git identity
 
 Git stamps every commit with a name and email. Set both globally so every
-repository on your machine uses them:
+repository on your machine uses them. Type each line and press Enter:
 
 ```
 git config --global user.name "Your Full Name"
 git config --global user.email "you@example.com"
 ```
 
-Use the email address associated with your GitHub account so later
+Use the email address attached to your GitHub account so later
 criteria can cross-check it. Confirm it stuck:
 
 ```
@@ -113,174 +81,430 @@ git config --global user.name
 git config --global user.email
 ```
 
-> what you'll see: your name on one line, your email on the next. If
-> either line is blank, the `git config --global` command above did not
-> run, or you mistyped it.
+> what you'll see: your name on one line, your email on the next. If either line is blank, the `git config --global` command above did not run, or you mistyped it.
 
-## Step 4: Generate an SSH key and add it to GitHub
+## Step 2: Generate an SSH key and add it to GitHub
 
-An SSH key lets you authenticate to GitHub without typing a password every
-time you push. Ed25519 is the modern, recommended key type.
+An SSH key lets your computer prove who it is to GitHub without a
+password. Once the key is registered, cloning and pushing need nothing
+else. Ed25519 is the modern, recommended key type.
 
-1. Generate the key (press Enter through the prompts to accept the
-   default file location; a passphrase is optional but recommended):
-   ```
-   ssh-keygen -t ed25519 -C "you@example.com"
-   ```
-2. Print the fingerprint you will paste into your report:
-   ```
-   ssh-keygen -lf ~/.ssh/id_ed25519.pub
-   ```
-   > what you'll see: a line like
-   > `256 SHA256:AbCdEf...restofthefingerprint you@example.com (ED25519)`
-3. Print the public key itself and copy the whole line (starts with
-   `ssh-ed25519`):
-   ```
-   cat ~/.ssh/id_ed25519.pub
-   ```
-4. On GitHub: click your avatar > **Settings** > **SSH and GPG keys** >
-   **New SSH key**. Paste the public key, give it a title (for example
-   "Lab 0 workstation"), and save.
-5. Test the connection:
-   ```
-   ssh -T git@github.com
-   ```
-   > what you'll see: `Hi yourusername! You've successfully
-   > authenticated, but GitHub does not provide shell access.` That
-   > message is success, not an error.
+**1. Generate the key.** Press Enter at the "Enter file in which to save
+the key" prompt to accept the default location. At the passphrase prompt
+you may press Enter for no passphrase on your own laptop; on a shared
+workstation, type a passphrase (git will ask for it on every push).
 
-Windows users: run these same commands from Git Bash, which installs with
-Git for Windows and gives you the `ssh-keygen`/`ssh` commands used above.
+```
+ssh-keygen -t ed25519 -C "you@example.com"
+```
 
-## Step 5: Record your GitHub account
+> what you'll see: `Your identification has been saved in /c/Users/yourname/.ssh/id_ed25519` (Mac: `/Users/yourname/.ssh/id_ed25519`), then `Your public key has been saved in ...id_ed25519.pub`, a fingerprint line, and a box of random characters called the randomart.
 
-In `setup-report.md`, under the `## GitHub` heading, write your GitHub
-username and your profile URL in the form `https://github.com/yourusername`.
-This is how the grader confirms you have a real GitHub identity attached
-to the submission.
+**2. Print the fingerprint** you will paste into your report:
 
-## Step 6: Run the Docker and GPU/CPU smoke test
+```
+ssh-keygen -lf ~/.ssh/id_ed25519.pub
+```
+
+> what you'll see: a line like `256 SHA256:7Kq2mXo0Vb9cP4hZ1sTf6yLwR8nDgU3jE5aH0iCkQ2M you@example.com (ED25519)`
+
+**3. Print the public key** and copy the whole line. It starts with
+`ssh-ed25519` and ends with your email. Select it with the mouse; in Git
+Bash, selecting text copies it, and in Terminal press Command+C.
+
+```
+cat ~/.ssh/id_ed25519.pub
+```
+
+The file that ends in `.pub` is the **public** key and is safe to share.
+The file without `.pub` is your **private** key. Never copy, paste, or
+upload the private key anywhere.
+
+**4. Register it on GitHub.** In your browser: click your avatar (top
+right), then Settings, then SSH and GPG keys, then New SSH key. Paste the
+public key into the Key box, give it a title such as `Lab 0 laptop`, and
+click Add SSH key.
+
+**5. Test the connection:**
+
+```
+ssh -T git@github.com
+```
+
+> what you'll see the first time: `The authenticity of host 'github.com' can't be established ... Are you sure you want to continue connecting (yes/no/[fingerprint])?` Type `yes` and press Enter. Then: `Hi yourusername! You've successfully authenticated, but GitHub does not provide shell access.` That message is success, not an error.
+
+If you see `Permission denied (publickey)` instead, the key on GitHub does
+not match the key on this computer. Repeat items 3 and 4, pasting the
+whole line from `cat ~/.ssh/id_ed25519.pub`.
+
+## Step 3: Accept the invitation and clone your repository
+
+**1. Accept the invitation.** Your instructor created a private repository
+for you named `UIWCyber/csec2300-lab00-yourusername`, where `yourusername`
+is your GitHub username in lower case. GitHub emailed you an invitation to
+it. Open that email and click View invitation, then Accept invitation. You
+can also open the repository address posted on Canvas in your browser; it
+shows the same Accept button. Sign in with your own GitHub account.
+
+**2. Clone it into your home folder.** Replace `yourusername` with your
+GitHub username:
+
+```
+cd
+git clone git@github.com:UIWCyber/csec2300-lab00-yourusername.git
+```
+
+> what you'll see:
+
+```
+Cloning into 'csec2300-lab00-yourusername'...
+remote: Enumerating objects: 14, done.
+...
+Receiving objects: 100% (14/14), done.
+```
+
+This works with no password because of the SSH key from Step 2. If it
+fails with `Permission denied (publickey)`, go back to Step 2. If it fails
+with `Repository not found`, you have not accepted the invitation yet, or
+the username in the address is misspelled.
+
+**3. Move into the new folder** and confirm you are in the right place:
+
+```
+cd csec2300-lab00-yourusername
+pwd
+ls
+```
+
+> what you'll see: `pwd` ends in `csec2300-lab00-yourusername`, and `ls` prints `HINTS.md  README.md  autograde  scripts  setup-report.md`.
+
+**Every command from here to the end of this guide runs inside this
+folder.** Before each step, glance at `pwd`. If it does not end in
+`csec2300-lab00-yourusername`, type:
+
+```
+cd ~/csec2300-lab00-yourusername
+```
+
+The `~` is a shortcut for your home folder, so this command works from
+anywhere. If you close the terminal and come back later, do this first.
+
+## Step 4: Run the system check
+
+Before doing any work, ask the grader whether your machine is ready.
+This does not grade your submission; it only checks that the tools you
+need are installed and reachable. Run it from the lab folder:
+
+```
+bash autograde/run.sh --syscheck
+```
+
+> what you'll see:
+
+```
+System check (pre-flight) for csec2300-lab00-yourusername
+------------------------------------------------------------------------
+STATUS CHECK                                    FIX HINT
+PASS   python3 available
+PASS   git identity configured
+PASS   git installed
+PASS   docker installed
+PASS   starter files intact
+------------------------------------------------------------------------
+All preflight checks passed - you can start the lab.
+```
+
+A copy of a clean syscheck run is saved at
+`guide-assets/lab-00-syscheck.png` so you know what "all green" looks
+like.
+
+If instead you see `bash: autograde/run.sh: No such file or directory`,
+you are not inside the lab folder. Run `cd ~/csec2300-lab00-yourusername`
+and try again.
+
+If you see a `FAIL` line, fix only that item and re-run the same command:
+
+- **`python3 available` FAILS.** Install Python 3 as described under "Before you start", open a new terminal window, and try again.
+- **`git identity configured` FAILS.** Step 1 did not stick. Repeat it.
+- **`git installed` or `docker installed` FAILS.** The tool is missing or not on your PATH. Reinstall it, open a new terminal window, and try again. On Windows, make sure you are in Git Bash, opened after the install finished.
+- **`starter files intact` FAILS.** `setup-report.md` or `scripts/smoke-test.sh` was deleted or renamed. Restore it with `git checkout -- setup-report.md` (or the script's path).
+
+Do not move on until this table is all `PASS`.
+
+## Step 5: Run the Docker and GPU/CPU smoke test
+
+Docker Desktop must be running before this step. Open the Docker Desktop
+application and wait until the whale icon in the system tray (Windows) or
+menu bar (Mac) stops animating. On the lab workstations it is already
+running.
 
 This lab ships a script that captures everything the grader looks for in
-one shot: `scripts/smoke-test.sh`. Run it from the repository root:
+one shot: `scripts/smoke-test.sh`. Run it from the lab folder:
 
 ```
 bash scripts/smoke-test.sh
 ```
 
-> what you'll see: the script prints git version/identity, your SSH key
-> fingerprint (or "no ed25519 key yet" if you skipped Step 4), the Docker
-> version followed by the "Hello from Docker!" message, and either an
-> `nvidia-smi` table (GPU lab machines) or a `system_profiler`/CPU summary
-> (Mac laptops without a discrete GPU). All of that output is written to
-> `env-check.txt` in the same folder - that is the file the grader reads.
+The script prints its output on screen and writes the same text to
+`env-check.txt` in the lab folder. That file is the one the grader reads.
+
+> what you'll see on a Mac laptop (a workstation shows an `NVIDIA-SMI` table under `== gpu ==` instead of the Apple lines):
+
+```
+== git ==
+git version 2.45.2
+Alex Cardinal
+alex.cardinal@example.com
+== ssh key ==
+256 SHA256:7Kq2mXo0Vb9cP4hZ1sTf6yLwR8nDgU3jE5aH0iCkQ2M alex.cardinal@example.com (ED25519)
+== docker ==
+Docker version 28.3.2, build 578ccf6
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+...
+== gpu ==
+Graphics/Displays:
+
+    Apple M4 Pro:
+
+      Chipset Model: Apple M4 Pro
+      Type: GPU
+...
+```
 
 If the Docker lines are missing or the script stops with an error:
 
-- **`docker: command not found`** - Docker is not installed or not on
-  PATH. Install Docker Desktop and reopen your terminal.
-- **`Cannot connect to the Docker daemon`** - Docker is installed but not
-  running. Open the Docker Desktop application and wait for the whale
-  icon in the menu bar/system tray to say it is running, then re-run the
-  script.
-- **On a lab machine, `nvidia-smi` prints nothing or errors** - that is
-  fine; the script automatically falls back to a CPU/GPU summary command.
-  You do not need to do anything extra.
+- **`docker: command not found`.** Docker is not installed or not on PATH. Install Docker Desktop and open a new terminal window.
+- **`Cannot connect to the Docker daemon`.** Docker is installed but not running. Open the Docker Desktop application, wait for the whale icon, then re-run the script.
+- **`no ed25519 key yet` under `== ssh key ==`.** Step 2 was skipped. Do it, then re-run the script.
+- **On a lab machine, `nvidia-smi` prints nothing or errors.** The script falls back to a CPU summary on its own. Nothing to do.
+- **On a Windows laptop with no NVIDIA graphics card**, the `== gpu ==` section stays empty, because the fallback commands are Mac commands. Add one line of CPU information yourself, from the lab folder, with the command below. It is the only case where you add to `env-check.txt` by hand.
 
-Open `env-check.txt` afterward and confirm it actually contains the
-Docker version line, the "Hello from Docker!" message, and a GPU or CPU
-line. If any of those three are missing, re-run the script - do not hand
-edit `env-check.txt`, since a captured command is stronger evidence than
-typed-in text.
+```
+echo "cpu: $(powershell -NoProfile -Command "(Get-CimInstance Win32_Processor).Name")" >> env-check.txt
+```
 
-## Step 7: Finish setup-report.md
+> what you'll see: nothing on screen. The command appends a line such as `cpu: 12th Gen Intel(R) Core(TM) i7-1255U` to the end of the file.
 
-Open `setup-report.md` and fill in every section. Keep the exact heading
-names (`## Identity`, `## SSH`, `## GitHub`, `## Docker`, `## GPU`); the
-grader looks for those exact words. Delete every placeholder marker
-(`_____`, `<your ...>`, `TODO`) as you fill each section in - a leftover
-placeholder anywhere in the file costs you points even if the rest of the
-section is correct.
+Now look at the file. `cat` prints a file to the screen:
 
-- **Identity**: your name and email, matching Step 3.
-- **SSH**: the `SHA256:...` fingerprint from Step 4 (not the whole private
-  key - never paste a private key anywhere).
-- **GitHub**: your username and profile URL from Step 5.
-- **Docker**: a short written confirmation that `docker --version` and
-  `docker run --rm hello-world` worked, in your own words.
-- **GPU**: a short written summary of what your GPU/CPU smoke test showed.
-- **Reflection**: a few sentences on your workstation and anything you had
-  to troubleshoot. This section, combined with the rest of the file, needs
-  to add up to at least 150 words total, so do not leave it as one line.
+```
+cat env-check.txt
+```
 
-## Final step: Validate and capture your proof
+You can also open it in an editor to read it (Windows:
+`notepad env-check.txt`, Mac: `open -e env-check.txt`), but do not type
+into it. Confirm it contains the Docker version line, the "Hello from
+Docker!" message, and a GPU or CPU line. If any of the three is missing,
+fix the cause above and re-run the script. A captured command is stronger
+evidence than typed-in text, so the grader expects the script's output.
 
-Run the real grader (not `--syscheck` this time):
+## Step 6: Fill in setup-report.md
+
+`setup-report.md` is a plain text file written in Markdown. The lines that
+start with `##` are headings; the grader looks for five of them by exact
+name. Open the file in an editor, from the lab folder.
+
+**Windows:**
+
+```
+notepad setup-report.md
+```
+
+Notepad opens the file. Edit, press Ctrl+S to save, and close Notepad. If
+Notepad offers to change the encoding or the file type, keep the defaults:
+the file must stay `setup-report.md`, not `setup-report.md.txt`.
+
+**Mac:**
+
+```
+open -e setup-report.md
+```
+
+TextEdit opens the file as plain text. Edit, press Command+S to save, and
+close TextEdit.
+
+**Either system, if you installed VS Code:**
+
+```
+code setup-report.md
+```
+
+Fill in every section, following these rules:
+
+- **Keep the five headings** exactly as they are: `## Identity`, `## SSH`, `## GitHub`, `## Docker`, `## GPU`. The `## Reflection` heading is where most of your words go.
+- **Delete every placeholder marker:** the underscores `_____`, the word `TODO`, and the sample answers wrapped in angle brackets. A leftover marker anywhere in the file costs points even if the rest of the section is correct.
+- **Write at least 150 words** in the whole file. One-line answers do not get there; write two or three sentences under Docker, GPU, and Reflection.
+- **Paste the `SHA256:` fingerprint** from Step 2, never the private key.
+
+Here is a complete example of a finished report. Alex Cardinal is
+invented; every value in your file must be your own.
+
+```
+# Setup Report - Lab 0
+
+## Identity
+Name: Alex Cardinal
+Email: alex.cardinal@example.com
+
+## SSH
+Fingerprint: SHA256:7Kq2mXo0Vb9cP4hZ1sTf6yLwR8nDgU3jE5aH0iCkQ2M
+Generated with ssh-keygen -t ed25519 and registered on GitHub under the
+title "Lab 0 laptop". The ssh -T test greeted me by username.
+
+## GitHub
+Username: alexcardinal-uiw
+Profile: https://github.com/alexcardinal-uiw
+
+## Docker
+docker --version printed Docker version 28.3.2, build 578ccf6. The
+hello-world container ran and printed "Hello from Docker!" followed by the
+four steps Docker took to run it. The first run pulled the image from
+Docker Hub, which took a few seconds on campus wifi.
+
+## GPU
+My laptop is a MacBook Pro with an Apple M4 Pro chip, so nvidia-smi is not
+available. The system_profiler command reported Chipset Model: Apple M4
+Pro with 20 GPU cores and Metal 3 support. On the lab workstation the same
+script prints the NVIDIA-SMI table instead.
+
+## Reflection
+I did this lab on my own laptop from the Terminal app. Setting the git
+identity and generating the key went smoothly. The first clone failed with
+Permission denied (publickey) because I had pasted only half of the public
+key into GitHub; pasting the whole line from cat ~/.ssh/id_ed25519.pub
+fixed it. Docker Desktop had to be started before the smoke test would
+run, and the grader told me my report was under 150 words until I wrote
+this section. Everything is now in my home folder under
+csec2300-lab00-alexcardinal-uiw.
+```
+
+After saving, print the file to check that your edits are really in it:
+
+```
+cat setup-report.md
+```
+
+## Step 7: Run the grader and capture your proof
+
+Run the real grader (not `--syscheck` this time), from the lab folder:
 
 ```
 bash autograde/run.sh
 ```
 
-This prints a JSON report with one entry per graded criterion, a `total`
-out of 100, and two verification codes at the bottom: `WORK-FP` (a
+It prints a detailed JSON report first, then a summary panel with one line
+per criterion, your score, and two verification codes: `WORK-FP` (a
 fingerprint of your submitted files) and `ATTEST` (a code tying that
-fingerprint to your repository and commit). Read the `feedback` field on
-any criterion that is not at full points; it tells you exactly what the
-grader could not find.
+fingerprint to your repository and commit).
 
 > what you'll see when everything is correct:
-> ```
-> {
->   "total": 100,
->   "max": 100,
->   ...
->   "work_fp": "9258835520f0",
->   "attest": "6cf0bfc32a8d"
-> }
->
-> WORK-FP  : 9258835520f0
-> ATTEST   : 6cf0bfc32a8d
-> ```
-> An example of this finished output is saved at
-> `guide-assets/lab-00-completion.png` - your codes will be different
-> since they are derived from your own files and repository.
 
-**Take a screenshot of your terminal showing this full result, including
-the `WORK-FP` and `ATTEST` lines and the `total` score.** That screenshot
-is what you submit as proof of completion, alongside committing and
-pushing `setup-report.md` and `env-check.txt`:
+```
+============================================================
+  SCORE: 100 / 100  (100%)
+------------------------------------------------------------
+  PASS report_exists                  5/5
+  PASS git_identity                  10/10
+  PASS ssh_key                       10/10
+  PASS github_user                   10/10
+  PASS smoke_file                    10/10
+  PASS docker_smoke                  10/10
+  PASS gpu_smoke                     10/10
+  PASS sections                     15/15
+  PASS no_placeholder               10/10
+  PASS wordcount                    10/10
+------------------------------------------------------------
+  WORK-FP : 9258835520f0
+  ATTEST  : 6cf0bfc32a8d
+============================================================
+  Screenshot THIS panel as your completion proof.
+```
+
+Your codes will differ; they come from your own files and repository. An
+example of this finished output is saved at
+`guide-assets/lab-00-completion.png`.
+
+If a line says `FAIL`, scroll up to the JSON report and read the
+`feedback` field for that criterion; it says exactly what the grader could
+not find. Fix it, save, and run the grader again. Repeat until the score is
+100.
+
+**Take a screenshot of the panel**, including the `SCORE` line and the
+`WORK-FP` and `ATTEST` lines. Windows: press Windows+Shift+S, drag over
+the panel, and the image lands in your clipboard and in
+`Pictures\Screenshots`. Mac: press Command+Shift+4, drag over the panel,
+and the image lands on your desktop. That screenshot is what you upload to
+the Lab 0 assignment on Canvas.
+
+## Step 8: Commit and push
+
+Your two files exist only on your computer until you push them. From the
+lab folder:
+
+**1. See what changed:**
+
+```
+git status
+```
+
+> what you'll see: `modified:   setup-report.md` under "Changes not staged for commit", and `env-check.txt` under "Untracked files".
+
+**2. Stage both files, then commit them** with a message:
 
 ```
 git add setup-report.md env-check.txt
 git commit -m "Complete Lab 0 environment setup"
+```
+
+> what you'll see: `[main 3f2a9c1] Complete Lab 0 environment setup` and `2 files changed`. The seven characters after `main` are your commit id and will differ.
+
+**3. Push to GitHub:**
+
+```
 git push
 ```
 
-Pushing triggers the same grader automatically in GitHub Actions; check
-the Actions tab on your repository to confirm it also reports your score.
+> what you'll see: several `Writing objects` and `Counting objects` lines, then the two lines below. No password is asked, because of the SSH key.
+
+```
+To github.com:UIWCyber/csec2300-lab00-yourusername.git
+   a1b2c3d..3f2a9c1  main -> main
+```
+
+**4. Confirm it arrived.** In your browser open
+`https://github.com/UIWCyber/csec2300-lab00-yourusername`. Both
+`setup-report.md` and `env-check.txt` are listed, and the line above the
+file list shows your commit message.
+
+If the Actions tab on your repository is enabled, it shows the same score
+after each push. If the tab is empty, that is expected: your grade comes
+from the grader your instructor runs on your repository after the
+deadline, so what matters is that both files are pushed before then.
+
+Finally, upload the screenshot from Step 7 to the Lab 0 assignment on
+Canvas. Lab 0 is done.
 
 ## Troubleshooting
 
-- **My `git_identity` criterion is 0 even though I set my name/email.**
-  The grader reads the email out of `setup-report.md`, not out of your
-  git config directly. Make sure the exact email you typed after `Email:`
-  under `## Identity` is a real address (`name@domain.tld` shape) and
-  matches what you used in Step 3.
-- **My `ssh_key` criterion is 0.** The grader looks for a real
-  `ssh-ed25519 AAAA...` public key line or a `SHA256:` fingerprint of at
-  least 20 characters in `setup-report.md`. Paste the actual output of
-  `ssh-keygen -lf ~/.ssh/id_ed25519.pub`, not the literal text
-  `SHA256:_____` left over from the template.
-- **`docker run --rm hello-world` hangs or fails to pull the image.** You
-  need an internet connection the first time, since Docker pulls the
-  image from Docker Hub. On a restricted network, connect to a different
-  network (or campus wifi instead of a VPN) and try again.
-- **My word count is under 150 even though I filled every section.** Short
-  one-line answers in Docker/GPU/Reflection usually do not reach 150
-  words on their own. Add two or three more sentences describing what you
-  saw and any problem you solved, in your own words.
-- **I do not have an NVIDIA GPU on my laptop.** That is expected on most
-  laptops. Use the Mac fallback (`system_profiler SPDisplaysDataType`) or,
-  if that also fails, `sysctl -n machdep.cpu.brand_string` for CPU info.
-  The smoke-test script already tries these in order, so you usually do
-  not need to run them by hand.
+- **I closed the terminal and every command fails with "No such file".** A new terminal starts in your home folder. Run `cd ~/csec2300-lab00-yourusername` first.
+- **`git push` asks for a username and password.** Your repository was cloned with an HTTPS address, not SSH. Switch it to SSH once with the command below, then push again. If you must stay on HTTPS, Windows opens a "Connect to GitHub" window; choose "Sign in with your browser". On a Mac, GitHub no longer accepts your account password here; use the SSH switch instead.
+
+```
+git remote set-url origin git@github.com:UIWCyber/csec2300-lab00-yourusername.git
+git push
+```
+
+- **My `git_identity` criterion is 0 even though I set my name/email.** The grader reads the email out of `setup-report.md`, not out of your git config directly. Make sure the exact email you typed after `Email:` under `## Identity` is a real address (`name@domain.tld` shape) and matches what you used in Step 1.
+- **My `ssh_key` criterion is 0.** The grader looks for a real `ssh-ed25519 AAAA...` public key line or a `SHA256:` fingerprint of at least 20 characters in `setup-report.md`. Paste the actual output of `ssh-keygen -lf ~/.ssh/id_ed25519.pub`, not the literal text `SHA256:_____` left over from the template.
+- **My `no_placeholder` criterion is 0.** Somewhere in `setup-report.md` a `_____`, a `TODO`, or an angle-bracket sample answer is still there, often in a line you thought you deleted. Open the file and search for each marker.
+- **`docker run --rm hello-world` hangs or fails to pull the image.** You need an internet connection the first time, since Docker pulls the image from Docker Hub. On a restricted network, connect to a different network (or campus wifi instead of a VPN) and try again.
+- **My word count is under 150 even though I filled every section.** Short one-line answers in Docker/GPU/Reflection usually do not reach 150 words on their own. Add two or three more sentences describing what you saw and any problem you solved, in your own words.
+- **I do not have an NVIDIA GPU on my laptop.** That is expected on most laptops. On a Mac the script falls back to `system_profiler` and then to the CPU name on its own. On a Windows laptop, add the CPU line shown in Step 5.
+- **Notepad saved my report as `setup-report.md.txt`.** Rename it back from the lab folder: `mv setup-report.md.txt setup-report.md`.
+- **I did the lab on a shared workstation.** Your SSH key is stored on that machine under the account you used. When you are done, delete the key from GitHub (Settings, SSH and GPG keys, Delete) and generate a fresh one on your own computer for the next lab.

@@ -22,7 +22,7 @@ identifiable, reproducible workstation - this lab builds yours.
 **Security+ SY0-701 domain:** 4.0 Security Operations (secure baseline, identity & access).
 
 ## Prerequisites
-- A computer with `git`, `ssh`, and Docker installed (lab GPU machines qualify).
+- A computer with `git`, `ssh`, Docker, and Python 3 installed (lab GPU machines qualify). On Windows, install Python 3 from the Microsoft Store so the `python3` command exists in Git Bash.
 - A GitHub account (create one at https://github.com/join if needed - do this yourself; the grader never asks for a password).
 
 ## Tasks
@@ -37,12 +37,77 @@ identifiable, reproducible workstation - this lab builds yours.
 - `setup-report.md` with headings: **Identity**, **SSH**, **GitHub**, **Docker**, **GPU** (all filled, no placeholders).
 - `env-check.txt` - captured output of the smoke-test commands.
 
+## How to do this lab (step by step)
+
+The Student Guide on the course site walks every step below with the exact
+output you should see:
+https://uiwcyber.github.io/csec2300-public/#labs%2Flab-00-environment-setup%2FSTUDENT-GUIDE.md.
+The short version follows.
+
+**Step 1. Open a terminal.** Windows: Git Bash (Start menu, type `Git Bash`).
+Mac: Terminal. A new terminal starts in your home folder. `pwd` prints the
+folder you are in, `ls` lists it, `cd name` enters a folder, and `cd` alone
+returns home.
+
+**Step 2. Identity and key**, from any folder:
+
+```
+git config --global user.name "Your Full Name"
+git config --global user.email "you@example.com"
+ssh-keygen -t ed25519 -C "you@example.com"
+cat ~/.ssh/id_ed25519.pub
+```
+
+Paste that public key into GitHub (avatar, Settings, SSH and GPG keys, New
+SSH key), then confirm with `ssh -T git@github.com`.
+
+**Step 3. Clone into your home folder**, then enter the lab folder. Replace
+`yourusername` with your GitHub username:
+
+```
+cd
+git clone git@github.com:UIWCyber/csec2300-lab00-yourusername.git
+cd csec2300-lab00-yourusername
+```
+
+**Every command below runs inside this folder.** If `pwd` does not end in
+`csec2300-lab00-yourusername`, run `cd ~/csec2300-lab00-yourusername`.
+
+**Step 4. System check:** `bash autograde/run.sh --syscheck` until every line
+is `PASS`.
+
+**Step 5. Smoke test:** `bash scripts/smoke-test.sh` writes `env-check.txt`.
+Read it with `cat env-check.txt`; do not edit it.
+
+**Step 6. Fill in the report.** Windows: `notepad setup-report.md`. Mac:
+`open -e setup-report.md`. Keep the five headings, remove every placeholder
+(`_____`, `TODO`, and the angle-bracket sample answers), and write at least
+150 words.
+
+**Step 7. Grade it:** `bash autograde/run.sh`. Fix any `FAIL` line and repeat
+until the SCORE panel shows 100. Screenshot the panel with its `WORK-FP` and
+`ATTEST` lines.
+
+**Step 8. Push:**
+
+```
+git add setup-report.md env-check.txt
+git commit -m "Complete Lab 0 environment setup"
+git push
+```
+
+Confirm both files appear at `https://github.com/UIWCyber/csec2300-lab00-yourusername`.
+
 ## Submission
-Commit both files and push to your assignment repository. The Actions workflow
-runs `autograde/run.sh` automatically; you can also run it locally:
+Push both files to your assignment repository before the deadline and upload
+the screenshot of the grader's SCORE panel to the Lab 0 assignment on Canvas.
+The grade of record comes from `autograde/run.sh` run against your repository
+after the deadline; run it yourself first, from the lab folder:
 ```
 bash autograde/run.sh
 ```
+If GitHub Actions is enabled on your repository, the same grader also runs on
+every push and its score appears on the Actions tab.
 
 ## Grading
 | Criterion | Points |
