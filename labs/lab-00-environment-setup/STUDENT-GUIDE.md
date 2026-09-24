@@ -15,8 +15,8 @@ rather than pasting whole blocks; you learn the shape of each one that way.
 
 ## Before you start
 
-- **Tools.** You need a computer with `git`, `ssh`, Docker, and Python 3 installed. The campus GPU lab workstations already have all of them (they run Windows with Docker Desktop and an NVIDIA GPU). On your own laptop, install [Git](https://git-scm.com/downloads) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) first; `ssh` ships with Windows 10/11, macOS, and Linux already.
-- **Python 3.** On Windows, install it from the Microsoft Store (search for "Python 3"); that makes the `python3` command the grader uses available. On a Mac, run `python3 --version`; if macOS offers to install the command line developer tools, accept.
+- **Tools.** You need a computer with `git`, `ssh` and Docker installed. The campus GPU lab workstations already have all of them (they run Windows with Docker Desktop and an NVIDIA GPU). On your own laptop, install [Git](https://git-scm.com/downloads) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) first; `ssh` ships with Windows 10/11, macOS, and Linux already.
+- **Python 3, only if you want to grade yourself.** The grader runs on GitHub after every push, so you do not need Python to finish this lab. For the optional local run in Step 9, Windows users install Python 3 from the Microsoft Store and Mac users already have it.
 - **A GitHub account.** If you do not have one, create it yourself at https://github.com/join. Choose a professional username; you will show this account to employers. The grader never asks for your password; do not type your GitHub password into any script or terminal.
 - **Where the rules are.** The graded assignment, the repository invitation, and the exact point values live in the **Lab 0** assignment on Canvas and in your repository's `README.md`. This guide walks you through the mechanics; README.md and HINTS.md are the authoritative source for what is graded. If you get stuck, open `HINTS.md` in your repository for a three-tier hint ladder before asking the instructor.
 
@@ -390,62 +390,10 @@ After saving, print the file to check that your edits are really in it:
 cat setup-report.md
 ```
 
-## Step 7: Run the grader and capture your proof
+## Step 7: Commit and push. The grader runs by itself.
 
-Run the real grader (not `--syscheck` this time), from the lab folder:
-
-```
-bash autograde/run.sh
-```
-
-It prints a detailed JSON report first, then a summary panel with one line
-per criterion, your score, and two verification codes: `WORK-FP` (a
-fingerprint of your submitted files) and `ATTEST` (a code tying that
-fingerprint to your repository and commit).
-
-> what you'll see when everything is correct:
-
-```
-============================================================
-  SCORE: 100 / 100  (100%)
-------------------------------------------------------------
-  PASS report_exists                  5/5
-  PASS git_identity                  10/10
-  PASS ssh_key                       10/10
-  PASS github_user                   10/10
-  PASS smoke_file                    10/10
-  PASS docker_smoke                  10/10
-  PASS gpu_smoke                     10/10
-  PASS sections                     15/15
-  PASS no_placeholder               10/10
-  PASS wordcount                    10/10
-------------------------------------------------------------
-  WORK-FP : 9258835520f0
-  ATTEST  : 6cf0bfc32a8d
-============================================================
-  Screenshot THIS panel as your completion proof.
-```
-
-Your codes will differ; they come from your own files and repository. An
-example of this finished output is saved at
-`guide-assets/lab-00-completion.png`.
-
-If a line says `FAIL`, scroll up to the JSON report and read the
-`feedback` field for that criterion; it says exactly what the grader could
-not find. Fix it, save, and run the grader again. Repeat until the score is
-100.
-
-**Take a screenshot of the panel**, including the `SCORE` line and the
-`WORK-FP` and `ATTEST` lines. Windows: press Windows+Shift+S, drag over
-the panel, and the image lands in your clipboard and in
-`Pictures\Screenshots`. Mac: press Command+Shift+4, drag over the panel,
-and the image lands on your desktop. That screenshot is what you upload to
-the Lab 0 assignment on Canvas.
-
-## Step 8: Commit and push
-
-Your two files exist only on your computer until you push them. From the
-lab folder:
+Your two files exist only on your computer until you push them. Pushing is
+how you hand the lab in: there is nothing to upload to Canvas.
 
 **1. See what changed:**
 
@@ -464,31 +412,70 @@ git commit -m "Complete Lab 0 environment setup"
 
 > what you'll see: `[main 3f2a9c1] Complete Lab 0 environment setup` and `2 files changed`. The seven characters after `main` are your commit id and will differ.
 
-**3. Push to GitHub:**
+**3. Bring down anything your instructor changed, then push:**
 
 ```
+git pull
 git push
 ```
 
-> what you'll see: several `Writing objects` and `Counting objects` lines, then the two lines below. No password is asked, because of the SSH key.
+> what you'll see from `git pull`: either `Already up to date.` or a short merge summary. Then from `git push`: several `Writing objects` lines, and the two lines below. No password is asked, because of the SSH key.
 
 ```
 To github.com:UIWCyber/csec2300-lab00-yourusername.git
    a1b2c3d..3f2a9c1  main -> main
 ```
 
-**4. Confirm it arrived.** In your browser open
-`https://github.com/UIWCyber/csec2300-lab00-yourusername`. Both
-`setup-report.md` and `env-check.txt` are listed, and the line above the
-file list shows your commit message.
+## Step 8: Read your score on GitHub
 
-If the Actions tab on your repository is enabled, it shows the same score
-after each push. If the tab is empty, that is expected: your grade comes
-from the grader your instructor runs on your repository after the
-deadline, so what matters is that both files are pushed before then.
+Open `https://github.com/UIWCyber/csec2300-lab00-yourusername` in your
+browser. Both `setup-report.md` and `env-check.txt` are listed, and next to
+your commit message there is a small **yellow dot**: the grader is running.
+It takes about a minute.
 
-Finally, upload the screenshot from Step 7 to the Lab 0 assignment on
-Canvas. Lab 0 is done.
+- A **green check** means the grader finished. Click it, then click **Details**, to see your score.
+- A **red X** means the grader finished and something is missing. Click it the same way to find out what.
+
+Either way the page you land on lists every criterion with its points and a
+`feedback` line saying exactly what the grader looked for and whether it
+found it. Fix what it names, save, then commit and push again exactly as in
+Step 7. The grader runs again on every push, and you may push as many times
+as you like before the deadline. The last score before the deadline is your
+grade.
+
+> what a finished report looks like:
+
+```
+Autograde: 100/100 points
+
+- [OK] report_exists - 5/5: setup-report.md present
+- [OK] git_identity - 10/10: name and email recorded
+- [OK] ssh_key - 10/10: key fingerprint present
+- [OK] github_user - 10/10: username and profile recorded
+- [OK] smoke_file - 10/10: env-check.txt capture present
+- [OK] docker_smoke - 10/10: docker output found
+- [OK] gpu_smoke - 10/10: GPU or CPU output found
+- [OK] sections - 15/15: found 5/5 required headings
+- [OK] no_placeholder - 10/10: no placeholders left
+- [OK] wordcount - 10/10: report meets the minimum length
+```
+
+## Step 9: Run the grader yourself, if you want to
+
+This step is optional and needs Python 3 on your own machine. It tells you
+the score before you push instead of after. From the lab folder:
+
+```
+bash autograde/run.sh
+```
+
+It prints the same criteria, then a panel with your score and two
+verification codes: `WORK-FP`, a fingerprint of your files, and `ATTEST`, a
+code tying that fingerprint to your repository. An example of the finished
+panel is saved at `guide-assets/lab-00-completion.png`.
+
+Nothing about this step is submitted. The score that counts is the one on
+GitHub, from the files you pushed.
 
 ## Troubleshooting
 

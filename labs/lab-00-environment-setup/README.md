@@ -84,30 +84,32 @@ Read it with `cat env-check.txt`; do not edit it.
 (`_____`, `TODO`, and the angle-bracket sample answers), and write at least
 150 words.
 
-**Step 7. Grade it:** `bash autograde/run.sh`. Fix any `FAIL` line and repeat
-until the SCORE panel shows 100. Screenshot the panel with its `WORK-FP` and
-`ATTEST` lines.
-
-**Step 8. Push:**
+**Step 7. Push. The grader runs by itself.**
 
 ```
 git add setup-report.md env-check.txt
 git commit -m "Complete Lab 0 environment setup"
+git pull
 git push
 ```
 
-Confirm both files appear at `https://github.com/UIWCyber/csec2300-lab00-yourusername`.
+Open your repository at `https://github.com/UIWCyber/csec2300-lab00-yourusername`.
+Both files are there, and a yellow dot appears next to your commit while the
+grader runs. It turns into a green check or a red X in about a minute. Click
+it, then click Details, to read your score line by line. Fix what it names,
+push again, and repeat until the score is 100.
+
+**Step 8. Grade it yourself first, if you want** (this needs Python on your
+machine and is never required): `bash autograde/run.sh` prints the same SCORE
+panel locally.
 
 ## Submission
-Push both files to your assignment repository before the deadline and upload
-the screenshot of the grader's SCORE panel to the Lab 0 assignment on Canvas.
-The grade of record comes from `autograde/run.sh` run against your repository
-after the deadline; run it yourself first, from the lab folder:
-```
-bash autograde/run.sh
-```
-If GitHub Actions is enabled on your repository, the same grader also runs on
-every push and its score appears on the Actions tab.
+Push `setup-report.md` and `env-check.txt` to your assignment repository before
+the deadline. That is the whole submission: nothing is uploaded to Canvas.
+
+The grader runs on every push and shows you the score on the commit, so you can
+correct your work as many times as you like before the deadline. The grade of
+record is the same grader run against your repository after the deadline.
 
 ## Grading
 | Criterion | Points |
