@@ -390,6 +390,92 @@ After saving, print the file to check that your edits are really in it:
 cat setup-report.md
 ```
 
+### What a finished report looks like
+
+Your own values differ in every line. Copying the example below earns nothing:
+the grader compares the email in your report against the author of your commit,
+and it looks for your GitHub profile URL.
+
+```
+# Setup Report - Lab 0
+
+## Identity
+Name: Jordan Reyes
+Email: jreyes@student.uiwtx.edu
+
+This is the same email I set with git config --global user.email, so my commits
+carry it too.
+
+## SSH
+Fingerprint: SHA256:9pQ3s7VtqLZm1xKbY4dR6hTnW8oC2eJuF5gAv0iX3yM jreyes@student.uiwtx.edu (ED25519)
+
+That line is the output of ssh-keygen -lf ~/.ssh/id_ed25519.pub. The public key is
+registered on GitHub under Settings, SSH and GPG keys, and ssh -T git@github.com
+answered with my username, so the key works for pushing.
+
+## GitHub
+Username: jreyes-uiw
+Profile: https://github.com/jreyes-uiw
+
+## Docker
+docker --version printed Docker version 27.3.1, build ce12230, and
+docker run --rm hello-world printed Hello from Docker!. The daemon can reach the
+registry, pull an image and run a container, which is what later labs need.
+
+## GPU
+nvidia-smi reported driver 560.94 with CUDA 12.6 and one NVIDIA RTX A4000 holding
+16376 MiB of memory. On the lab workstations this is the card the local model labs
+will use later in the semester.
+
+## Reflection
+I work on a Windows 11 laptop with 16 GB of memory, and I run every command from
+Git Bash. Two things went wrong. My first push was rejected because I had cloned
+the repository over HTTPS instead of SSH, and I fixed it with
+git remote set-url origin followed by the SSH address. Then the smoke test wrote
+no GPU section, because my laptop has no NVIDIA card, and the script fell through
+to the processor name instead. Reading env-check.txt line by line is what told me
+both of those things, and I now understand why the report and the capture are two
+separate files: one is what I claim, the other is what my machine says.
+```
+
+That report is 230 words, well past the 150 the grader asks for, and it carries
+all five headings with no placeholder text left anywhere.
+
+### What a finished capture looks like
+
+You do not write `env-check.txt`. `bash scripts/smoke-test.sh` writes it, and you
+push it exactly as it came out. Editing it by hand is the one thing that can turn
+a passing lab into an academic integrity problem.
+
+On a Windows laptop with no NVIDIA card it looks like this:
+
+```
+== git ==
+git version 2.47.0.windows.1
+Jordan Reyes
+jreyes@student.uiwtx.edu
+== ssh key ==
+256 SHA256:9pQ3s7VtqLZm1xKbY4dR6hTnW8oC2eJuF5gAv0iX3yM jreyes@student.uiwtx.edu (ED25519)
+== docker ==
+Docker version 27.3.1, build ce12230
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+== gpu ==
+Intel(R) Core(TM) i7-1355U
+```
+
+On a Mac it ends differently, and that is expected:
+
+```
+== gpu ==
+Apple M2 Pro
+```
+
+Both score the full 10 points for the GPU section: the grader accepts a GPU or a
+processor, because not every machine has an NVIDIA card. What loses the points is
+an empty section, which happens only if the script never ran.
+
 ## Step 7: Commit and push. The grader runs by itself.
 
 Your two files exist only on your computer until you push them. Pushing is
