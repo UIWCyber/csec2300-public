@@ -6,6 +6,13 @@ This guide walks you through the lab step by step. It does not give you the grad
 answers - it shows you how to run the tools, read their output, and where to look
 up the concepts so you can answer in your own words.
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## What you will build / prove
 
 You will capture a real hardware report from a machine (GPU workstation or your own

@@ -35,6 +35,20 @@ privilege and reproducible, minimal images reduce blast radius (CO1, CO2).
 ## Deliverables
 - A hardened `Dockerfile` at the repo root.
 
+## Running this lab on Windows
+
+Every command below is written for a Mac or Linux shell. On Windows 11, open
+PowerShell from the Start menu, change into your lab folder, and use the right column.
+Both columns run the same code and produce the same score.
+
+| Mac, Linux or Git Bash | Windows PowerShell |
+| --- | --- |
+| `bash autograde/run.sh --syscheck` | `powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck` |
+| `bash autograde/run.sh` | `powershell -ExecutionPolicy Bypass -File autograde\run.ps1` |
+
+The `-ExecutionPolicy Bypass` part is there because Windows blocks scripts by default.
+It applies to that one command only and changes nothing on your machine.
+
 ## Submission
 Push to your repository. Run locally with `bash autograde/run.sh`.
 Run `bash autograde/run.sh --syscheck` first to confirm the Docker daemon is reachable.

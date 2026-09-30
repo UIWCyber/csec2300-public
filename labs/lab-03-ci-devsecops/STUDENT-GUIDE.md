@@ -2,6 +2,13 @@
 
 Course: CSEC 2300-01 Foundations of Cyber Security (UIW) - Dr. Gonzalo D Parra
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## What you will build and prove
 
 You will build an automated **security pipeline** that runs every time code is

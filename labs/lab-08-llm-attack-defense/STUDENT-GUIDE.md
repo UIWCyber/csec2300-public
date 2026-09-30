@@ -6,6 +6,13 @@ This is an operational walkthrough. It teaches you the process and the tools. It
 not hand you the graded answers. The exact attack strings and the wording of your
 hardened prompt are your own work: use `README.md` and `HINTS.md` for those.
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## What you will build and prove
 
 You will attack a deliberately weak AI assistant with prompt injection, then design a

@@ -9,6 +9,13 @@ authoritative task list lives in `README.md`; the hint ladder lives in
 
 ---
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## 1. What you will build and prove
 
 You will write one text file, `docker-compose.yml`, that stands up two

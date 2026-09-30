@@ -38,6 +38,22 @@ Then hash **your** three strings. A classmate's digests will not match yours.
 - `answers.yaml` with `sha256_1/2/3` filled (from your personalized inputs).
 - `key.pem` (private key) and `cert.pem` (self-signed certificate) at the repo root.
 
+## Running this lab on Windows
+
+Every command below is written for a Mac or Linux shell. On Windows 11, open
+PowerShell from the Start menu, change into your lab folder, and use the right column.
+Both columns run the same code and produce the same score.
+
+| Mac, Linux or Git Bash | Windows PowerShell |
+| --- | --- |
+| `bash autograde/run.sh --syscheck` | `powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck` |
+| `bash autograde/run.sh` | `powershell -ExecutionPolicy Bypass -File autograde\run.ps1` |
+| `bash starter/show-inputs.sh` | `powershell -ExecutionPolicy Bypass -File starter\show-inputs.ps1` |
+| `bash starter/serve-https.sh` | `powershell -ExecutionPolicy Bypass -File starter\serve-https.ps1` |
+
+The `-ExecutionPolicy Bypass` part is there because Windows blocks scripts by default.
+It applies to that one command only and changes nothing on your machine.
+
 ## Submission
 Push to your repository. Run locally with `bash autograde/run.sh` (and `--syscheck` first).
 **Do not** commit real production keys - these are throwaway lab keys.

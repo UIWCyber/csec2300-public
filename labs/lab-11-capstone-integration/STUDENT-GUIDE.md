@@ -2,6 +2,20 @@
 
 **CSEC 2300 Foundations of Cyber Security** | Instructor: Dr. Gonzalo D Parra
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your repository folder, and run the grader this way instead:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+The grader, the score and the deliverables are identical; only the way you start a
+script differs. `-ExecutionPolicy Bypass` is there because Windows blocks scripts by
+default, and it applies to that one command only.
+
 ## What you will build and prove
 
 This lab is where your capstone comes together. You take the pieces your team

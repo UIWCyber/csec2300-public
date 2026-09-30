@@ -5,6 +5,13 @@ It does not give you the analysis answers - those come from reading your
 scenario carefully and using `README.md` and `HINTS.md`. Follow the steps
 below in order.
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## 1. What you will build / prove
 
 You will read a short breach-scenario writeup (assigned to you personally,

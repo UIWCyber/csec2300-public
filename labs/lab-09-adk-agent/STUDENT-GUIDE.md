@@ -6,6 +6,13 @@ This guide walks you through the lab step by step. It is written for students wi
 
 ---
 
+## Windows: use the PowerShell column
+
+This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
+change into your lab folder, and use the PowerShell command from the table in
+README.md, under "Running this lab on Windows". The grader, the score and the
+deliverables are identical; only the way you start a script differs.
+
 ## 1. What you will build and prove
 
 You will build a tiny Python "agent". An agent is a program that decides which small helper functions (called **tools**) to run. Your job is to put a security fence around those tools: an **allowlist** so the agent can only ever run the safe tools you approved, and a check that **refuses** anything not on the list. You prove it by making the autograder score 100/100 against a fake, scripted model that tries both a safe request and a dangerous one.
