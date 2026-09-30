@@ -53,7 +53,17 @@ The `-ExecutionPolicy Bypass` part is there because Windows blocks scripts by de
 It applies to that one command only and changes nothing on your machine.
 
 ## Submission
-Push to your repository. Run locally with `bash autograde/run.sh` (and `--syscheck` first).
+Push your deliverables to your assignment repository before the deadline. That is the
+whole submission: nothing is uploaded to Canvas.
+
+The grader runs on every push. Open your repository and look next to your commit: a yellow
+dot means the grader is running, a green check means your score is 100, and a red X means
+something is still missing. Click it, then click Details, to see every criterion and the
+feedback line saying what the grader looked for. Fix what it names, push again, and repeat.
+You may push as many times as you like; the last score before the deadline is your grade.
+
+Grading yourself first is optional and needs Python 3 on your machine: `bash autograde/run.sh`,
+or the PowerShell command from the table above.
 
 ## Grading (behavior tested by executing your agent against a mocked deterministic LLM)
 | Criterion | Points |
