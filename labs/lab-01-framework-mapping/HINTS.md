@@ -7,13 +7,13 @@
 
 ## Task group B - CIS Controls v8
 - **Tier 1 (nudge):** CIS Controls are numbered 1–18. Browse the list: https://www.cisecurity.org/controls/cis-controls-list
-- **Tier 2 (guided):** Access Control Management is Control **6**; Email and Web Browser Protections is Control **9**; Data Recovery is Control **11**; Audit Log Management is Control **8**.
+- **Tier 2 (guided):** Access Control Management is Control **6**; Data Protection is Control **3**; Email and Web Browser Protections is Control **9**; Data Recovery is Control **11**; Audit Log Management is Control **8**. Your secondary control question depends on your variant: one asks about email and web protections, the other about data protection.
 - **Tier 3 (near-solution):** Enforcing MFA on VPN belongs to CIS Control `___` (Access Control Management). Answer with just the number.
 
 ## Task group C - CIA impact & YAML format
 - **Tier 1 (nudge):** Ransomware encrypts files in place - which leg of the CIA triad does that hit first? https://csrc.nist.gov/glossary/term/cia_triad
 - **Tier 2 (guided):** Use plain `key: value` lines. Answer CIA with one word: confidentiality, integrity, or availability.
-- **Tier 3 (near-solution):**
+- **Tier 3 (near-solution):** the field is named `primary_cia_impact`, exactly as in `starter/answers-template.yaml`:
   ```
-  ransomware_primary_impact: ____________   # one of: confidentiality / integrity / availability
+  primary_cia_impact: ____________   # one of: confidentiality / integrity / availability
   ```
