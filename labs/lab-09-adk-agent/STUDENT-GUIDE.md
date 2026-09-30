@@ -13,6 +13,19 @@ change into your lab folder, and use the PowerShell command from the table in
 README.md, under "Running this lab on Windows". The grader, the score and the
 deliverables are identical; only the way you start a script differs.
 
+## How this lab is submitted
+
+Pushing is the submission. The grader runs in your repository on every push and the
+score appears next to your commit: a green check means 100, a red X means something is
+missing, and clicking it shows every criterion with the feedback that names what is
+wrong. Fix, push again, and repeat until it is green. The last score before the
+deadline is your grade.
+
+There is no screenshot and nothing to upload to Canvas. Running the grader yourself is
+optional and needs Python 3. Later sections of this guide still describe submitting a
+screenshot of the SCORE panel: that is out of date and will be corrected when this lab
+is assigned.
+
 ## 1. What you will build and prove
 
 You will build a tiny Python "agent". An agent is a program that decides which small helper functions (called **tools**) to run. Your job is to put a security fence around those tools: an **allowlist** so the agent can only ever run the safe tools you approved, and a check that **refuses** anything not on the list. You prove it by making the autograder score 100/100 against a fake, scripted model that tries both a safe request and a dangerous one.

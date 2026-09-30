@@ -13,6 +13,19 @@ change into your lab folder, and use the PowerShell command from the table in
 README.md, under "Running this lab on Windows". The grader, the score and the
 deliverables are identical; only the way you start a script differs.
 
+## How this lab is submitted
+
+Pushing is the submission. The grader runs in your repository on every push and the
+score appears next to your commit: a green check means 100, a red X means something is
+missing, and clicking it shows every criterion with the feedback that names what is
+wrong. Fix, push again, and repeat until it is green. The last score before the
+deadline is your grade.
+
+There is no screenshot and nothing to upload to Canvas. Running the grader yourself is
+optional and needs Python 3. Later sections of this guide still describe submitting a
+screenshot of the SCORE panel: that is out of date and will be corrected when this lab
+is assigned.
+
 ## What you will build / prove
 
 You will capture a real hardware report from a machine (GPU workstation or your own

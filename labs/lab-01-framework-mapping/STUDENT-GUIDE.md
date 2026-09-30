@@ -146,41 +146,62 @@ Work through the **Tasks** section of `README.md` in order:
    `answers.yaml` must live at the **root** of your repository (next to
    `README.md`), not inside `starter/`.
 
-## 7. Final step - Validate and capture your proof
+## 7. Final step - Push, and read your score on GitHub
 
-Run the grader:
-```
-bash autograde/run.sh
-```
-This prints a JSON report with one entry per grading criterion (10 points
-each, 100 total), plus two verification codes at the bottom:
-```
-WORK-FP  : <a short hash of your submitted files>
-ATTEST   : <a short hash tying your score to your repo and commit>
-```
+Pushing is how you hand the lab in. There is no screenshot and nothing to upload
+to Canvas.
 
-> **what a fully passing run looks like:** see
-> `guide-assets/lab-01-completion.png`. Your own file names, hashes, and
-> exact feedback text will differ - what matters is `"total": 100` and a
-> `WORK-FP` / `ATTEST` pair at the bottom.
-
-**This screenshot (or a copy/paste of your own terminal output showing the
-score, `WORK-FP`, and `ATTEST`) is what you submit** as proof of completion,
-in addition to committing and pushing `answers.yaml`. Commit and push:
 ```
 git add answers.yaml
 git commit -m "Complete Lab 1 framework mapping"
+git pull
 git push
 ```
-your GitHub assignment repository's Actions workflow re-runs the same grader on your pushed
-repo automatically; you can check the result under the **Actions** tab on
-your repo page.
 
-If your score is below 100, read the `feedback` field for each criterion
-that shows `0` points - it tells you exactly which field did not match and
-what CSF function or CIS Control number was expected for your variant.
-Re-check your scenario file and `HINTS.md`, fix the field in `answers.yaml`,
-and re-run `bash autograde/run.sh`.
+Now open your repository page at
+`https://github.com/UIWCyber/csec2300-lab01-yourusername`. Next to your commit
+there is a small mark:
+
+- A **yellow dot** means the grader is running. It takes about a minute.
+- A **green check** means your score is 100 and the lab is done.
+- A **red X** means the grader found something missing. That is normal on a first push.
+
+Click the mark, then click **Details**. The summary lists all ten criteria with their
+points and a `feedback` line for each. A criterion worth 0 tells you exactly which
+field did not match and what was expected for your variant. Fix that field in
+`answers.yaml`, save, then commit and push again. The grader runs on every push, and
+the last score before the deadline is your grade.
+
+> what a finished run looks like:
+
+```
+Autograde: 100/100 points
+
+- [OK] answers_parse - 10/10: answers.yaml parsed
+- [OK] csf_detect - 10/10: detection event mapped to Detect
+- [OK] csf_respond - 10/10: containment event mapped to Respond
+- [OK] csf_protect - 10/10: preventive control mapped to Protect
+- [OK] csf_recover - 10/10: restore from backup mapped to Recover
+- [OK] csf_identify - 10/10: asset inventory mapped to Identify
+```
+
+## 7b. Grading yourself first, if you want to
+
+Optional, and it needs Python 3 on your machine. From the lab folder:
+
+```
+bash autograde/run.sh
+```
+
+Windows PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+It prints the same criteria plus two codes, `WORK-FP`, a fingerprint of your files,
+and `ATTEST`, which ties that fingerprint to your repository. Nothing from this run is
+submitted. The score that counts is the one GitHub shows for what you pushed.
 
 ## 8. Troubleshooting
 
