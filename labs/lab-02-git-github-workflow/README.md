@@ -29,7 +29,7 @@ Warm up on these before doing the graded tasks:
 
 ## Tasks
 1. Make at least **8 commits** spread over **at least 2 different clock hours** (work incrementally, not one bulk dump).
-2. Create a `feature/<name>` branch, commit on it, and **merge** it back into `main`.
+2. Create a `feature/NAME` branch, commit on it, and **merge** it back into `main`.
 3. Create an annotated **tag** (e.g., `v1.0`).
 4. Keep a **consistent author identity** across your commits.
 5. Add a `.gitignore` that excludes secrets (`*.env`, `*.pem`, `*.key`, `secrets/`).
@@ -69,7 +69,12 @@ You may push as many times as you like; the last score before the deadline is yo
 Grading yourself first is optional and needs Python 3 on your machine: `bash autograde/run.sh`,
 or the PowerShell command from the table above.
 
-This lab is graded on your branches and tags as well, so push them too: `git push --all && git push --tags`.
+This lab is graded on your branches and tags as well, so push them too:
+
+```
+git push --all
+git push --tags
+```
 
 ## Grading
 | Criterion | Points |

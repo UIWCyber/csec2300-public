@@ -7,12 +7,25 @@ every word and every command. Take it slowly. You cannot break anything by readi
 
 ---
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -40,23 +53,12 @@ actually work, where every change is reviewed and audited (Course Outcome CO3).
 
 ## The words you need (read this once)
 
-- **Repository (repo):** a folder that git is watching. It has a hidden `.git`
-  subfolder where the full history lives. "Being in a repo" just means you are
-  inside that folder.
-- **Commit:** a saved snapshot of your files, with a short message describing what
-  changed. Think of it as a labeled save point you can always return to. Good work
-  is **many small commits**, not one giant one.
-- **Branch:** a parallel line of work. `main` is the primary branch. You make a
-  `feature/...` branch to try something without disturbing `main`, then combine it
-  back later. It is a safe sandbox.
-- **Merge:** combining one branch's commits into another. When you merge a feature
-  branch into `main`, git records a special **merge commit** that ties the two lines
-  together.
-- **Tag:** a permanent name pinned to one commit, usually a release like `v1.0`. It
-  is a bookmark for "this is the version we shipped."
-- **`.gitignore`:** a plain text file listing patterns for files git should never
-  track (for example `*.key`). This is how you keep passwords and private keys out
-  of the project.
+- **Repository (repo):** a folder that git is watching. It has a hidden `.git` subfolder where the full history lives. "Being in a repo" just means you are inside that folder.
+- **Commit:** a saved snapshot of your files, with a short message describing what changed. Think of it as a labeled save point you can always return to. Good work is **many small commits**, not one giant one.
+- **Branch:** a parallel line of work. `main` is the primary branch. You make a `feature/...` branch to try something without disturbing `main`, then combine it back later. It is a safe sandbox.
+- **Merge:** combining one branch's commits into another. When you merge a feature branch into `main`, git records a special **merge commit** that ties the two lines together.
+- **Tag:** a permanent name pinned to one commit, usually a release like `v1.0`. It is a bookmark for "this is the version we shipped."
+- **`.gitignore`:** a plain text file listing patterns for files git should never track (for example `*.key`). This is how you keep passwords and private keys out of the project.
 
 If any of these still feel abstract, spend fifteen minutes on the two practice
 sites before you touch the graded work. They are the fastest way to make branches
@@ -69,36 +71,26 @@ and merges click:
 
 ## Before you start
 
-- **Finish Lab 0 first.** Lab 0 sets your git identity (name and email) and your SSH
-  key. This lab assumes both are already done.
-- **Where the real instructions live:** the Lab 2 assignment on Canvas contains the
-  **repository invitation** and the authoritative `README.md`. If a hint here
-  and the README ever disagree, the README wins.
-- **If you get stuck:** open `HINTS.md` in the repo. It has three tiers, from a gentle
-  nudge to a near-complete example. Use the smallest hint that unblocks you.
-- **You are on Windows?** Use **Git Bash** (installed with Git for Windows) for every
-  command below. It gives you the same `bash` shell the commands are written for.
-  Open the Start menu, type "Git Bash", and press Enter.
+- **Finish Lab 0 first.** Lab 0 sets your git identity (name and email) and your SSH key. This lab assumes both are already done.
+- **Where the real instructions live:** the Lab 2 assignment on Canvas contains the **repository invitation** and the authoritative `README.md`. If a hint here and the README ever disagree, the README wins.
+- **If you get stuck:** open `HINTS.md` in the repo. It has three tiers, from a gentle nudge to a near-complete example. Use the smallest hint that unblocks you.
+- **You are on Windows?** Use **PowerShell**, as described above. Git Bash also works if you prefer a bash shell, but nothing in this lab needs it.
 
 ---
 
 ## Step 1 - Accept and open the lab
 
-1. Click the **repository invitation** from the Canvas assignment. Accept it.
-   Your instructor creates a private repository for you with the starter files in it.
-   **That repository is already a git repo** - you do not run `git init` yourself.
-2. On your new repo's GitHub page, click the green **Code** button, choose **SSH**,
-   and copy the address (it looks like `git@github.com:...`).
-3. In Git Bash, clone (download) it and step into the folder:
+1. Click the **repository invitation** from the Canvas assignment. Accept it. Your instructor creates a private repository for you with the starter files in it. **That repository is already a git repo** - you do not run `git init` yourself.
+2. On your new repo's GitHub page, click the green **Code** button, choose **SSH**, and copy the address (it looks like `git@github.com:...`).
+3. In PowerShell, clone (download) it and step into the folder:
 
 ```bash
 git clone git@github.com:YOUR-ORG/lab-02-git-github-workflow-YOURNAME.git
 cd lab-02-git-github-workflow-YOURNAME
 ```
 
-- `git clone <address>` copies the whole repo, history and all, to your computer.
-- `cd <folder>` means "change directory" - it moves you inside that folder so the
-  next commands run in the right place.
+- `git clone YOUR_CLONE_URL` copies the whole repo, history and all, to your computer.
+- `cd YOUR_FOLDER` means "change directory" - it moves you inside that folder so the next commands run in the right place.
 
 > **what you'll see:** git prints `Cloning into '...'` and a few lines about objects.
 > After `cd`, your prompt shows the folder name. You are now "inside the repo."
@@ -113,8 +105,13 @@ Before doing any work, confirm your environment is ready:
 bash autograde/run.sh --syscheck
 ```
 
-- `bash` runs a script. `autograde/run.sh` is the checker script. `--syscheck` tells
-  it to run the pre-flight (environment) checks instead of grading.
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
+- `bash` runs a script. `autograde/run.sh` is the checker script. `--syscheck` tells it to run the pre-flight (environment) checks instead of grading.
 
 > **what you'll see:** a table like this, all rows saying `PASS`:
 
@@ -124,15 +121,12 @@ If any row says **FAIL**, fix it with the hint in that row, then run the command
 again:
 
 - **git identity configured = FAIL:** you skipped Lab 0. Set it once, globally:
-  ```bash
-  git config --global user.name "Your Name"
-  git config --global user.email "you@example.com"
-  ```
-- **inside a git repository = FAIL:** you are not inside the cloned folder. Run `cd`
-  into it (see Step 1). Your assignment repository is already a git repo, so you should never need
-  `git init` here.
-- **git installed = FAIL:** install Git for Windows from https://git-scm.com and
-  reopen Git Bash.
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+- **inside a git repository = FAIL:** you are not inside the cloned folder. Run `cd` into it (see Step 1). Your assignment repository is already a git repo, so you should never need `git init` here.
+- **git installed = FAIL:** install Git for Windows from https://git-scm.com and reopen your terminalt Bash.
 - **starter files intact = FAIL:** you deleted a starter file. Re-clone a fresh copy.
 
 Do not move on until every row is PASS.
@@ -175,14 +169,9 @@ git status
 
 **Anatomy of each command:**
 
-- `git add <file>` - **stage** the file. Staging means "include this change in my
-  next commit." You are choosing what goes into the snapshot.
-- `git commit -m "message"` - **save** the staged changes as one commit. The `-m`
-  flag attaches the message inline. Write it as `type: short summary`, for example
-  `docs:`, `feat:` (a feature), `chore:` (housekeeping). Present tense, under ~60
-  characters.
-- `git status` - **show** what is staged, unstaged, or untracked. Run it whenever you
-  are unsure what state you are in. It is safe and read-only.
+- `git add FILENAME` - **stage** the file. Staging means "include this change in my next commit." You are choosing what goes into the snapshot.
+- `git commit -m "message"` - **save** the staged changes as one commit. The `-m` flag attaches the message inline. Write it as `type: short summary`, for example `docs:`, `feat:` (a feature), `chore:` (housekeeping). Present tense, under ~60 characters.
+- `git status` - **show** what is staged, unstaged, or untracked. Run it whenever you are unsure what state you are in. It is safe and read-only.
 
 > **what you'll see** after a commit: a line like
 > `[main a1b2c3d] docs: note what I just changed` and `1 file changed`.
@@ -213,9 +202,7 @@ You will move risky or experimental work onto a side branch so `main` stays clea
 git switch -c feature/secrets-hygiene
 ```
 
-- `git switch -c <name>` - **create** a new branch and move onto it in one step. The
-  `-c` means "create." The name must start with `feature/` for the grader to see it.
-  Everything you commit now lands on this branch, not on `main`.
+- `git switch -c NAME` - **create** a new branch and move onto it in one step. The `-c` means "create." The name must start with `feature/` for the grader to see it. Everything you commit now lands on this branch, not on `main`.
 
 Make a couple of real commits here. For example, add a small file that reads
 configuration from the environment instead of from a committed file, and commit it,
@@ -241,12 +228,8 @@ git switch main
 git merge --no-ff feature/secrets-hygiene -m "merge: integrate secrets-hygiene into main"
 ```
 
-- `git switch main` - move back onto the `main` branch. (No `-c` this time, because
-  `main` already exists.)
-- `git merge --no-ff <branch>` - pull the branch's commits into `main`. The
-  `--no-ff` flag ("no fast-forward") **forces git to record a real merge commit** so
-  the history clearly shows a branch was merged. This is exactly what the grader
-  looks for. `-m` gives the merge commit its message.
+- `git switch main` - move back onto the `main` branch. (No `-c` this time, because `main` already exists.)
+- `git merge --no-ff BRANCH` - pull the branch's commits into `main`. The `--no-ff` flag ("no fast-forward") **forces git to record a real merge commit** so the history clearly shows a branch was merged. This is exactly what the grader looks for. `-m` gives the merge commit its message.
 
 > **what you'll see:** `Merge made by the 'recursive' strategy` (or similar) and a
 > summary of the files that came over from the branch.
@@ -254,7 +237,7 @@ git merge --no-ff feature/secrets-hygiene -m "merge: integrate secrets-hygiene i
 **Avoiding a merge conflict:** a conflict happens when both branches changed the
 **same lines** of the same file. To sidestep it in this lab, edit `WORKLOG.md` only
 on `main`, and have your feature branch add **new** files instead. If a conflict does
-happen, git marks the spots with `<<<<<<<`, `=======`, `>>>>>>>`. Open the file,
+happen, git marks the spots with <<<<<<<, `=======`, >>>>>>>. Open the file,
 delete those marker lines and keep the text you want, then `git add` the file and
 `git commit` to finish the merge. Never leave marker lines in a committed file.
 
@@ -271,9 +254,7 @@ A tag pins a friendly name to the current commit.
 git tag -a v1.0 -m "release v1.0: clean workflow with secrets hygiene"
 ```
 
-- `git tag -a <name>` - create an **annotated** tag (the `-a`), which stores who made
-  it and when. Plain lightweight tags work too, but annotated is the professional
-  default. `-m` is the tag's message.
+- `git tag -a NAME` - create an **annotated** tag (the `-a`), which stores who made it and when. Plain lightweight tags work too, but annotated is the professional default. `-m` is the tag's message.
 
 Confirm it:
 
@@ -309,10 +290,8 @@ git check-ignore secrets/service.env
 git status
 ```
 
-- `git check-ignore <path>` prints the path back if it is being ignored (silence
-  means it is **not** ignored - fix your `.gitignore`).
-- `git status` should **not** list your secret file under changes to commit. If it
-  does, it is not ignored yet.
+- `git check-ignore PATH` prints the path back if it is being ignored (silence means it is **not** ignored - fix your `.gitignore`).
+- `git status` should **not** list your secret file under changes to commit. If it does, it is not ignored yet.
 
 > **Why this matters:** committed private keys and API keys are one of the most common
 > real-world breaches. The grader scans your project folder for private-key blocks and
@@ -327,6 +306,12 @@ Run the full grader:
 
 ```bash
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 > **what you'll see:** a JSON report listing each criterion with its points, then a
@@ -351,8 +336,7 @@ git push --tags
 ```
 
 - `git push --all` uploads every branch (`main` and your `feature/...` branch).
-- `git push --tags` uploads your `v1.0` tag. Tags do not go up with `--all`, so this
-  second command is required.
+- `git push --tags` uploads your `v1.0` tag. Tags do not go up with `--all`, so this second command is required.
 
 > **what you'll see:** git lists the branches and tags it sent. On your repo's GitHub
 > page, the **Actions** tab will show the autograder running and its score.
@@ -365,35 +349,25 @@ The same grader that ran on your computer also runs on GitHub, on GitHub's own
 servers, every time you push. This is the copy Dr. Gonzalo D Parra reads for your
 grade, so it is worth knowing exactly what a passing submission looks like online.
 
-1. **Accept the assignment.** Open the repository invitation for Lab 2 on
-   Canvas and click **Accept this assignment**. GitHub creates a private repository
-   for you and gives you its clone URL. Clone it, do all the work from this guide
-   inside that folder, and commit as you go.
+1. **Accept the assignment.** Open the repository invitation for Lab 2 on Canvas and click **Accept this assignment**. GitHub creates a private repository for you and gives you its clone URL. Clone it, do all the work from this guide inside that folder, and commit as you go.
 
-2. **Push every branch and every tag.** A single `git push` sends only your current
-   branch, and tags never travel automatically. Send all of it:
+2. **Push every branch and every tag.** A single `git push` sends only your current branch, and tags never travel automatically. Send all of it:
 
-   ```bash
-   git push origin --all
-   git push origin --tags
-   ```
+```bash
+git push origin --all
+git push origin --tags
+```
 
    - `--all` uploads `main` and your `feature/...` branch.
-   - `--tags` uploads your `v1.0` tag. This second command is required; without it
-     the online grader reports **0** for the `tag` and `feature_branch` checks even
-     though they pass on your machine.
+   - `--tags` uploads your `v1.0` tag. This second command is required; without it the online grader reports **0** for the `tag` and `feature_branch` checks even though they pass on your machine.
 
-3. **Open the Actions tab.** On your repository page on GitHub, click **Actions**.
-   You will see a workflow named **Autograde Lab 2** with a run for your push. A
-   spinning yellow dot means it is still grading; wait for it to finish.
+3. **Open the Actions tab.** On your repository page on GitHub, click **Actions**. You will see a workflow named **Autograde Lab 2** with a run for your push. A spinning yellow dot means it is still grading; wait for it to finish.
 
    > **what you'll see:** the run turns into a green check when it passes. Click the
    > run, then the **grade** job, to read the full per-criterion panel and the
    > **Autograde: 100/100 points** summary at the top.
 
-4. **Confirm the score matches.** The server prints the very same panel you saw
-   locally, with the identical **WORK-FP** and the same per-criterion points. A
-   finished, passing online run looks like this:
+4. **Confirm the score matches.** The server prints the very same panel you saw locally, with the identical **WORK-FP** and the same per-criterion points. A finished, passing online run looks like this:
 
    ![GitHub Actions autograder showing 100 out of 100 server-side with WORK-FP and ATTEST](guide-assets/lab-02-github-actions.png)
 
@@ -405,20 +379,9 @@ grade, so it is worth knowing exactly what a passing submission looks like onlin
 
 ## Troubleshooting (the usual stumbles for this lab)
 
-1. **"time_spread" scores 0** - all your commits landed in one clock hour, which reads
-   as a single bulk dump. Do the remaining work in a later sitting and add a few more
-   real commits so your history spans at least two hours.
-2. **"merge_commit" scores 0** - you merged without `--no-ff`, so git fast-forwarded
-   and left no merge commit. Make a fresh tiny commit on a new `feature/...` branch and
-   merge again **with** `--no-ff`.
-3. **"feature_branch" scores 0** - your branch name does not start with `feature/`, or
-   you deleted it after merging. Recreate it as `feature/<name>` and keep it.
-4. **"gitignore_secrets" scores 0** - your `.gitignore` is missing the patterns. Open
-   `HINTS.md` Tier 3 and add the exact block, then commit `.gitignore`.
-5. **"no_secrets" scores 0** - a file in your folder contains something that looks like
-   a private key or an `API_KEY=sk-...` literal. Replace it with a placeholder or
-   delete it. Ignoring the file is **not** enough; the scanner walks the folder, so the
-   real value must not be present at all.
-6. **"author_consistency" scores low** - you committed under two different emails. Set
-   your identity once with `git config --global user.email "..."` and use it for all
-   commits.
+1. **"time_spread" scores 0** - all your commits landed in one clock hour, which reads as a single bulk dump. Do the remaining work in a later sitting and add a few more real commits so your history spans at least two hours.
+2. **"merge_commit" scores 0** - you merged without `--no-ff`, so git fast-forwarded and left no merge commit. Make a fresh tiny commit on a new `feature/...` branch and merge again **with** `--no-ff`.
+3. **"feature_branch" scores 0** - your branch name does not start with `feature/`, or you deleted it after merging. Recreate it as `feature/NAME` and keep it.
+4. **"gitignore_secrets" scores 0** - your `.gitignore` is missing the patterns. Open `HINTS.md` Tier 3 and add the exact block, then commit `.gitignore`.
+5. **"no_secrets" scores 0** - a file in your folder contains something that looks like a private key or an `API_KEY=sk-...` literal. Replace it with a placeholder or delete it. Ignoring the file is **not** enough; the scanner walks the folder, so the real value must not be present at all.
+6. **"author_consistency" scores low** - you committed under two different emails. Set your identity once with `git config --global user.email "..."` and use it for all commits.

@@ -9,14 +9,14 @@
 - **Tier 1 (nudge):** STRIDE = Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. https://learn.microsoft.com/azure/security/develop/threat-modeling-tool-threats
 - **Tier 2 (guided):** List assets (models, data volume, secrets), then a threat + mitigation per STRIDE category.
 - **Tier 3 (near-solution):**
-  ```
-  ## Assets
-  - ____
-  ## STRIDE
-  | Category | Threat | Mitigation |
-  |----------|--------|-----------|
-  | Spoofing | ____ | ____ |
-  ```
+```
+## Assets
+- ____
+## STRIDE
+| Category | Threat | Mitigation |
+|----------|--------|-----------|
+| Spoofing | ____ | ____ |
+```
 
 ## Task group C - Report stub & secrets
 - **Tier 1 (nudge):** The report should be ready to paste into a GitHub wiki. Keep secrets out of the repo entirely.

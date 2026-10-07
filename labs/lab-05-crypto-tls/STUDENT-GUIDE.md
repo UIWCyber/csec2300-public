@@ -9,12 +9,25 @@ copying a classmate will never pass.
 
 ---
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -54,12 +67,12 @@ grader can confirm the certificate on the wire matches the one you committed.
 ## Step 1 - Accept and open the lab
 
 1. Accept the repository invitation GitHub emails you when your instructor adds you to your private repo. GitHub creates a private repository named for you.
-2. Copy the repository URL (green **Code** button), then in Git Bash run:
+2. Copy the repository URL (green **Code** button), then run:
 
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo-folder>
-   ```
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+```
 
    Replace the angle-bracket parts with your real values. `cd` means "change
    directory" (move into that folder).
@@ -77,13 +90,19 @@ Always confirm your environment before doing any work:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > **what you'll see:**
 
 ![Syscheck panel](guide-assets/lab-05-syscheck.png)
 
 Every row should say `PASS`. If a row says `FAIL`, fix it before continuing:
 
-- **python3 available FAIL:** install Python 3 and reopen Git Bash so it is on your PATH.
+- **python3 available FAIL:** install Python 3 and open a new terminal so it is on your PATH.
 - **openssl installed FAIL:** reinstall Git for Windows (it bundles openssl), or install openssl and reopen the terminal.
 - **starter files intact FAIL:** you deleted or renamed a starter file. Re-clone the repository or restore the named file.
 
@@ -95,6 +114,12 @@ Your inputs are unique to your repository. Print them with:
 
 ```bash
 bash starter/show-inputs.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File starter\show-inputs.ps1
 ```
 
 > **what you'll see:** three lines like `input 1: ...`, `input 2: ...`,
@@ -208,11 +233,17 @@ This is the last 10 points. You start a tiny web server that speaks HTTPS using
 your certificate, and the grader connects to it and checks that the certificate
 on the wire is exactly the one you committed.
 
-**The simplest way**, using openssl directly (leave this running in one Git Bash
+**The simplest way**, using openssl directly (leave this running in one terminal
 window):
 
 ```bash
 bash starter/serve-https.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File starter\serve-https.ps1
 ```
 
 That script runs `openssl s_server -accept 8443 -cert cert.pem -key key.pem
@@ -234,7 +265,7 @@ docker run -d --name lab05-tls -p 127.0.0.1:8443:8443 \
 - `-v "$PWD/cert.pem:/work/cert.pem:ro"` mounts your certificate into the container, read-only.
 - `alpine/openssl s_server ...` runs the same openssl HTTPS server inside the container.
 
-**Confirm it works** from a second Git Bash window:
+**Confirm it works** from a second terminal window:
 
 ```bash
 echo | openssl s_client -connect localhost:8443 -servername localhost 2>/dev/null \
@@ -260,6 +291,12 @@ Run the full autograder from the repository root:
 
 ```bash
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 Read the per-criterion table. Each entry shows `points` out of `max` and a short
@@ -290,4 +327,4 @@ git push
 - **`cert_selfsigned` or `key_matches_cert` shows "blocked by cert_is_cert".** Your `cert.pem` is missing or is not a real certificate. Re-run the Step 5 command and make sure `cert.pem` is at the repository root (not inside `starter/`).
 - **`key_strength` fails.** Your key is weaker than 2048-bit RSA. Regenerate with `-newkey rsa:2048` (or use `ed25519`).
 - **`https_served` says "no HTTPS server responding on 8443".** Your server is not running, or it is on a different port. Start it (Step 7), keep that window open, and re-run the grader in a separate window. This criterion safely **skips** if no server is up; it does not block your other points.
-- **Windows: `openssl` or `sha256sum` "command not found".** You are in Command Prompt, not Git Bash. Open **Git Bash** and try again.
+- **Windows: `openssl` or `sha256sum` "command not found".** `openssl` ships with Git for Windows; add it to PATH or use Git Bash for that one command. Open **Git Bash** and try again.

@@ -10,12 +10,25 @@ ladder). Keep both open while you work.
 
 ---
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -40,11 +53,8 @@ verification codes (WORK-FP and ATTEST).
 
 ### First, two words you need
 
-- An **image** is a frozen, read-only template: an operating system plus your
-  app, packaged so it runs the same way on any machine. Think of it as a recipe
-  that has already been cooked and vacuum-sealed.
-- A **container** is a running copy of an image. You can start many containers
-  from one image. Think of it as a single meal served from that sealed recipe.
+- An **image** is a frozen, read-only template: an operating system plus your app, packaged so it runs the same way on any machine. Think of it as a recipe that has already been cooked and vacuum-sealed.
+- A **container** is a running copy of an image. You can start many containers from one image. Think of it as a single meal served from that sealed recipe.
 
 A `Dockerfile` is the plain-text list of instructions Docker reads to *build*
 an image. Every hardening change you make in this lab is one edited line in the
@@ -65,36 +75,26 @@ Security+ SY0-701 Domain 3.0 (secure baselines and containers).
 
 Prerequisites:
 
-- **Docker Desktop** installed and running. On Windows, open the Start menu,
-  launch **Docker Desktop**, and wait until its whale icon in the system tray
-  stops animating. The autograder can still parse your `Dockerfile` without
-  Docker, but three of the nine checks actually build and run your image, so
-  turn Docker on to earn full marks locally.
+- **Docker Desktop** installed and running. On Windows, open the Start menu, launch **Docker Desktop**, and wait until its whale icon in the system tray stops animating. The autograder can still parse your `Dockerfile` without Docker, but three of the nine checks actually build and run your image, so turn Docker on to earn full marks locally.
 - **Git** installed, so you can accept and clone the assignment.
-- The authoritative instructions are the **Lab 4 assignment on Canvas**: it
-  contains your **your GitHub assignment repository** invite link and points at this repo's
-  `README.md`. Use `HINTS.md` when you get stuck; it escalates from a nudge to a
-  near-solution so you can take only as much help as you need.
+- The authoritative instructions are the **Lab 4 assignment on Canvas**: it contains your **your GitHub assignment repository** invite link and points at this repo's `README.md`. Use `HINTS.md` when you get stuck; it escalates from a nudge to a near-solution so you can take only as much help as you need.
 
-A note on typing commands: on Windows use **Git Bash** or **PowerShell**. The
-commands below start with `bash autograde/run.sh`, which works in Git Bash and
-in the terminal inside Docker Desktop. If `bash` is not found, open Git Bash.
+A note on typing commands: on Windows use **PowerShell**. The
+commands below start with `bash autograde/run.sh`, and each one is also given in its
+PowerShell form, which is what to use on Windows.
 
 ---
 
 ## Step 1: Accept and open the lab
 
-1. Click the **your GitHub assignment repository** link in the Canvas assignment and accept it.
-   GitHub creates a private copy of the lab just for you.
-2. Copy the repository web address (the green **Code** button gives you an
-   HTTPS URL).
-3. In your terminal, clone it and move into the folder. Replace the URL with
-   your own:
+1. Click the **your GitHub assignment repository** link in the Canvas assignment and accept it. GitHub creates a private copy of the lab just for you.
+2. Copy the repository web address (the green **Code** button gives you an HTTPS URL).
+3. In your terminal, clone it and move into the folder. Replace the URL with your own:
 
-   ```bash
-   git clone https://github.com/UIWCyber/csec2300-lab04-YOURNAME.git
-   cd lab-04-docker-hardening-YOU
-   ```
+```bash
+git clone https://github.com/UIWCyber/csec2300-lab04-YOURNAME.git
+cd lab-04-docker-hardening-YOU
+```
 
 `cd` means "change directory." You are now standing inside the lab folder, which
 is where every command in this guide expects to be run.
@@ -109,6 +109,12 @@ Before touching anything, confirm your machine is ready:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > **What you'll see:** a small table with a STATUS column. Every row should say
 > `PASS`.
 
@@ -116,14 +122,9 @@ bash autograde/run.sh --syscheck
 
 The three rows and how to fix a FAIL:
 
-- **python3 available** - Python runs the grader. If this fails, install Python
-  3 and reopen your terminal.
-- **docker daemon reachable** - If this says FAIL, Docker Desktop is not running.
-  Launch it and wait for the whale icon to settle, then re-run the check. (You
-  can still do the whole lab and earn most points with Docker off, but you want
-  this green to test the build locally.)
-- **starter files intact** - The `Dockerfile` and `app/server.py` must still be
-  present. If you deleted one, restore it from the original repo.
+- **python3 available** - Python runs the grader. If this fails, install Python 3 and reopen your terminal.
+- **docker daemon reachable** - If this says FAIL, Docker Desktop is not running. Launch it and wait for the whale icon to settle, then re-run the check. (You can still do the whole lab and earn most points with Docker off, but you want this green to test the build locally.)
+- **starter files intact** - The `Dockerfile` and `app/server.py` must still be present. If you deleted one, restore it from the original repo.
 
 Fix any FAIL, then re-run the same command until all three say PASS.
 
@@ -137,6 +138,12 @@ watch your score climb later:
 
 ```bash
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 > **What you'll see:** a block of JSON. Near the top is `"total"`. The starter
@@ -155,34 +162,14 @@ You will edit the `Dockerfile` so each weakness becomes a strength. Here is what
 each kind of line does, so you know *why* you are changing it. The exact tags
 and directives to use are in `README.md` (Tasks) and `HINTS.md` (Tiers 1 to 3).
 
-- **`FROM ...`** picks the base image everything else sits on. The starter uses a
-  moving, oversized base. Your job (Task 1): pin it to a **specific, slim** tag
-  so the build is reproducible and small. `HINTS.md` Tier 2 names good choices.
-  Rule: never leave it on `:latest`.
-- **`ENV NAME=value`** sets an environment variable that is baked into every
-  layer of the image. The starter bakes an API key and a database password this
-  way, which means they ship inside the image for anyone to read. Task 3: delete
-  the secret `ENV` lines. Real secrets are passed in at run time instead, for
-  example with `docker run --env API_KEY=...`. It is fine to keep a non-secret
-  variable like the port.
-- **`RUN ...`** executes a command while building the image (installing packages,
-  creating a user). You will use a `RUN` line to create an ordinary,
-  unprivileged user. `HINTS.md` Tier 3 shows the shape of that command.
-- **`COPY app/ /app/`** copies your application files into the image. Prefer
-  `COPY` over `ADD` (Task 5): `ADD` has surprising behavior with URLs and
-  archives, so `COPY` is the safer default. The starter already uses `COPY`.
+- **`FROM ...`** picks the base image everything else sits on. The starter uses a moving, oversized base. Your job (Task 1): pin it to a **specific, slim** tag so the build is reproducible and small. `HINTS.md` Tier 2 names good choices. Rule: never leave it on `:latest`.
+- **`ENV NAME=value`** sets an environment variable that is baked into every layer of the image. The starter bakes an API key and a database password this way, which means they ship inside the image for anyone to read. Task 3: delete the secret `ENV` lines. Real secrets are passed in at run time instead, for example with `docker run --env API_KEY=...`. It is fine to keep a non-secret variable like the port.
+- **`RUN ...`** executes a command while building the image (installing packages, creating a user). You will use a `RUN` line to create an ordinary, unprivileged user. `HINTS.md` Tier 3 shows the shape of that command.
+- **`COPY app/ /app/`** copies your application files into the image. Prefer `COPY` over `ADD` (Task 5): `ADD` has surprising behavior with URLs and archives, so `COPY` is the safer default. The starter already uses `COPY`.
 - **`WORKDIR /app`** sets the folder later commands run in. Leave it.
-- **`USER ...`** chooses which user the container runs as. With no `USER` line, a
-  container runs as `root`. Task 2: add a `USER` line naming the non-root user
-  you created, placed *after* you create that user, so the app drops root
-  privileges before it starts.
-- **`HEALTHCHECK ...`** tells Docker how to test that your app is actually alive.
-  The starter has none. Task 4: add one that probes the app's `/health` path.
-  `HINTS.md` Tier 3 shows the skeleton. Tip: the base image already includes an
-  interpreter you can use for the probe, so you do not need to install extra
-  tools.
-- **`CMD [...]`** is the command that starts your app when the container runs.
-  Leave the app's start command working; hardening must not break the app.
+- **`USER ...`** chooses which user the container runs as. With no `USER` line, a container runs as `root`. Task 2: add a `USER` line naming the non-root user you created, placed *after* you create that user, so the app drops root privileges before it starts.
+- **`HEALTHCHECK ...`** tells Docker how to test that your app is actually alive. The starter has none. Task 4: add one that probes the app's `/health` path. `HINTS.md` Tier 3 shows the skeleton. Tip: the base image already includes an interpreter you can use for the probe, so you do not need to install extra tools.
+- **`CMD [...]`** is the command that starts your app when the container runs. Leave the app's start command working; hardening must not break the app.
 
 The one hard constraint: the little server in `app/server.py` listens on a port
 (it reads the `PORT` variable, default 8080) and answers `/health` with the word
@@ -249,15 +236,22 @@ Run the grader again:
 bash autograde/run.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
 > **What you'll see:** the same JSON as before, but now `"total": 100`. Each of
 > the nine criteria shows `"points"` equal to its `"max"`, with feedback like
 > `final USER is non-root` and `container served /health = 'ok' after
 > hardening`. At the very bottom are two lines:
 >
-> ```
-> WORK-FP  : xxxxxxxxxxxx
-> ATTEST   : xxxxxxxxxxxx
-> ```
+
+```
+WORK-FP  : xxxxxxxxxxxx
+ATTEST   : xxxxxxxxxxxx
+```
 
 **WORK-FP** is a fingerprint of your `Dockerfile` content. **ATTEST** is a
 signed record of this exact run. Together they are your submission proof.
@@ -286,21 +280,11 @@ workstations, so it is acceptable, but starting Docker Desktop lets you confirm
 
 ## Troubleshooting
 
-- **`docker: command not found` or "docker daemon unreachable".** Docker Desktop
-  is not installed or not started. Open it, wait for the whale icon to settle,
-  and re-run `bash autograde/run.sh --syscheck`.
-- **`docker build` fails on the `FROM` line.** You likely mistyped the base image
-  tag. Copy the exact tag from `HINTS.md` Tier 2, and make sure you did not leave
-  it as `:latest`.
-- **`nonroot_user` still fails.** Your `USER` line must come *after* the `RUN`
-  line that creates the user, and it must name that user (not `root` and not
-  `0`). Order matters.
-- **`endpoint_responds` fails after hardening.** Your non-root user may not be
-  able to read the app files, or you changed the port the app listens on. Keep
-  the app listening on its default port and make sure the copied files are
-  readable by the user you switched to. Re-run `docker build` then the grader.
-- **`bash: command not found` on Windows.** Use Git Bash rather than the plain
-  Command Prompt.
+- **`docker: command not found` or "docker daemon unreachable".** Docker Desktop is not installed or not started. Open it, wait for the whale icon to settle, and re-run `bash autograde/run.sh --syscheck`.
+- **`docker build` fails on the `FROM` line.** You likely mistyped the base image tag. Copy the exact tag from `HINTS.md` Tier 2, and make sure you did not leave it as `:latest`.
+- **`nonroot_user` still fails.** Your `USER` line must come *after* the `RUN` line that creates the user, and it must name that user (not `root` and not `0`). Order matters.
+- **`endpoint_responds` fails after hardening.** Your non-root user may not be able to read the app files, or you changed the port the app listens on. Keep the app listening on its default port and make sure the copied files are readable by the user you switched to. Re-run `docker build` then the grader.
+- **`bash: command not found` on Windows.** Use the PowerShell form of the command rather than the plain Command Prompt.
 
 ---
 

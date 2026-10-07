@@ -1,6 +1,6 @@
 # Setup Report - Lab 0
 
-Fill every section. Remove the placeholder markers (`_____`, `<your ...>`, `TODO`)
+Fill every section. Remove the placeholder markers (`_____`, `YOUR_VALUE`, `TODO`)
 as you complete each item. The autograder checks for these headings.
 
 ## Identity

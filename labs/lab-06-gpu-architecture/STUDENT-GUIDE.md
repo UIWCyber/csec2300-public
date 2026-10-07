@@ -6,12 +6,25 @@ This guide walks you through the lab step by step. It does not give you the grad
 answers - it shows you how to run the tools, read their output, and where to look
 up the concepts so you can answer in your own words.
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -36,27 +49,18 @@ design, and two hardware roots of trust (TPM and secure boot). You submit two fi
 
 ## Before you start
 
-- You do not need Docker, Ollama, or a GPU to finish this lab on your own laptop -
-  the collector script automatically falls back to CPU-only tools if there is no
-  NVIDIA GPU.
-- The authoritative task list is `README.md` in your repo; the hint ladder (three
-  tiers per task group, from a nudge to a near-solution) is in `HINTS.md`. Use
-  `HINTS.md` before asking for help - try Tier 1 first, then Tier 2, then Tier 3.
-- Assignment access: accept the Lab 6 invite link posted for this lab on Canvas
-  (your GitHub assignment repository). That creates your private repo with this lab's files already
-  in it.
+- You do not need Docker, Ollama, or a GPU to finish this lab on your own laptop - the collector script automatically falls back to CPU-only tools if there is no NVIDIA GPU.
+- The authoritative task list is `README.md` in your repo; the hint ladder (three tiers per task group, from a nudge to a near-solution) is in `HINTS.md`. Use `HINTS.md` before asking for help - try Tier 1 first, then Tier 2, then Tier 3.
+- Assignment access: accept the Lab 6 invite link posted for this lab on Canvas (your GitHub assignment repository). That creates your private repo with this lab's files already in it.
 
 ## Step 1 - Accept and open the lab
 
-1. Click the repository invitation on Canvas for Lab 6 and accept it. This
-   creates your own private repository, for example
-   `github.com/uiw-csec2300/lab-06-gpu-architecture-yourusername`.
-2. Clone it to your machine (Terminal on Mac/Linux, Git Bash or PowerShell on
-   Windows):
-   ```
-   git clone <your repository URL>
-   cd lab-06-gpu-architecture-yourusername
-   ```
+1. Click the repository invitation on Canvas for Lab 6 and accept it. This creates your own private repository, for example `github.com/uiw-csec2300/lab-06-gpu-architecture-yourusername`.
+2. Clone it to your machine (Terminal on Mac/Linux, PowerShell on Windows):
+```
+git clone <your repository URL>
+cd lab-06-gpu-architecture-yourusername
+```
 3. Confirm you see `README.md`, `HINTS.md`, `autograde/`, and `starter/`.
 
 ## Step 2 - Run the system check first
@@ -67,16 +71,23 @@ Before doing any work, confirm your environment is ready:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > **What you'll see:**
-> ```
-> System check (pre-flight) for lab-06-gpu-architecture-yourusername
-> ------------------------------------------------------------------------
-> STATUS CHECK                                    FIX HINT
-> PASS   python3 available
-> PASS   starter files intact
-> ------------------------------------------------------------------------
-> All preflight checks passed - you can start the lab.
-> ```
+
+```
+System check (pre-flight) for lab-06-gpu-architecture-yourusername
+------------------------------------------------------------------------
+STATUS CHECK                                    FIX HINT
+PASS   python3 available
+PASS   starter files intact
+------------------------------------------------------------------------
+All preflight checks passed - you can start the lab.
+```
 
 See `guide-assets/lab-06-syscheck.png` for a real passing run.
 
@@ -104,20 +115,27 @@ Run the provided script from the repo root:
 bash starter/capture.sh
 ```
 
-> **What you'll see (GPU workstation):**
-> ```
-> +-----------------------------------------------------------------------------+
-> | NVIDIA-SMI 5xx.xx       Driver Version: 5xx.xx       CUDA Version: 12.x     |
-> |-------------------------------+----------------------+----------------------+
-> | GPU  Name        Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
-> | ...
-> == CPU ==
-> ...
-> ```
+On Windows, the same step in PowerShell:
 
-If you are on Windows and `bash` is not available, open Git Bash (installed with
+```
+powershell -ExecutionPolicy Bypass -File starter\capture.ps1
+```
+
+> **What you'll see (GPU workstation):**
+
+```
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 5xx.xx       Driver Version: 5xx.xx       CUDA Version: 12.x     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| ...
+== CPU ==
+...
+```
+
+If you are on Windows, use the PowerShell form shown with each step (Git Bash also works, installed with
 Git for Windows) and run the same command from there, or run
-`nvidia-smi > gpu-report.txt` directly in PowerShell/cmd and then separately append
+nvidia-smi > gpu-report.txt directly in PowerShell/cmd and then separately append
 CPU info.
 
 ### On your own machine (no NVIDIA GPU - Mac, most laptops)
@@ -126,8 +144,7 @@ CPU info.
 cross-platform tools:
 - macOS: `system_profiler SPDisplaysDataType` (graphics/display info) plus
   `sysctl -a | grep machdep.cpu` (CPU info, since `lscpu` is Linux-only).
-- Linux without an NVIDIA card: `system_profiler` will not exist either, so the
-  script falls straight to `lscpu`.
+- Linux without an NVIDIA card: `system_profiler` will not exist either, so the script falls straight to `lscpu`.
 
 Run the same command either way:
 
@@ -135,18 +152,25 @@ Run the same command either way:
 bash starter/capture.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File starter\capture.ps1
+```
+
 > **What you'll see (Apple Silicon Mac, no discrete GPU):**
-> ```
-> Graphics/Displays:
->     Apple M4 Pro:
->       Chipset Model: Apple M4 Pro
->       Type: GPU
->       Total Number of Cores: 20
->       ...
-> == CPU ==
-> machdep.cpu.core_count: 14
-> machdep.cpu.brand_string: Apple M4 Pro
-> ```
+
+```
+Graphics/Displays:
+    Apple M4 Pro:
+      Chipset Model: Apple M4 Pro
+      Type: GPU
+      Total Number of Cores: 20
+      ...
+== CPU ==
+machdep.cpu.core_count: 14
+machdep.cpu.brand_string: Apple M4 Pro
+```
 
 This is expected and fine - the grader's "real hardware output" check looks for
 common hardware-report keywords (things like `chipset`, `vram`, `cpu`, `core`,
@@ -208,24 +232,31 @@ Run the grader:
 bash autograde/run.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
 > **What you'll see (partial credit example, one field still off-concept):**
-> ```
-> {
->   "total": 90,
->   ...
->   "criteria": [
->     ...
->     {
->       "id": "vram_meaning",
->       "max": 10,
->       "points": 0,
->       "feedback": "vram_meaning = '...'; expected one of: video, gpu memory, graphics"
->     }
->   ],
->   "work_fp": "...",
->   "attest": "..."
-> }
-> ```
+
+```
+{
+  "total": 90,
+  ...
+  "criteria": [
+    ...
+    {
+      "id": "vram_meaning",
+      "max": 10,
+      "points": 0,
+      "feedback": "vram_meaning = '...'; expected one of: video, gpu memory, graphics"
+    }
+  ],
+  "work_fp": "...",
+  "attest": "..."
+}
+```
 
 Read the `feedback` string on any criterion showing `"points": 0` - it tells you
 which field is missing the expected concept, without telling you the answer
@@ -260,30 +291,12 @@ it ran and matches your local score.
 
 ## Troubleshooting
 
-1. **`gpu-report.txt` is empty or the "report_real" check fails.**
-   Your capture command probably ran in the wrong directory, or a tool errored out
-   silently. Re-run `bash starter/capture.sh` from the repo root and `cat
-   gpu-report.txt` to confirm it has real text in it before moving on.
+1. **`gpu-report.txt` is empty or the "report_real" check fails.** Your capture command probably ran in the wrong directory, or a tool errored out silently. Re-run `bash starter/capture.sh` from the repo root and `cat gpu-report.txt` to confirm it has real text in it before moving on.
 
-2. **On Windows, `bash` or `system_profiler`/`lscpu` are "not recognized".**
-   Use Git Bash (installed with Git for Windows) to get a `bash` shell. On a
-   non-GPU Windows laptop, `system_profiler` (macOS-only) and `lscpu` (Linux-only)
-   will both be unavailable; that is expected. Ask in office hours or check
-   `HINTS.md` Task group A for a Windows-appropriate capture command, or use the
-   GPU workstation for this step instead.
+2. **On Windows, `bash` or `system_profiler`/`lscpu` are "not recognized".** Use the PowerShell command shown beside each step. On a non-GPU Windows laptop, `system_profiler` (macOS-only) and `lscpu` (Linux-only) will both be unavailable; that is expected. Ask in office hours or check `HINTS.md` Task group A for a Windows-appropriate capture command, or use the GPU workstation for this step instead.
 
-3. **A concept field keeps scoring 0 even though you feel your answer is right.**
-   The grader looks for specific concept keywords inside your sentence (see the
-   `feedback` line it prints). Reread the relevant `HINTS.md` tier and make sure
-   your sentence actually uses words like "parallel," "latency," "signed
-   firmware," etc. rather than a synonym the grader was not told to look for.
+3. **A concept field keeps scoring 0 even though you feel your answer is right.** The grader looks for specific concept keywords inside your sentence (see the `feedback` line it prints). Reread the relevant `HINTS.md` tier and make sure your sentence actually uses words like "parallel," "latency," "signed firmware," etc. rather than a synonym the grader was not told to look for.
 
-4. **You are not on a GPU machine and worry you will be penalized for a
-   CPU-only report.** You will not be. The grader accepts any real hardware
-   report; the fallback path (`system_profiler`/`sysctl` on Mac, `lscpu` on
-   Linux) is a legitimate, expected result on non-GPU machines, not an error.
+4. **You are not on a GPU machine and worry you will be penalized for a CPU-only report.** You will not be. The grader accepts any real hardware report; the fallback path (`system_profiler`/`sysctl` on Mac, `lscpu` on Linux) is a legitimate, expected result on non-GPU machines, not an error.
 
-5. **`answers.yaml` does not exist / grader says fields are empty.**
-   You edited `starter/answers-template.yaml` instead of copying it to
-   `answers.yaml` at the repo root first. Run `cp starter/answers-template.yaml
-   answers.yaml`, then edit the copy.
+5. **`answers.yaml` does not exist / grader says fields are empty.** You edited `starter/answers-template.yaml` instead of copying it to `answers.yaml` at the repo root first. Run `cp starter/answers-template.yaml answers.yaml`, then edit the copy.

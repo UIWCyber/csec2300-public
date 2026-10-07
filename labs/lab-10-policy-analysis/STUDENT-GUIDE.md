@@ -2,12 +2,25 @@
 
 Course: CSEC 2300 Foundations of Cyber Security, Dr. Gonzalo D Parra
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -35,16 +48,10 @@ editor, git, and Python 3 to grade your own work.
 
 ## 2. Before you start
 
-- Prerequisites: Labs 7-9 completed (you are analyzing that stack, so it
-  helps to remember what Ollama, Open WebUI, and the agent actually store).
-- The authoritative task list and grading rubric live in `README.md` in this
-  folder. This guide only explains the mechanics of doing the work; README.md
-  is the assignment.
-- If you get stuck on wording or structure, open `HINTS.md`. It has three
-  tiers per task group (nudge, guided, near-solution) so you can get just
-  enough help without spoiling your own analysis.
-- Accept the assignment through the repository invitation posted on
-  Canvas, then clone your repository the same way you did for earlier labs:
+- Prerequisites: Labs 7-9 completed (you are analyzing that stack, so it helps to remember what Ollama, Open WebUI, and the agent actually store).
+- The authoritative task list and grading rubric live in `README.md` in this folder. This guide only explains the mechanics of doing the work; README.md is the assignment.
+- If you get stuck on wording or structure, open `HINTS.md`. It has three tiers per task group (nudge, guided, near-solution) so you can get just enough help without spoiling your own analysis.
+- Accept the assignment through the repository invitation posted on Canvas, then clone your repository the same way you did for earlier labs:
 
 ```
 git clone <your-repo-url>
@@ -59,16 +66,23 @@ Before writing anything, confirm your environment can run the grader:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > what you'll see:
-> ```
-> System check (pre-flight) for <your-repo-folder>
-> ------------------------------------------------------------------------
-> STATUS CHECK                                    FIX HINT
-> PASS   python3 available
-> PASS   starter files intact
-> ------------------------------------------------------------------------
-> All preflight checks passed - you can start the lab.
-> ```
+
+```
+System check (pre-flight) for <your-repo-folder>
+------------------------------------------------------------------------
+STATUS CHECK                                    FIX HINT
+PASS   python3 available
+PASS   starter files intact
+------------------------------------------------------------------------
+All preflight checks passed - you can start the lab.
+```
 
 See `guide-assets/lab-10-syscheck.png` for a real passing run.
 
@@ -105,15 +119,10 @@ counting the header row), where every row has all 4 columns filled in with
 real content: no `TODO`, no blank cells, no `____`, no `...`.
 
 **The four columns, explained**:
-- **Component**: the piece of the stack that handles the data (Ollama, Open
-  WebUI, the agent/retrieval layer, the grading pipeline, model files, etc).
-- **Data Category**: what kind of data it is (chat prompts, account emails,
-  uploaded documents, session tokens, logs, model weights).
-- **Storage Location**: where it physically lives (a Docker volume, a local
-  file, a database inside a container, a GitHub repository).
-- **Lawful Basis**: which legal justification applies under GDPR Article 6
-  (consent, contract, legitimate interest, legal obligation) or, for
-  education records, the FERPA school-official exception.
+- **Component**: the piece of the stack that handles the data (Ollama, Open WebUI, the agent/retrieval layer, the grading pipeline, model files, etc).
+- **Data Category**: what kind of data it is (chat prompts, account emails, uploaded documents, session tokens, logs, model weights).
+- **Storage Location**: where it physically lives (a Docker volume, a local file, a database inside a container, a GitHub repository).
+- **Lawful Basis**: which legal justification applies under GDPR Article 6 (consent, contract, legitimate interest, legal obligation) or, for education records, the FERPA school-official exception.
 
 **One worked example row** (do not copy this verbatim; think through the
 other components of your own stack the same way):
@@ -130,7 +139,7 @@ cell has to be a real answer, not a placeholder.
 
 > what you'll see if a row is incomplete: the grader's feedback for
 > `table_complete` will report a lower row count than you expect, for
-> example `"data-inventory table has 2 complete rows; need >=4..."` even
+> example "data-inventory table has 2 complete rows; need >=4..." even
 > though you see more rows on screen. That almost always means one of your
 > "rows" is still the header, or a cell in that row is blank or still says
 > `TODO`.
@@ -184,7 +193,7 @@ instead of three disconnected lists.
 ## 8. Step 6 - Clean up placeholders
 
 Before you validate, search your file for anything you have not replaced:
-`TODO`, `<your`, `_____`, `placeholder`, or `lorem ipsum`. Any of these
+`TODO`, <your, `_____`, `placeholder`, or `lorem ipsum`. Any of these
 remaining anywhere in `analysis.md` zeroes out the "no placeholder" check,
 even if the rest of the document is complete. Do a find-in-editor pass for
 the word `TODO` specifically since the starter template uses it as every
@@ -196,6 +205,12 @@ Run the full grader from your repo root:
 
 ```
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 This prints a JSON report with one entry per rubric criterion, a `total`
@@ -223,26 +238,12 @@ git push
 
 ## 10. Troubleshooting
 
-- **Section shows 0 points even though I wrote it**: check the exact
-  heading text and level. It must be `## Data Inventory`, `## GDPR
-  Analysis` (or any heading starting with GDPR), `## FERPA Analysis`,
-  `## Risks`, `## Recommendations` - one `#`-count is fine as long as it
-  starts with one or more `#` followed by that keyword.
-- **Table says fewer rows than I see on screen**: a row is only counted if
-  it is not the header/separator row and all of its first 4 cells have
-  content with no `TODO`, `____`, or `...`. Double check you did not leave
+- **Section shows 0 points even though I wrote it**: check the exact heading text and level. It must be `## Data Inventory`, `## GDPR Analysis` (or any heading starting with GDPR), `## FERPA Analysis`, `## Risks`, `## Recommendations` - one `#`-count is fine as long as it starts with one or more `#` followed by that keyword.
+- **Table says fewer rows than I see on screen**: a row is only counted if it is not the header/separator row and all of its first 4 cells have content with no `TODO`, `____`, or `...`. Double check you did not leave
   a half-finished row, and that your separator row (`|---|---|---|---|`)
   is not being miscounted (it never is, but a row with only dashes and no
   real header words might be misread as a data row - keep the header row
   exactly as the template has it).
-- **Citations count is below 2 even though I mentioned GDPR and FERPA
-  several times**: naming the law is not enough; you need a specific
-  article or section number in the text, like "Article 6" or "34 CFR §
-  99.31", not just the word "GDPR" or "FERPA" by itself.
-- **Word count is short**: run a word count on the file locally (most
-  editors show this in the status bar) before you validate; 600 words is
-  not a lot for 5 sections, but a few one-sentence sections will not clear
-  it.
-- **`bash: command not found` on Windows**: run these commands inside Git
-  Bash (installed with Git for Windows) or WSL, not the plain Command
-  Prompt or PowerShell.
+- **Citations count is below 2 even though I mentioned GDPR and FERPA several times**: naming the law is not enough; you need a specific article or section number in the text, like "Article 6" or "34 CFR § 99.31", not just the word "GDPR" or "FERPA" by itself.
+- **Word count is short**: run a word count on the file locally (most editors show this in the status bar) before you validate; 600 words is not a lot for 5 sections, but a few one-sentence sections will not clear it.
+- **`bash: command not found` on Windows**: use the PowerShell form shown beside each step (Git Bash also works, installed with Git for Windows) or WSL, not the plain Command Prompt or PowerShell.

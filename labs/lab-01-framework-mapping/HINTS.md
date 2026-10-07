@@ -14,6 +14,6 @@
 - **Tier 1 (nudge):** Ransomware encrypts files in place - which leg of the CIA triad does that hit first? https://csrc.nist.gov/glossary/term/cia_triad
 - **Tier 2 (guided):** Use plain `key: value` lines. Answer CIA with one word: confidentiality, integrity, or availability.
 - **Tier 3 (near-solution):** the field is named `primary_cia_impact`, exactly as in `starter/answers-template.yaml`:
-  ```
-  primary_cia_impact: ____________   # one of: confidentiality / integrity / availability
-  ```
+```
+primary_cia_impact: ____________   # one of: confidentiality / integrity / availability
+```

@@ -6,12 +6,25 @@ This guide walks you through the lab step by step. It is written for students wi
 
 ---
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -45,7 +58,7 @@ Plain-English glossary before you start:
 
 Prerequisites:
 
-- **Python 3** installed. Check by opening a terminal (on Windows, use PowerShell or Git Bash) and typing `python3 --version`. If that prints an error, try `python --version`.
+- **Python 3** installed. Check by opening a terminal (on Windows, use PowerShell) and typing `python3 --version`. If that prints an error, try `python --version`.
 - That is all you need. Ollama and Docker are optional and are NOT required to reach 100 percent. The tests use a fake, scripted model built into the test file.
 
 Where the authoritative instructions live:
@@ -77,6 +90,12 @@ Always run the preflight check before you do anything else. It confirms your env
 
 ```bash
 bash autograde/run.sh --syscheck
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
 ```
 
 > what you'll see:
@@ -161,6 +180,12 @@ Run the full autograder. This is the same grader the server runs on your push.
 bash autograde/run.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
 Read the per-criterion table in the JSON output. Each criterion shows `points` out of `max` and a feedback line. You want every one at full marks and `"total": 100`.
 
 | Criterion | Points | What earns it |
@@ -201,7 +226,7 @@ git push
 - **"NO TESTS RAN" from unittest.** You ran plain `python3 -m unittest`. Use `python3 -m unittest discover -s tests -v` instead. The test file is inside the `tests/` folder.
 - **`refusal_behavior` scores 0 with "it crashed with KeyError, not a refusal".** Your `run_tool` tried to look up an unknown tool in the dictionary and Python raised a `KeyError`. That is a crash, not a deliberate refusal. Add the allowlist check that raises `PermissionError` (or returns a "refused" message) BEFORE the dictionary lookup.
 - **`dangerous_absent` scores 0.** A dangerous name (most likely `shell`) is still in `ALLOWED_TOOLS`. Rebuild the allowlist from only your safe tools so the dangerous one is never included.
-- **`bash: command not found` on Windows.** Use Git Bash (installed with Git for Windows) or run `python3 autograde/grader.py` directly. The grader is plain Python.
+- **`bash: command not found` on Windows.** Use the PowerShell form of the command, or run `python3 autograde/grader.py` directly. The grader is plain Python.
 - **`python3` not recognized.** Try `python` instead of `python3`. If neither works, reinstall Python 3 and make sure "Add Python to PATH" is checked during setup, then reopen your terminal.
 
 ---

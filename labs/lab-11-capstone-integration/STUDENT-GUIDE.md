@@ -2,19 +2,25 @@
 
 **CSEC 2300 Foundations of Cyber Security** | Instructor: Dr. Gonzalo D Parra
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your repository folder, and run the grader this way instead:
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
 
 ```
 powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
 powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
-The grader, the score and the deliverables are identical; only the way you start a
-script differs. `-ExecutionPolicy Bypass` is there because Windows blocks scripts by
-default, and it applies to that one command only.
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -44,25 +50,16 @@ done before. Lab 11 is about pulling it into a clean, gradable whole.
 
 ## Before you start
 
-- The authoritative instructions live in two places: the **Lab 11 assignment on
-  Canvas** (repository invitation plus the repository `README.md`) and
-  **`HINTS.md`** in the repository, which gives a three-tier hint ladder if you
-  get stuck. Read both before you touch anything.
-- This lab is graded on your **team capstone repository**, not a personal one.
-  The whole capstone is described in the **Capstone Document Pack** at
-  `capstone/` in the course materials. Two documents there matter most for this
-  lab:
-  - `capstone/readiness-checklist.md` is a self-audit whose items line up almost
-    one for one with the autograder criteria. Treat it as your pre-submit list.
-  - `capstone/proposal-template.md` is the plan your team submitted for approval;
-    it names the stack and the controls you are now proving.
-- You need Git, Docker Desktop, and Python 3 installed. The system check in
-  Step 2 confirms this for you.
+- The authoritative instructions live in two places: the **Lab 11 assignment on Canvas** (repository invitation plus the repository `README.md`) and **`HINTS.md`** in the repository, which gives a three-tier hint ladder if you get stuck. Read both before you touch anything.
+- This lab is graded on your **team capstone repository**, not a personal one. The whole capstone is described in the **Capstone Document Pack** at `capstone/` in the course materials. Two documents there matter most for this lab:
+  - `capstone/readiness-checklist.md` is a self-audit whose items line up almost one for one with the autograder criteria. Treat it as your pre-submit list.
+  - `capstone/proposal-template.md` is the plan your team submitted for approval; it names the stack and the controls you are now proving.
+- You need Git, Docker Desktop, and Python 3 installed. The system check in Step 2 confirms this for you.
 
 ## Step 1: Accept and open the lab
 
 Accept the repository invitation from Canvas. It creates your team repository.
-Clone it and change into it. On Windows, run these in **Git Bash** (installed
+Clone it and change into it. On Windows, run these in **PowerShell** (they are identical
 with Git for Windows), not the classic Command Prompt, so the `bash` commands in
 this guide work.
 
@@ -85,6 +82,12 @@ machine has what the lab needs.
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > what you'll see: a table like the completed run below. Every row should say
 > PASS before you continue.
 
@@ -92,14 +95,10 @@ bash autograde/run.sh --syscheck
 
 How to fix a FAIL:
 
-- **python3 available** fails: install Python 3 from python.org and reopen your
-  terminal so it is on your PATH.
+- **python3 available** fails: install Python 3 from python.org and reopen your terminal so it is on your PATH.
 - **git installed** fails: install Git for Windows, then reopen the terminal.
-- **docker daemon reachable** fails: open Docker Desktop and wait until it says
-  the engine is running, then re-run the check.
-- **README.md / threat-model.md / report.md present** fails: you are in the
-  wrong folder, or a starter file was deleted. Run `ls` and make sure you are at
-  the top of the repository.
+- **docker daemon reachable** fails: open Docker Desktop and wait until it says the engine is running, then re-run the check.
+- **README.md / threat-model.md / report.md present** fails: you are in the wrong folder, or a starter file was deleted. Run `ls` and make sure you are at the top of the repository.
 
 ## Step 3: Bring the CI pipeline into the repo
 
@@ -152,7 +151,7 @@ docker compose -p <your-team> up -d --build
 > what you'll see: Docker builds your image and starts the services. Once they
 > are healthy you can reach the proxy in a browser at the port you published.
 > When you are done, tear it down cleanly so nothing is left running:
-> `docker compose -p <your-team> down -v`.
+> `docker compose -p YOUR_TEAM down -v`.
 
 ## Step 5: Write the threat model
 
@@ -160,11 +159,8 @@ Open `threat-model.md`. The starter has a STRIDE table where every cell says
 TODO. Replace all of it. The grader needs three things and will not award the
 points until the word TODO is gone:
 
-1. an **Assets** section listing what you are protecting (models, the data
-   volume, secrets, endpoints),
-2. a **STRIDE** table covering all six categories (Spoofing, Tampering,
-   Repudiation, Information disclosure, Denial of service, Elevation of
-   privilege), and
+1. an **Assets** section listing what you are protecting (models, the data volume, secrets, endpoints),
+2. a **STRIDE** table covering all six categories (Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege), and
 3. a real **mitigation** for each row.
 
 `HINTS.md` group B walks the structure. Write about your own stack: tie each
@@ -212,6 +208,12 @@ From the top of your repository, run the full autograder:
 bash autograde/run.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
 Read the per-criterion table. Each line shows the points you earned and a short
 reason. Fix any criterion that is not full, using the feedback line and
 `HINTS.md`, then run it again. A finished run looks like this:
@@ -237,20 +239,8 @@ and a current Project board). Anything red there is your final-sprint task list.
 
 ## Troubleshooting
 
-- **The grader gives zero for `threat_model` or `report_stub` even though the
-  file looks full.** You almost certainly left the word TODO somewhere. Both
-  checks require zero TODO markers. Search the file for `TODO` and clear every
-  one.
-- **`compose_hardened` stays at zero.** An image is still on `:latest`, or a
-  service has no resource limit. Every `image:` needs a real version tag, and
-  each service needs `mem_limit` or `cpus`. Re-run the `grep` from Step 4.
-- **`hardened_dockerfile` stays at zero.** The last `USER` is still root, the
-  `HEALTHCHECK` is missing, or a `FROM` is unpinned. Check all three with the
-  Step 4 `grep`.
-- **`ci_security` stays at zero.** Your workflow is missing one of the three
-  stages, or your only workflow is `classroom.yml`, which the grader ignores on
-  purpose. Make sure a second workflow file names a linter, a secret scanner,
-  and a dependency audit.
-- **`contributor_spread` is skipped or flagged.** The grader saw no Git history
-  or only one author. Make sure you cloned a real repository with commits and
-  that more than one teammate has committed under their own identity.
+- **The grader gives zero for `threat_model` or `report_stub` even though the file looks full.** You almost certainly left the word TODO somewhere. Both checks require zero TODO markers. Search the file for `TODO` and clear every one.
+- **`compose_hardened` stays at zero.** An image is still on `:latest`, or a service has no resource limit. Every `image:` needs a real version tag, and each service needs `mem_limit` or `cpus`. Re-run the `grep` from Step 4.
+- **`hardened_dockerfile` stays at zero.** The last `USER` is still root, the `HEALTHCHECK` is missing, or a `FROM` is unpinned. Check all three with the Step 4 `grep`.
+- **`ci_security` stays at zero.** Your workflow is missing one of the three stages, or your only workflow is `classroom.yml`, which the grader ignores on purpose. Make sure a second workflow file names a linter, a secret scanner, and a dependency audit.
+- **`contributor_spread` is skipped or flagged.** The grader saw no Git history or only one author. Make sure you cloned a real repository with commits and that more than one teammate has committed under their own identity.

@@ -9,12 +9,25 @@ authoritative task list lives in `README.md`; the hint ladder lives in
 
 ---
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -49,48 +62,30 @@ this keeps data on-premises, which is a privacy and data-governance control
 
 **Prerequisites**
 
-- A computer with **Docker Desktop** installed and running. On the GPU
-  workstations in the lab this is already installed. On your own Windows
-  machine, install "Docker Desktop" and open it once so the whale icon in the
-  system tray stops animating (that means the engine is ready).
-- The lab files, which you get from the **your GitHub assignment repository** invite link on
-  Canvas.
+- A computer with **Docker Desktop** installed and running. On the GPU workstations in the lab this is already installed. On your own Windows machine, install "Docker Desktop" and open it once so the whale icon in the system tray stops animating (that means the engine is ready).
+- The lab files, which you get from the **your GitHub assignment repository** invite link on Canvas.
 
 **Where the real instructions live**
 
-- `README.md` in this folder is the assignment: the exact tasks and the
-  grading table.
-- `HINTS.md` is a three-tier hint ladder. Tier 1 is a gentle nudge, Tier 3 is
-  almost the answer. Use the lowest tier that unblocks you.
+- `README.md` in this folder is the assignment: the exact tasks and the grading table.
+- `HINTS.md` is a three-tier hint ladder. Tier 1 is a gentle nudge, Tier 3 is almost the answer. Use the lowest tier that unblocks you.
 
 **A few words you will see a lot**
 
-- **Docker** runs software inside a **container**: a sealed box with its own
-  files and network, kept separate from the rest of your computer.
-- **Docker Compose** is a way to describe several containers, and how they
-  connect, in **one file** (`docker-compose.yml`) instead of typing many long
-  commands. You describe the desired end state; Compose builds it.
-- A **service** is one container definition inside that file (you will define
-  two: `ollama` and `open-webui`).
-- A **network** in Compose is a private lane that connects your services to
-  each other. Containers on the same named network can call each other by
-  name; anything not on that network cannot reach in.
-- A **port** is a numbered door on a computer. `"8407:8080"` means "connect
-  door 8407 on my computer to door 8080 inside the container." If a service
-  has **no** ports line, it has no door to the outside and can only be reached
-  from inside its private network. That is exactly what we want for Ollama.
-- A **volume** is a named folder Docker keeps for you so downloaded model data
-  survives even if the container is deleted and recreated.
+- **Docker** runs software inside a **container**: a sealed box with its own files and network, kept separate from the rest of your computer.
+- **Docker Compose** is a way to describe several containers, and how they connect, in **one file** (`docker-compose.yml`) instead of typing many long commands. You describe the desired end state; Compose builds it.
+- A **service** is one container definition inside that file (you will define two: `ollama` and `open-webui`).
+- A **network** in Compose is a private lane that connects your services to each other. Containers on the same named network can call each other by name; anything not on that network cannot reach in.
+- A **port** is a numbered door on a computer. `"8407:8080"` means "connect door 8407 on my computer to door 8080 inside the container." If a service has **no** ports line, it has no door to the outside and can only be reached from inside its private network. That is exactly what we want for Ollama.
+- A **volume** is a named folder Docker keeps for you so downloaded model data survives even if the container is deleted and recreated.
 
 ---
 
 ## 3. Step 1: Accept and open the lab
 
-1. Click the **your GitHub assignment repository** invite link on Canvas and accept it. This
-   creates your personal copy (repository) of the lab.
+1. Click the **your GitHub assignment repository** invite link on Canvas and accept it. This creates your personal copy (repository) of the lab.
 2. Copy the green **Code** button URL from your new repository.
-3. Open a terminal. On Windows this is **PowerShell** (press Start, type
-   `PowerShell`, press Enter). Then clone and enter the folder:
+3. Open a terminal. On Windows this is **PowerShell** (press Start, type `PowerShell`, press Enter). Then clone and enter the folder:
 
 ```
 git clone <paste-your-repo-URL-here>
@@ -112,6 +107,12 @@ Before doing any work, confirm your machine is ready. Run:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > what you'll see:
 
 ![syscheck panel](guide-assets/lab-07-syscheck.png)
@@ -120,10 +121,8 @@ Every row should say **PASS**. If a row says **FAIL**, fix it using the hint
 in that row before continuing:
 
 - **python3 available FAIL**: install Python 3 and reopen the terminal.
-- **docker daemon reachable FAIL**: open Docker Desktop and wait for the whale
-  icon to go solid, then re-run the check.
-- **starter files intact FAIL**: you deleted or moved a starter file. Restore
-  it (re-clone the repo into a fresh folder if needed).
+- **docker daemon reachable FAIL**: open Docker Desktop and wait for the whale icon to go solid, then re-run the check.
+- **starter files intact FAIL**: you deleted or moved a starter file. Restore it (re-clone the repo into a fresh folder if needed).
 
 Re-run the command until all rows PASS.
 
@@ -145,22 +144,12 @@ cp starter/docker-compose.skeleton.yml docker-compose.yml
 Now edit `docker-compose.yml` and work through the tasks in `README.md`. In
 plain language, you must:
 
-1. **Pin both images.** Replace every `:latest` with a specific version tag so
-   you always get the exact same, known software. `README.md` and `HINTS.md`
-   (Tier 2) name the two images to use. Never leave `:latest`; that is a
-   supply-chain risk.
-2. **Give Ollama a named volume** for its model directory `/root/.ollama`, so
-   downloaded data is not lost.
+1. **Pin both images.** Replace every `:latest` with a specific version tag so you always get the exact same, known software. `README.md` and `HINTS.md` (Tier 2) name the two images to use. Never leave `:latest`; that is a supply-chain risk.
+2. **Give Ollama a named volume** for its model directory `/root/.ollama`, so downloaded data is not lost.
 3. **Create one private network** and attach **both** services to it.
-4. **Remove Ollama's door to the host.** Delete the `ports:` line from the
-   `ollama` service entirely. Open WebUI will still reach Ollama by name over
-   the private network. This is the whole point of the lab.
-5. **Publish only the WebUI.** Keep a `ports:` line on `open-webui` so you can
-   open the chat page in a browser. On a shared machine, map it to a high host
-   port so you do not collide with anyone else (this guide used host port
-   **8407**). Never publish Ollama's `11434` to the host.
-6. **Add a resource limit** to each service (a memory cap) so a runaway model
-   cannot starve the machine.
+4. **Remove Ollama's door to the host.** Delete the `ports:` line from the `ollama` service entirely. Open WebUI will still reach Ollama by name over the private network. This is the whole point of the lab.
+5. **Publish only the WebUI.** Keep a `ports:` line on `open-webui` so you can open the chat page in a browser. On a shared machine, map it to a high host port so you do not collide with anyone else (this guide used host port **8407**). Never publish Ollama's `11434` to the host.
+6. **Add a resource limit** to each service (a memory cap) so a runaway model cannot starve the machine.
 
 `HINTS.md` Tier 3 shows the exact YAML shapes for volumes, networks, and
 limits if you get stuck. Do not copy a full solution from a classmate; the
@@ -194,12 +183,13 @@ docker compose -p csec2300-lab07 up -d
 > what you'll see: Compose downloads each image (a stream of "Pull complete"
 > lines the first time only), then:
 >
-> ```
-> Network csec2300-lab07_llmnet   Created
-> Volume  csec2300-lab07_ollama   Created
-> Container csec2300-lab07-ollama-1      Started
-> Container csec2300-lab07-open-webui-1  Started
-> ```
+
+```
+Network csec2300-lab07_llmnet   Created
+Volume  csec2300-lab07_ollama   Created
+Container csec2300-lab07-ollama-1      Started
+Container csec2300-lab07-open-webui-1  Started
+```
 >
 > The `-d` means "detached": the containers keep running and your prompt comes
 > back. The first `up` can take a few minutes while images download; later
@@ -212,7 +202,7 @@ docker compose -p csec2300-lab07 ps
 ```
 
 > what you'll see: two rows, both `Up`. Look at the PORTS column. Open WebUI
-> shows something like `0.0.0.0:8407->8080/tcp` (published to the host).
+> shows something like 0.0.0.0:8407->8080/tcp (published to the host).
 > Ollama shows only `11434/tcp` with **no** `0.0.0.0:` in front. That missing
 > `0.0.0.0:` is your proof Ollama has no door to the host. That is correct.
 
@@ -245,6 +235,12 @@ Run the grader:
 
 ```
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 It prints a JSON report: one entry per grading criterion with `points` earned,
@@ -285,22 +281,9 @@ docker compose -p csec2300-lab07 down -v
 
 ## 8. Troubleshooting
 
-- **"docker: command not found" or "Cannot connect to the Docker daemon."**
-  Docker Desktop is not running. Open it and wait for the whale icon to go
-  solid, then try again.
-- **`up` fails with "port is already allocated".** Another program (or another
-  student) is using your host port. Pick a different high host port for
-  `open-webui` (for example `8408:8080`) and re-run `up`. Never switch to
-  `8080` or `11434` on the host.
-- **Compose error like "did not find expected key" or "mapping values are not
-  allowed".** A YAML indentation problem. Check that every level is indented
-  with spaces (not tabs) and that items line up. Run `docker compose config`
-  to see the offending line.
-- **`pinned_images` criterion is 0.** You still have a `:latest` tag somewhere,
-  or an image with no tag at all. Give every `image:` a specific version.
-- **`ollama_not_published` criterion is 0.** Your `ollama` service still has a
-  `ports:` line publishing `11434`. Delete that line completely; WebUI reaches
-  Ollama over the private network, not through the host.
-- **The chat page will not load at `localhost:8407`.** Give Open WebUI a minute
-  after `up` to finish starting, then refresh. Confirm the container is `Up`
-  with `docker compose -p csec2300-lab07 ps`.
+- **"docker: command not found" or "Cannot connect to the Docker daemon."** Docker Desktop is not running. Open it and wait for the whale icon to go solid, then try again.
+- **`up` fails with "port is already allocated".** Another program (or another student) is using your host port. Pick a different high host port for `open-webui` (for example `8408:8080`) and re-run `up`. Never switch to `8080` or `11434` on the host.
+- **Compose error like "did not find expected key" or "mapping values are not allowed".** A YAML indentation problem. Check that every level is indented with spaces (not tabs) and that items line up. Run `docker compose config` to see the offending line.
+- **`pinned_images` criterion is 0.** You still have a `:latest` tag somewhere, or an image with no tag at all. Give every `image:` a specific version.
+- **`ollama_not_published` criterion is 0.** Your `ollama` service still has a `ports:` line publishing `11434`. Delete that line completely; WebUI reaches Ollama over the private network, not through the host.
+- **The chat page will not load at `localhost:8407`.** Give Open WebUI a minute after `up` to finish starting, then refresh. Confirm the container is `Up` with `docker compose -p csec2300-lab07 ps`.

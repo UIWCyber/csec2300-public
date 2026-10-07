@@ -2,11 +2,11 @@
 
 ## Task group A - Capture hardware
 - **Tier 1 (nudge):** Read what the tools report, do not guess specs. https://developer.nvidia.com/nvidia-system-management-interface
-- **Tier 2 (guided):** `nvidia-smi > gpu-report.txt` on GPU machines; else `system_profiler SPDisplaysDataType > gpu-report.txt` or `lscpu >> gpu-report.txt`.
+- **Tier 2 (guided):** nvidia-smi > gpu-report.txt on GPU machines; else system_profiler SPDisplaysDataType > gpu-report.txt or lscpu >> gpu-report.txt.
 - **Tier 3 (near-solution):**
-  ```
-  { nvidia-smi || system_profiler SPDisplaysDataType; lscpu 2>/dev/null; } > gpu-report.txt
-  ```
+```
+{ nvidia-smi || system_profiler SPDisplaysDataType; lscpu 2>/dev/null; } > gpu-report.txt
+```
 
 ## Task group B - Memory hierarchy & GPU vs CPU
 - **Tier 1 (nudge):** Speed and size trade off across registers, cache, RAM, disk. GPUs win on throughput, CPUs on latency. https://en.wikipedia.org/wiki/Memory_hierarchy

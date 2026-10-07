@@ -1,5 +1,25 @@
 # Lab 0 Student Guide: Environment and Identity Setup
 
+## Windows: the commands to run
+
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
+
 ## What you will build
 
 You will turn your laptop or lab workstation into a working, identifiable
@@ -24,7 +44,7 @@ rather than pasting whole blocks; you learn the shape of each one that way.
 
 Every command in this lab is typed into a terminal.
 
-- **Windows:** open the Start menu, type `Git Bash`, and open it. Git Bash installs with Git for Windows. Do not use PowerShell or Command Prompt for this lab: the grader is a bash script and only runs in Git Bash.
+- **Windows:** open the Start menu, type `PowerShell`, and open it. Git Bash, which installs with Git for Windows, also works. Do not use PowerShell or Command Prompt for this lab: the grader is a bash script and only runs in Git Bash.
 - **Mac:** press Command+Space, type `Terminal`, and press Return.
 
 You now have a window with a blinking cursor waiting for a command. Three
@@ -199,6 +219,12 @@ need are installed and reachable. Run it from the lab folder:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > what you'll see:
 
 ```
@@ -243,6 +269,12 @@ one shot: `scripts/smoke-test.sh`. Run it from the lab folder:
 
 ```
 bash scripts/smoke-test.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts\smoke-test.ps1
 ```
 
 The script prints its output on screen and writes the same text to
@@ -553,6 +585,12 @@ the score before you push instead of after. From the lab folder:
 
 ```
 bash autograde/run.sh
+```
+
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
 ```
 
 It prints the same criteria, then a panel with your score and two

@@ -2,12 +2,25 @@
 
 Course: CSEC 2300-01 Foundations of Cyber Security (UIW) - Dr. Gonzalo D Parra
 
-## Windows: use the PowerShell column
+## Windows: the commands to run
 
-This guide shows Mac and Linux commands. If you are on Windows 11, open PowerShell,
-change into your lab folder, and use the PowerShell command from the table in
-README.md, under "Running this lab on Windows". The grader, the score and the
-deliverables are identical; only the way you start a script differs.
+Use **PowerShell**: open the Start menu, type `PowerShell`, press Enter, and `cd` into
+your lab folder. You do not need Git Bash, and you do not need a bash shell at all.
+
+Most commands in this guide are identical on Windows: `git`, `docker`, `openssl`,
+`python3` and `curl` all work in PowerShell exactly as written.
+
+Only the lab's own scripts differ, because a `.sh` script needs a bash shell. Each one
+has a PowerShell twin with the same name and a `.ps1` ending, and every step below that
+runs a script shows both forms. The pattern is always the same:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
+`-ExecutionPolicy Bypass` is there because Windows blocks scripts by default. It applies
+to that one command and changes nothing on your machine.
 
 ## How this lab is submitted
 
@@ -36,42 +49,28 @@ WORK-FP and ATTEST code, which is the proof you submit.
 
 ## Before you start
 
-- Finish Lab 2 first. You should be comfortable with `git add`, `git commit`,
-  and `git push`.
-- The authoritative instructions live in the **Lab 3 assignment on Canvas**:
-  the repository invitation and the `README.md` in your repository.
-- If you get stuck, open `HINTS.md`. It has a three-tier hint ladder (a nudge,
-  then guided help, then a near-solution). Use the smallest hint that unblocks
-  you.
-- This guide teaches you the **process and the tools**. It does not hand you
-  the graded answers. That is on purpose. You learn security by doing it.
+- Finish Lab 2 first. You should be comfortable with `git add`, `git commit`, and `git push`.
+- The authoritative instructions live in the **Lab 3 assignment on Canvas**: the repository invitation and the `README.md` in your repository.
+- If you get stuck, open `HINTS.md`. It has a three-tier hint ladder (a nudge, then guided help, then a near-solution). Use the smallest hint that unblocks you.
+- This guide teaches you the **process and the tools**. It does not hand you the graded answers. That is on purpose. You learn security by doing it.
 
 ### A one-minute vocabulary primer
 
-- **CI (Continuous Integration):** a robot that automatically runs checks on
-  your code every time you push. Instead of you remembering to run tests, the
-  server does it for you and reports back pass or fail.
-- **DevSecOps:** the practice of building security checks **into** that robot,
-  so problems are caught automatically as part of normal development. People
-  call this "shifting security left" (catching issues early, on the left side
-  of the timeline, instead of after shipping).
-- **GitHub Actions:** GitHub's built-in CI robot. You tell it what to do by
-  writing a **workflow file** (a `.yml` file) inside `.github/workflows/`.
-- **Workflow file:** a plain-text recipe, written in YAML, that lists the
-  steps the robot should run.
+- **CI (Continuous Integration):** a robot that automatically runs checks on your code every time you push. Instead of you remembering to run tests, the server does it for you and reports back pass or fail.
+- **DevSecOps:** the practice of building security checks **into** that robot, so problems are caught automatically as part of normal development. People call this "shifting security left" (catching issues early, on the left side of the timeline, instead of after shipping).
+- **GitHub Actions:** GitHub's built-in CI robot. You tell it what to do by writing a **workflow file** (a `.yml` file) inside `.github/workflows/`.
+- **Workflow file:** a plain-text recipe, written in YAML, that lists the steps the robot should run.
 
 ## Step 1: Accept and open the lab
 
-1. Click the repository invitation from Canvas and accept the
-   assignment. GitHub creates a private repository just for you.
+1. Click the repository invitation from Canvas and accept the assignment. GitHub creates a private repository just for you.
 2. Copy the repository's clone URL (the green **Code** button on the repo page).
-3. On your computer, open a terminal (on Windows, use **Git Bash**, which was
-   installed with Git) and run:
+3. On your computer, open a terminal (on Windows, use **PowerShell**, which was installed with Git) and run:
 
-   ```bash
-   git clone <the-URL-you-copied>
-   cd lab-03-ci-devsecops
-   ```
+```bash
+git clone <the-URL-you-copied>
+cd lab-03-ci-devsecops
+```
 
    > What you'll see: git downloads the files and drops you into the lab folder.
    > Run `ls` (or `dir`) and you should see `README.md`, `autograde/`, and a
@@ -85,6 +84,12 @@ Before doing any work, confirm your environment is ready:
 bash autograde/run.sh --syscheck
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1 --syscheck
+```
+
 > What you'll see:
 
 ![syscheck panel](guide-assets/lab-03-syscheck.png)
@@ -95,7 +100,7 @@ how to fix it:
 | If this FAILs | Do this |
 |---|---|
 | `python3 available` | Install Python 3 and reopen your terminal so it is on your PATH. |
-| `git installed` | Install Git for Windows (Git Bash) and reopen the terminal. |
+| `git installed` | Install Git for Windows and reopen the terminal. |
 | `starter files intact` | You deleted a starter file by accident. Restore it with `git checkout -- starter/app/config.py`. |
 
 This lab needs only Python and Git. No Docker required.
@@ -133,38 +138,26 @@ jobs:
 
 How to read that structure:
 
-- **`on:`** is the trigger. `[push, pull_request]` means "run on every push and
-  on every pull request."
+- **`on:`** is the trigger. `[push, pull_request]` means "run on every push and on every pull request."
 - **`jobs:`** holds one or more jobs. Each job runs on a fresh cloud machine.
-- **`runs-on:`** picks the machine image. `ubuntu-latest` is a standard Linux
-  runner GitHub provides for free.
-- **`steps:`** is an ordered list. Each step is either `uses:` (run a prebuilt
-  action someone else published) or `run:` (run a shell command). Steps run
-  top to bottom; if one fails, the run turns red.
+- **`runs-on:`** picks the machine image. `ubuntu-latest` is a standard Linux runner GitHub provides for free.
+- **`steps:`** is an ordered list. Each step is either `uses:` (run a prebuilt action someone else published) or `run:` (run a shell command). Steps run top to bottom; if one fails, the run turns red.
 
 You must include three security steps:
 
-1. **Linter** (for example `ruff`, `flake8`, `hadolint`, or `eslint`). A linter
-   reads your code without running it and flags style problems, likely bugs,
-   and suspicious patterns. This is a light form of **SAST** (Static
-   Application Security Testing).
-2. **Secret scanner** (`gitleaks`). It searches your files and git history for
-   things that look like passwords, tokens, and API keys, using known key
-   formats and high-entropy (random-looking) string detection. This is the
-   check that would have caught the seeded key.
-3. **Dependency audit** (`pip-audit`, `npm audit`, or `safety`). It reads your
-   dependency list and cross-references it against a database of known
-   vulnerabilities (CVEs) in those exact versions. Old libraries often have
-   published security holes; this tells you which ones to upgrade.
+1. **Linter** (for example `ruff`, `flake8`, `hadolint`, or `eslint`). A linter reads your code without running it and flags style problems, likely bugs, and suspicious patterns. This is a light form of **SAST** (Static Application Security Testing).
+2. **Secret scanner** (`gitleaks`). It searches your files and git history for things that look like passwords, tokens, and API keys, using known key formats and high-entropy (random-looking) string detection. This is the check that would have caught the seeded key.
+3. **Dependency audit** (`pip-audit`, `npm audit`, or `safety`). It reads your dependency list and cross-references it against a database of known vulnerabilities (CVEs) in those exact versions. Old libraries often have published security holes; this tells you which ones to upgrade.
 
 > What you'll see when these actually run (this lab's steps run cleanly on your
 > own machine too):
 >
-> ```
-> Lint (ruff):            All checks passed!
-> Dependency audit:       Found 5 known vulnerabilities in 2 packages
->                         requests 2.31.0 ... flask 2.0.0 ...
-> ```
+
+```
+Lint (ruff):            All checks passed!
+Dependency audit:       Found 5 known vulnerabilities in 2 packages
+                        requests 2.31.0 ... flask 2.0.0 ...
+```
 >
 > The dependency audit finding is expected. The starter pins deliberately old
 > versions so you can see what a real vulnerability report looks like. Your job
@@ -172,22 +165,20 @@ You must include three security steps:
 
 ## Step 5: Remove the seeded secret
 
-1. Edit `starter/app/config.py` so the key is read from an environment variable
-   instead of being written in the file. `HINTS.md` Tier 3 shows the exact
-   one-liner. The idea: `os.environ.get("API_KEY", "")`.
+1. Edit `starter/app/config.py` so the key is read from an environment variable instead of being written in the file. `HINTS.md` Tier 3 shows the exact one-liner. The idea: `os.environ.get("API_KEY", "")`.
 2. Delete the committed `.env` file and tell git about the deletion:
 
-   ```bash
-   git rm .env
-   ```
+```bash
+git rm .env
+```
 
    > What you'll see: `rm '.env'`. The file is now staged for deletion.
 
 3. Confirm the secret is truly gone from your working files:
 
-   ```bash
-   grep -rl "sk-live" . --exclude-dir=.git --exclude-dir=autograde
-   ```
+```bash
+grep -rl "sk-live" . --exclude-dir=.git --exclude-dir=autograde
+```
 
    > What you'll see: nothing at all. No output means no match, which is what
    > you want. (The grader ignores the `autograde/` folder, so a copy of the
@@ -221,6 +212,12 @@ Run the grader:
 bash autograde/run.sh
 ```
 
+On Windows, the same step in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -File autograde\run.ps1
+```
+
 Read the per-criterion table. Each line shows points earned out of the max and
 a short reason. Aim for **100/100**. When you get there, you will see your
 **WORK-FP** and **ATTEST** codes at the bottom. Take a screenshot of this whole
@@ -236,15 +233,12 @@ After you `git push`, open your repository on GitHub and click the **Actions**
 tab. Each push shows a run:
 
 - A **green check** means every step passed. Your pipeline is healthy.
-- A **red X** means a step failed. Click the run, then click the failed step to
-  expand its log. The log reads top to bottom; scroll to the first red error
-  line. For example, if the secret scanner turns the run red, its log will name
-  the file and line where it found a key, exactly like this local preview:
+- A **red X** means a step failed. Click the run, then click the failed step to expand its log. The log reads top to bottom; scroll to the first red error line. For example, if the secret scanner turns the run red, its log will name the file and line where it found a key, exactly like this local preview:
 
-  ```
-  .env:2:API_KEY=sk-live-...        <- a RED run: the scanner found a secret
-  starter/app/config.py:5:API_KEY = "sk-live-..."
-  ```
+```
+.env:2:API_KEY=sk-live-...        <- a RED run: the scanner found a secret
+starter/app/config.py:5:API_KEY = "sk-live-..."
+```
 
   Fix the reported problem, commit, and push again. The pipeline re-runs
   automatically and should go green.
@@ -259,41 +253,27 @@ The local `bash autograde/run.sh` score is your offline proof. When you push to
 your assignment repository, GitHub runs the checks again on its own
 servers, and you can watch them live. Two separate workflows run on every push:
 
-1. **The autograder** (`classroom.yml`, named "Autograde Lab 3"). This is the
-   graded pipeline your instructor sees. It runs the same `autograde/run.sh` and
-   posts your score.
-2. **Your own pipeline** (`ci.yml`, named "ci"). This is the DevSecOps pipeline
-   you built: the linter, the secret scan, and the dependency audit.
+1. **The autograder** (`classroom.yml`, named "Autograde Lab 3"). This is the graded pipeline your instructor sees. It runs the same `autograde/run.sh` and posts your score.
+2. **Your own pipeline** (`ci.yml`, named "ci"). This is the DevSecOps pipeline you built: the linter, the secret scan, and the dependency audit.
 
 ### Step by step
 
 1. **Push your work.**
 
-   ```bash
-   git add -A
-   git commit -m "Complete Lab 3: CI pipeline + secret rotation"
-   git push
-   ```
+```bash
+git add -A
+git commit -m "Complete Lab 3: CI pipeline + secret rotation"
+git push
+```
 
-2. **Open the Actions tab.** On your repository page on GitHub, click
-   **Actions**. You will see your push listed with **both** workflows running.
-   A spinning amber dot means "in progress"; a green check means "passed"; a red
-   X means "a step failed".
+2. **Open the Actions tab.** On your repository page on GitHub, click **Actions**. You will see your push listed with **both** workflows running. A spinning amber dot means "in progress"; a green check means "passed"; a red X means "a step failed".
 
-3. **Wait for both to go green.** Give it a minute. Both "Autograde Lab 3" and
-   "ci" should finish with a green check.
+3. **Wait for both to go green.** Give it a minute. Both "Autograde Lab 3" and "ci" should finish with a green check.
 
-   - If your **ci** pipeline is red, click it, open the red step, and read the
-     first error. A common cause is a linter finding in your app code, or a
-     secret the scanner detected in what you shipped. Fix it, commit, and push
-     again; the run repeats automatically.
-   - If the **autograder** is red or below 100, open its run and read the job
-     summary (next step) to see which criterion missed.
+   - If your **ci** pipeline is red, click it, open the red step, and read the first error. A common cause is a linter finding in your app code, or a secret the scanner detected in what you shipped. Fix it, commit, and push again; the run repeats automatically.
+   - If the **autograder** is red or below 100, open its run and read the job summary (next step) to see which criterion missed.
 
-4. **Read your score in the job summary.** Click the **Autograde Lab 3** run,
-   then click the **Summary** at the top left. GitHub prints a table:
-   `Autograde: 100/100 points`, one line per criterion, and your **WORK-FP** and
-   **ATTEST** codes. That summary is the server-side proof of your grade.
+4. **Read your score in the job summary.** Click the **Autograde Lab 3** run, then click the **Summary** at the top left. GitHub prints a table: `Autograde: 100/100 points`, one line per criterion, and your **WORK-FP** and **ATTEST** codes. That summary is the server-side proof of your grade.
 
 > What a finished submission looks like: both workflows green, and the
 > autograder reporting a perfect score with its verification codes.
@@ -310,20 +290,8 @@ try to scrub history.
 
 ## Troubleshooting
 
-1. **Grader says "no CI workflow found."** Your file must be at exactly
-   `.github/workflows/ci.yml`. Check spelling and that it is not inside
-   `starter/`. The folder starts with a dot.
-2. **Grader still says the secret is present.** You edited `config.py` but did
-   not delete `.env`, or the other way around. The key lives in both. Run the
-   `grep` from Step 5 to find every remaining copy.
-3. **Linter / secret-scan / dep-audit step "not detected."** The grader looks
-   for the tool names in your workflow text (for example `ruff`, `gitleaks`,
-   `pip-audit`). If you used a different tool, make sure it is one of the
-   accepted names listed in the `README.md` grading section.
-4. **`.gitignore` credit but you did not add `.env`.** Do not rely on the
-   starter's TODO comment. Add a real `.env` line so a future `.env` is
-   actually ignored. This is the point of the task.
-5. **YAML errors on GitHub (red run before any step logs).** YAML is
-   indentation-sensitive. Use spaces, never tabs, and keep the two-space
-   indentation consistent. Paste your file into GitHub's Actions tab error
-   message to see the line it complains about.
+1. **Grader says "no CI workflow found."** Your file must be at exactly `.github/workflows/ci.yml`. Check spelling and that it is not inside `starter/`. The folder starts with a dot.
+2. **Grader still says the secret is present.** You edited `config.py` but did not delete `.env`, or the other way around. The key lives in both. Run the `grep` from Step 5 to find every remaining copy.
+3. **Linter / secret-scan / dep-audit step "not detected."** The grader looks for the tool names in your workflow text (for example `ruff`, `gitleaks`, `pip-audit`). If you used a different tool, make sure it is one of the accepted names listed in the `README.md` grading section.
+4. **`.gitignore` credit but you did not add `.env`.** Do not rely on the starter's TODO comment. Add a real `.env` line so a future `.env` is actually ignored. This is the point of the task.
+5. **YAML errors on GitHub (red run before any step logs).** YAML is indentation-sensitive. Use spaces, never tabs, and keep the two-space indentation consistent. Paste your file into GitHub's Actions tab error message to see the line it complains about.

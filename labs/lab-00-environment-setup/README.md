@@ -44,7 +44,7 @@ output you should see:
 https://uiwcyber.github.io/csec2300-public/#labs%2Flab-00-environment-setup%2FSTUDENT-GUIDE.md.
 The short version follows.
 
-**Step 1. Open a terminal.** Windows: Git Bash (Start menu, type `Git Bash`).
+**Step 1. Open a terminal.** Windows: PowerShell (Start menu, type `PowerShell`).
 Mac: Terminal. A new terminal starts in your home folder. `pwd` prints the
 folder you are in, `ls` lists it, `cd name` enters a folder, and `cd` alone
 returns home.
@@ -77,6 +77,7 @@ cd csec2300-lab00-yourusername
 is `PASS`.
 
 **Step 5. Smoke test:** `bash scripts/smoke-test.sh` writes `env-check.txt`.
+Windows: `powershell -ExecutionPolicy Bypass -File scripts\smoke-test.ps1`.
 Read it with `cat env-check.txt`; do not edit it.
 
 **Step 6. Fill in the report.** Windows: `notepad setup-report.md`. Mac:
